@@ -19,13 +19,15 @@ import { ModalModule } from "ngx-bootstrap/modal";
 
 import { PagesModule } from "./pages/pages.module";
 
+
 import { IndexComponent } from "./pages/index/index.component";
-import { ProfilepageComponent } from "./pages/examples/profilepage/profilepage.component";
-import { RegisterpageComponent } from "./pages/examples/registerpage/registerpage.component";
-import { LandingpageComponent } from "./pages/examples/landingpage/landingpage.component";
+import { ProfilepageComponent } from "./pages/profilepage/profilepage.component";
+import { RegisterpageComponent } from "./pages/registerpage/registerpage.component";
+import { NavbarComponent } from './pages/navbar/navbar.component';
+import { FooterComponent } from './pages/footer/footer.component';
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
     // IndexComponent,
     // ProfilepageComponent,
     // RegisterpageComponent,
