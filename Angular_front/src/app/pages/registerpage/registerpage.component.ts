@@ -6,9 +6,12 @@ import { Component, OnInit, OnDestroy, HostListener } from "@angular/core";
 })
 export class RegisterpageComponent implements OnInit, OnDestroy {
   isCollapsed = true;
-  focus;
+  focus0;
   focus1;
   focus2;
+  focus3;
+  focus4;
+
   constructor() {}
   @HostListener("document:mousemove", ["$event"])
   onMouseMove(e) {
