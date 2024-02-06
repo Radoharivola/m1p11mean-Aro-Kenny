@@ -8,8 +8,11 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var authRouter = require('./routes/auth');
 var roleRouter = require('./routes/role');
+var serviceRouter = require('./routes/service');
 var protectedRouter = require('./routes/protected');
 var rdvRouter = require('./routes/rdv');
+var workScheduleRouter = require('./routes/workSchedule');
+
 
 require('./models/db');
 
@@ -30,7 +33,9 @@ app.use('/users', usersRouter);
 app.use('/auth', authRouter);
 app.use('/protected', protectedRouter);
 app.use('/role', roleRouter);
+app.use('/service', serviceRouter);
 app.use('/rdv', rdvRouter);
+app.use('/workSchedule', workScheduleRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
