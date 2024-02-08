@@ -7,19 +7,21 @@ const Service = require('../models/Service');
 
 router.post('/new', async (req, res) => {
     try {
-        const { client, employee, service, date } = req.body;
+        const { client, employee, services, date } = req.body;
         const foundClient = await User.findOne({ _id: client });
         if (!foundClient) {
             return res.status(400).json({ error: 'Client not found' });
         }
-        const foundService = await Service.findOne({ _id: service });
-        if (!foundService) {
-            return res.status(400).json({ error: 'service not found' });
-        }
+        // const foundService = await Service.findOne({ _id: service });
+        // if (!foundService) {
+        //     return res.status(400).json({ error: 'service not found' });
+        // }
         const foundEmployee = await User.findOne({ _id: employee });
         if (foundEmployee) {
+            const sumOfDurations = services.reduce((total, service) => total + service.serviceDuration, 0);
+
             var startDate = new Date(date);
-            var addedDate = new Date(startDate.getTime() + foundService.duration * 60000);
+            var addedDate = new Date(startDate.getTime() + sumOfDurations * 60000);
 
 
             const workSchedule = await WorkSchedule.findOne({ 'employee.employeeId': employee });
@@ -33,7 +35,6 @@ router.post('/new', async (req, res) => {
             if (addedDate > wsEndTime || startDate < wsStartTime) {
                 return res.status(500).json({ error: 'en dehors de ses horaires de travail' });
             }
-
             const rdv = new Rdv({
                 client: {
                     clientId: foundClient._id,
@@ -45,11 +46,7 @@ router.post('/new', async (req, res) => {
                     employeeFirstName: foundEmployee.firstName,
                     employeeLastName: foundEmployee.lastName,
                 },
-                service: {
-                    serviceId: foundService._id,
-                    serviceName: foundService.name,
-                    serviceDuration: foundService.duration,
-                },
+                services: services,
                 date: startDate,
                 dateFin: addedDate
             });
@@ -89,9 +86,10 @@ router.post('/new', async (req, res) => {
                 return res.status(500).json({ message: "the selected date intersects with another rdv", rdv: result, selectedEmp: foundEmployee });
             }
             await rdv.save();
+
             return res.status(200).json({ message: "appointment scheduled", rdv: rdv });
-        }else{
-            
+        } else {
+
         }
     } catch (error) {
         console.error(error);
