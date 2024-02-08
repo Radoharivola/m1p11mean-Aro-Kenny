@@ -5,7 +5,6 @@ const Rdv = require('../models/Rdv');
 const User = require('../models/User');
 const Service = require('../models/Service');
 
-/* GET home page. */
 router.post('/new', async (req, res) => {
     try {
         const { client, employee, service, date } = req.body;
@@ -20,7 +19,7 @@ router.post('/new', async (req, res) => {
         const foundEmployee = await User.findOne({ _id: employee });
         if (foundEmployee) {
             var startDate = new Date(date);
-            var addedDate = new Date(startDate.getTime() + foundService.duration * 60000); // 1 minute = 60000 milliseconds
+            var addedDate = new Date(startDate.getTime() + foundService.duration * 60000);
 
 
             const workSchedule = await WorkSchedule.findOne({ 'employee.employeeId': employee });
@@ -30,7 +29,7 @@ router.post('/new', async (req, res) => {
             const wsStartTime = new Date(workSchedule.startTime);
             wsStartTime.setFullYear(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
 
-            const bool = addedDate > wsEndTime;
+            // comparing the selected date to the employee's work schedule
             if (addedDate > wsEndTime || startDate < wsStartTime) {
                 return res.status(500).json({ error: 'en dehors de ses horaires de travail' });
             }
@@ -54,21 +53,46 @@ router.post('/new', async (req, res) => {
                 date: startDate,
                 dateFin: addedDate
             });
+            const result = await Rdv.findOne({
+                // this old code is working but it won't allow like really close schedules like ending at 9am and starting at 9am
+                // $or: [{date: { $lte: startDate },dateFin: { $gte: startDate }},{date: { $lte: addedDate },dateFin: { $gte: addedDate }},{$and: [{ date: { $gte: startDate } },{ dateFin: { $lte: addedDate } }] } ]
+                // end
 
-            // await rdv.save();
-            // return res.status(200).json({ startDate, addedDate, bool });
-            const formattedDate = new Date(addedDate).toISOString();
-            const dateOnly = formattedDate.split('T')[0];
-            const rdvs = await Rdv.find({ 'employee.employeeId': employee, date: { $gte: new Date(dateOnly), $lt: new Date(dateOnly).setDate(new Date(dateOnly).getDate() + 1) } })
-            return res.status(200).json({rdvs});
+                $and: [
+                    { 'employee.employeeId': employee },
+                    {
+                        $or: [
+                            {
+                                date: { $lte: startDate },
+                                dateFin: { $gt: startDate }
+                            },
+                            {
+                                date: { $lt: addedDate },
+                                dateFin: { $gte: addedDate }
+                            },
+                            {
+                                $and: [
+                                    { date: { $gte: startDate } },
+                                    { dateFin: { $lte: addedDate } }
+                                ]
+                            },
+                            {
+                                date: addedDate,
+                                dateFin: startDate
+                            }
+                        ]
+                    }
+                ]
 
+            }).limit(1);
+            if (result) {
+                return res.status(500).json({ message: "the selected date intersects with another rdv", rdv: result, selectedEmp: foundEmployee });
+            }
+            await rdv.save();
+            return res.status(200).json({ message: "appointment scheduled", rdv: rdv });
+        }else{
             
         }
-
-
-
-
-        res.status(200).json("ehehehehe appointment");
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'appointment creation failed' });
