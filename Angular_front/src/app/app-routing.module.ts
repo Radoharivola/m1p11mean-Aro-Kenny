@@ -6,12 +6,15 @@ import { Routes, RouterModule } from "@angular/router";
 import { IndexComponent } from "./pages/index/index.component";
 import { ProfilepageComponent } from "./pages/profilepage/profilepage.component";
 import { RegisterpageComponent } from "./pages/registerpage/registerpage.component";
+import { SomeShitComponent } from './pages/some-shit/some-shit.component';
 
 const routes: Routes = [
   { path: "", redirectTo: "home", pathMatch: "full" },
   { path: "home", component: IndexComponent },
   { path: "profile", component: ProfilepageComponent },
   { path: "register", component: RegisterpageComponent },
+  { path: "someshit", component: SomeShitComponent },
+
 ];
 
 @NgModule({
@@ -24,4 +27,4 @@ const routes: Routes = [
   ],
   exports: []
 })
-export class AppRoutingModule {}
+export class AppRoutingModule { }

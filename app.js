@@ -12,6 +12,7 @@ var serviceRouter = require('./routes/service');
 var protectedRouter = require('./routes/protected');
 var rdvRouter = require('./routes/rdv');
 var workScheduleRouter = require('./routes/workSchedule');
+var cors = require('cors')
 
 
 require('./models/db');
@@ -27,6 +28,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(cors());
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);

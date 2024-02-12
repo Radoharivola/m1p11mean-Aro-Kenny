@@ -23,6 +23,7 @@ import { RegisterpageComponent } from "./registerpage/registerpage.component";
 
 import { NavbarComponent } from './navbar/navbar.component';
 import { FooterComponent } from './footer/footer.component';
+import { SomeShitComponent } from './some-shit/some-shit.component';
 
 @NgModule({
   imports: [
@@ -48,7 +49,8 @@ import { FooterComponent } from './footer/footer.component';
     ProfilepageComponent,
     RegisterpageComponent,
     NavbarComponent,
-    FooterComponent
+    FooterComponent,
+    SomeShitComponent,
   ],
   exports: [
     IndexComponent,

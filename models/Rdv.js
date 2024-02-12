@@ -11,10 +11,15 @@ const rdvSchema = new mongoose.Schema({
         employeeLastName: { type: String }
     },
     services: [{
-        serviceId: { type: mongoose.Schema.Types.ObjectId, ref: 'Service' },
-        serviceName: { type: String },
-        serviceDuration: { type: Number, required: true }
+        _id: { type: mongoose.Schema.Types.ObjectId, ref: 'Service' },
+        name: { type: String },
+        duration: { type: Number, required: true },
+        price: { type: Number, required: true },
+        commission: { type: Number, required: true },
+        description: { type: String, required: true }
     }],
+    total: { type: Number, required: true },
+    paid: { type: Number, required: true },
     date: { type: Date, required: true },
     dateFin: { type: Date, required: true },
 
