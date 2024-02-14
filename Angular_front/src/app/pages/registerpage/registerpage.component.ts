@@ -1,4 +1,6 @@
 import { Component, OnInit, OnDestroy, HostListener } from "@angular/core";
+import { UserService } from '../../services/user.service';
+import { Router } from "@angular/router";
 
 @Component({
   selector: "app-registerpage",
@@ -12,7 +14,11 @@ export class RegisterpageComponent implements OnInit, OnDestroy {
   focus3;
   focus4;
 
-  constructor() {}
+  formData: { username: string, password: string, role: string, firstName: string, lastName: string, email: string, phone: string } = { username: '', password: '',
+  role: 'client', firstName: '', lastName: '', email: '', phone: '' };
+
+
+  constructor(private userService: UserService, private router: Router) {}
   @HostListener("document:mousemove", ["$event"])
   onMouseMove(e) {
     var squares1 = document.getElementById("square1");
@@ -86,5 +92,26 @@ export class RegisterpageComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     var body = document.getElementsByTagName("body")[0];
     body.classList.remove("register-page");
+  }
+
+  register() {
+    const data = {
+      "username": this.formData.username,
+      "password": this.formData.password,
+      "role": this.formData.role,
+      "firstName": this.formData.firstName,
+      "lastName": this.formData.lastName,
+      "email": this.formData.email,
+      "phone": this.formData.phone
+    };
+    this.userService.register({ data }).subscribe(
+      response => {       
+        console.log(response);
+        this.router.navigate(['/login']);
+      },
+      error => {
+        console.log(error);
+      }
+    )
   }
 }

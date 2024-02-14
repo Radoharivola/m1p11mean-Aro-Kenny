@@ -14,15 +14,15 @@
                 <!-- <h4 class="card-title">Register</h4> -->
               </div>
               <div class="card-body">
-                <form class="form">
+                <form class="form" (ngSubmit)="register()">
                   <div class="input-group" [ngClass]="{ 'input-group-focus': focus0 === true }">
                     <div class="input-group-prepend">
                       <div class="input-group-text">
                         <i class="tim-icons icon-single-02"> </i>
                       </div>
                     </div>
-                    <input class="form-control" placeholder="identifiant" type="text" (focus)="focus0 = true"
-                      (blur)="focus0 = false" />
+                    <input class="form-control" placeholder="Username" name="username" type="text" (focus)="focus0 = true"
+                      (blur)="focus0 = false" [(ngModel)]="formData.username"/>
                   </div>
                   <div class="input-group" [ngClass]="{ 'input-group-focus': focus1 === true }">
                     <div class="input-group-prepend">
@@ -30,8 +30,8 @@
                         <i class="tim-icons icon-single-02"> </i>
                       </div>
                     </div>
-                    <input class="form-control" placeholder="Nom" type="text" (focus)="focus1 = true"
-                      (blur)="focus1 = false" />
+                    <input class="form-control" placeholder="Nom" name="firstName" type="text" (focus)="focus1 = true"
+                      (blur)="focus1 = false" [(ngModel)]="formData.firstName" />
                   </div>
                   <div class="input-group" [ngClass]="{ 'input-group-focus': focus2 === true }">
                     <div class="input-group-prepend">
@@ -39,8 +39,8 @@
                         <i class="tim-icons icon-single-02"> </i>
                       </div>
                     </div>
-                    <input class="form-control" placeholder="Prénoms" type="text" (focus)="focus2 = true"
-                      (blur)="focus2 = false" />
+                    <input class="form-control" placeholder="Prénoms" name="lastName" type="text" (focus)="focus2 = true"
+                      (blur)="focus2 = false" [(ngModel)]="formData.lastName" />
                   </div>
                   
                   <div class="input-group" [ngClass]="{ 'input-group-focus': focus3 === true }">
@@ -49,8 +49,8 @@
                         <i class="tim-icons icon-email-85"> </i>
                       </div>
                     </div>
-                    <input class="form-control" placeholder="Email" type="text" (focus)="focus3 = true"
-                      (blur)="focus3 = false" />
+                    <input class="form-control" placeholder="Email" name="email" type="text" (focus)="focus3 = true"
+                      (blur)="focus3 = false" [(ngModel)]="formData.email" />
                   </div>
                   <div class="input-group" [ngClass]="{ 'input-group-focus': focus4 === true }">
                     <div class="input-group-prepend">
@@ -58,8 +58,17 @@
                         <i class="tim-icons icon-lock-circle"> </i>
                       </div>
                     </div>
-                    <input class="form-control" placeholder="Mot de passe" type="text" (focus)="focus4 = true"
-                      (blur)="focus4 = false" />
+                    <input class="form-control" placeholder="Password" name="password" type="text" (focus)="focus4 = true"
+                      (blur)="focus4 = false" [(ngModel)]="formData.password" />
+                  </div>
+                  <div class="input-group" [ngClass]="{ 'input-group-focus': focus4 === true }">
+                    <div class="input-group-prepend">
+                      <div class="input-group-text">
+                        <i class="tim-icons icon-lock-circle"> </i>
+                      </div>
+                    </div>
+                    <input class="form-control" placeholder="Phone number" name="phone" type="text" (focus)="focus4 = true"
+                      (blur)="focus4 = false" [(ngModel)]="formData.phone" />
                   </div>
                   <!-- <div class="form-check text-left">
                     <label class="form-check-label">
@@ -69,13 +78,16 @@
                       <a href="javascript:void(0)"> terms and conditions </a> .
                     </label>
                   </div> -->
+                  <div class="input-group">
+                    <input class="btn btn-danger btn-round btn-lg" type="submit" value="Register" />
+                  </div>
                 </form>
               </div>
-              <div class="card-footer">
+              <!-- <div class="card-footer">
                 <a class="btn btn-danger btn-round btn-lg" href="javascript:void(0)">
                   S'inscrire
                 </a>
-              </div>
+              </div> -->
             </div>
           </div>
         </div>
