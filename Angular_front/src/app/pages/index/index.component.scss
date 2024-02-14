@@ -1,0 +1,22 @@
+.scrollable-table-container {
+    max-height: 400px;
+    /* Adjust as needed */
+    overflow-y: auto;
+}
+
+.scrollable-table-container::-webkit-scrollbar {
+    width: 7px; /* width of the scrollbar */
+  }
+  
+  .scrollable-table-container::-webkit-scrollbar-track {
+    background: #17194100; /* color of the track */
+  }
+  
+  .scrollable-table-container::-webkit-scrollbar-thumb {
+    background: #fd5d93;
+    border-radius: 5px; /* color of the thumb */
+  }
+  
+  .scrollable-table-container::-webkit-scrollbar-thumb:hover {
+    background: #fd5d93; /* color of the thumb on hover */
+  }

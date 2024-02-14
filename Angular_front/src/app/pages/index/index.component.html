@@ -17,9 +17,6 @@
     </div>
   </div>
   <div class="main">
-
-
-
     <div class="section section-signup" id="appointment">
       <div class="container">
         <div class="squares square-1"></div>
@@ -97,7 +94,8 @@
                         </div>
                       </div>
                       <input class="form-control" placeholder="Numero" type="text" pattern="[0-9]{10}"
-                        title="Please enter a valid phone number (10 digits)" name="numero" [(ngModel)]="formData.numero" required/>
+                        title="Please enter a valid phone number (10 digits)" name="numero"
+                        [(ngModel)]="formData.numero" required />
                     </div>
                     <div class="input-group">
                       <div class="input-group-prepend">
@@ -115,7 +113,8 @@
                       <b> Oups! </b> {{message}}
                     </span>
                   </alert>
-                  <alert *ngIf="success" class="alert-with-icon" [type]="'success alert-with-icon'" [dismissible]="true">
+                  <alert *ngIf="success" class="alert-with-icon" [type]="'success alert-with-icon'"
+                    [dismissible]="true">
                     <span class="tim-icons icon-check-2" data-notify="icon"> </span>
                     <span>
                       <b> Yay! </b> {{message}}
@@ -124,213 +123,117 @@
                   <div class="input-group">
                     <input class="btn btn-danger btn-round btn-lg" type="submit" value="Valider" />
                   </div>
-
                 </form>
-
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-    <div class="section section-examples" data-background-color="black">
-      <img class="path" src="assets/img/path1.png" />
-
-      <div class="space-50"></div>
-      <div class="container text-center">
-        <div class="row">
-          <div class="col-sm-6">
-            <a [routerLink]="['/landing']">
-              <img alt="Image" class="img-raised" src="assets/img/landing-page.png" />
-            </a>
-            <a class="btn btn-simple btn-danger btn-round" [routerLink]="['/landing']">
-              View Landing Page
-            </a>
-          </div>
-          <div class="col-sm-6">
-            <a [routerLink]="['/profile']">
-              <img alt="Image" class="img-raised" src="assets/img/profile-page.png" />
-            </a>
-            <a class="btn btn-simple btn-danger btn-round" [routerLink]="['/profile']">
-              View Profile Page
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="section section-download" data-background-color="black" #target>
-      <img class="path" src="assets/img/path1.png" />
-
+    <div class="section section-tabs">
       <div class="container">
-        <div class="row justify-content-md-center">
-          <div class="text-center col-md-12 col-lg-8">
-            <h2 class="title">
-              Do you love this Bootstrap 4 Angular Design System?
-            </h2>
-            <h4 class="description">
-              Cause if you do, it can be yours for FREE. Hit the button below to
-              navigate to Creative Tim where you can find the design system in
-              HTML format. Start a new project or give an old Bootstrap project
-              a new look!
-            </h4>
-          </div>
-          <div class="text-center col-md-12 col-lg-8">
-            <a class="btn btn-danger btn-round btn-lg"
-              href="https://www.creative-tim.com/product/blk-design-system-angular" role="button">
-              Download Angular
-            </a>
-          </div>
+        <div class="title">
+          <h3 class="mb-3">Actu</h3>
         </div>
-        <br />
+        <div class="row">
+          <div class="col-md-12 ml-auto col-xl-12 mr-auto">
+            <div class="card">
+              <div class="card-header">
+                <tabset class="nav-tabs-danger">
+                  <tab>
+                    <ng-template tabHeading>
+                      <i class="tim-icons icon-gift-2"> </i> Offres
+                    </ng-template>
+                    <p>
+                      Efficiently unleash cross-media information without
+                      cross-media value. Quickly maximize timely deliverables
+                      for real-time schemas. <br />
 
-        <br />
+                      <br />
 
-        <br />
+                      Dramatically maintain clicks-and-mortar solutions without
+                      functional solutions.
+                    </p>
+                  </tab>
+                  <tab>
+                    <ng-template tabHeading>
+                      <i class="tim-icons icon-alert-circle-exc"> </i> Rappels <span
+                        class="text-danger">({{todaysRdv.length}})</span>
+                    </ng-template>
 
-        <br />
+                    <div class="row" *ngIf="todaysRdv && todaysRdv.length > 0; else noRdv">
+                      <div class="col-lg-4 mb-lg-auto" *ngFor="let rdv of todaysRdv">
+                        <div class="card card-register">
+                          <div class="card-body">
+                            <h3 class="text-warning font-weight-light">{{rdv.date | relativeTime}}</h3>
+                            <h4 class="text-white font-weight-light">Avec {{rdv.employee.firstName}}
+                              {{rdv.employee.lastName}}:</h4>
 
-        <br />
+                            <ul>
+                              <li *ngFor="let service of rdv.services">
+                                <p class="text-white mt-4">{{service.name}}</p>
+                              </li>
+                            </ul>
+                          </div>
+                          <div class="card-footer">
+                            <button class="btn btn-warning btn-round mr-1" type="button">
+                              Annuler
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <ng-template #noRdv>
+                      <div class="text-muted text-center">
+                        <p>Aucun rendez-vous</p>
+                      </div>
+                    </ng-template>
+                  </tab>
+                  <tab>
+                    <ng-template tabHeading>
+                      <i class="tim-icons icon-notes"> </i> historique
+                    </ng-template>
+                    <div *ngIf="history && history.length > 0; else noHistory" class="scrollable-table-container" (scroll)="onContainerScroll()">
+                      <table class="table" id="plain-table">
+                        <thead class="text-danger">
+                          <tr>
+                            <th class="header"><button class="btn btn-link btn-danger mr-1" (click)="flipDateSort()">Date</button></th>
+                            <th class="header">services</th>
+                            <th class="header">employé</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr *ngFor="let rdv of history">
+                            <td>{{rdv.date | relativeTime}}</td>
+                            <td>
+                              <ul>
+                                <li *ngFor="let service of rdv.services">
+                                  <p class="text-white mt-4">{{service.name}}</p>
+                                </li>
+                              </ul>
+                            </td>
+                            <td>{{rdv.employee.firstName}} {{rdv.employee.lastName}}</td>
 
-        <div class="row row-grid align-items-center my-md">
-          <div class="col-lg-6">
-            <h3 class="text-danger font-weight-light mb-2">
-              Merci de votre fidélité!
-            </h3>
-            <h4 class="mb-0 font-weight-light">
-              N'oubliez pas de nous suivre sur les réseaux. #branché.
-            </h4>
-          </div>
-          <div class="col-lg-6 text-lg-center btn-wrapper">
-            <a class="btn btn-icon btn-twitter btn-round btn-lg mr-1" id="twitter">
-              <i class="fab fa-twitter"> </i>
-            </a>
-            <a class="btn btn-icon btn-facebook btn-round btn-lg mr-1" id="facebook">
-              <i class="fab fa-facebook-square"> </i>
-            </a>
-            <a class="btn btn-icon btn-instagram btn-round btn-lg" target="_blank">
-              <i class="fab fa-instagram"> </i>
-            </a>
+                          </tr>
+                        </tbody>
+                      </table>
+                      
+                    </div>
+                    <ng-template #noHistory>
+                      <div class="text-muted text-center">
+                        <p>Aucun rendez-vous</p>
+                      </div>
+
+
+                    </ng-template>
+                  </tab>
+
+                </tabset>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
-    <div aria-hidden="true" aria-labelledby="myModalLabel" bsModal class="modal fade" #myModal="bs-modal" id="myModal"
-      role="dialog" tabindex="-1">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header justify-content-center">
-            <button aria-hidden="true" class="close" data-dismiss="modal" type="button" (click)="myModal.hide()">
-              <i class="tim-icons icon-simple-remove"> </i>
-            </button>
-            <h4 class="title title-up">Modal title</h4>
-          </div>
-          <div class="modal-body">
-            <p>
-              Far far away, behind the word mountains, far from the countries
-              Vokalia and Consonantia, there live the blind texts. Separated
-              they live in Bookmarksgrove right at the coast of the Semantics, a
-              large language ocean. A small river named Duden flows by their
-              place and supplies it with the necessary regelialia. It is a
-              paradisematic country, in which roasted parts of sentences fly
-              into your mouth.
-            </p>
-          </div>
-          <div class="modal-footer">
-            <button class="btn btn-default" type="button">Nice Button</button>
-            <button class="btn btn-danger" data-dismiss="modal" type="button" (click)="myModal.hide()">
-              Close
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div aria-hidden="true" aria-labelledby="myModalLabel" bsModal class="modal fade modal-mini modal-danger modal-mini"
-      #myModal1="bs-modal" id="myModal1" role="dialog" tabindex="-1">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header justify-content-center">
-            <button aria-hidden="true" class="close" data-dismiss="modal" (click)="myModal1.hide()" type="button">
-              <i class="tim-icons icon-simple-remove text-white"> </i>
-            </button>
-            <div class="modal-profile">
-              <i class="tim-icons icon-single-02"> </i>
-            </div>
-          </div>
-          <div class="modal-body">
-            <p>Always have an access to your profile</p>
-          </div>
-          <div class="modal-footer">
-            <button class="btn btn-link btn-neutral" type="button">Back</button>
-            <button class="btn btn-link btn-neutral" data-dismiss="modal" type="button" (click)="myModal1.hide()">
-              Close
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!-- <div aria-hidden="true" aria-labelledby="myModalLabel" bsModal class="modal fade modal-black" #myModal2="bs-modal"
-      id="myModal2" role="dialog" tabindex="-1">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header justify-content-center">
-            <button aria-hidden="true" class="close" data-dismiss="modal" (click)="myModal2.hide()" type="button">
-              <i class="tim-icons icon-simple-remove text-white"> </i>
-            </button>
-            <div class="text-muted text-center ml-auto mr-auto">
-              <h3 class="mb-0">Sign in with</h3>
-            </div>
-          </div>
-          <div class="modal-body">
-            <div class="btn-wrapper text-center">
-              <a class="btn btn-neutral btn-icon mr-1" href="javascript:void(0)">
-                <img src="assets/img/github.svg" />
-              </a>
-              <a class="btn btn-neutral btn-icon" href="javascript:void(0)">
-                <img src="assets/img/google.svg" />
-              </a>
-            </div>
-            <div class="text-center text-muted mb-4 mt-3">
-              <small> Or sign in with credentials </small>
-            </div>
-            <form role="form">
-              <div class="form-group mb-3">
-                <div class="input-group input-group-alternative" [ngClass]="{ 'input-group-focus': focus1 === true }">
-                  <div class="input-group-prepend">
-                    <span class="input-group-text">
-                      <i class="tim-icons icon-email-85"> </i>
-                    </span>
-                  </div>
-                  <input class="form-control" placeholder="Email" type="email" (focus)="focus1 = true"
-                    (blur)="focus1 = false" />
-                </div>
-              </div>
-              <div class="form-group">
-                <div class="input-group input-group-alternative" [ngClass]="{ 'input-group-focus': focus2 === true }">
-                  <div class="input-group-prepend">
-                    <span class="input-group-text">
-                      <i class="tim-icons icon-key-25"> </i>
-                    </span>
-                  </div>
-                  <input class="form-control" placeholder="Password" type="password" (focus)="focus2 = true"
-                    (blur)="focus2 = false" />
-                </div>
-              </div>
-              <div class="form-check mt-3">
-                <label class="form-check-label">
-                  <input checked="checked" class="form-check-input" type="checkbox" />
-
-                  <span class="form-check-sign"> </span> Remember me!
-                </label>
-              </div>
-              <div class="text-center">
-                <button class="btn btn-primary my-4" type="button">
-                  Sign in
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div> -->
   </div>
 </div>

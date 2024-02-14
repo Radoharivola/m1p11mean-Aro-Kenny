@@ -10,6 +10,8 @@ import { UserService } from '../../services/user.service';
   styleUrls: ['./index.component.scss']
 })
 export class IndexComponent implements OnInit, OnDestroy {
+  dateSort: number = -1;
+  page: number = 1;
   error: boolean = false;
   success: boolean = false;
   message = "";
@@ -20,9 +22,16 @@ export class IndexComponent implements OnInit, OnDestroy {
   isSwitchOn: boolean = false;
   client = "65c0c12041f49e5ca93ded6e";
 
+  todaysRdv: any[];
+  history: any[];
+
   phoneRegex = /^[0-9]{10}$/;
 
   formData: { date: string, employee: object, paid: number, numero: string } = { date: '', employee: null, paid: 0, numero: '' };
+  limit: number = 10;
+  totalPages: number = 0;
+
+
   constructor(private serviceService: ServiceService, private userService: UserService, private rdvservice: RdvService) { }
 
   ngOnInit() {
@@ -30,6 +39,8 @@ export class IndexComponent implements OnInit, OnDestroy {
     body.classList.add("index-page");
     this.fetchServices();
     this.fetchEmployees();
+    this.fetchTodaysRdv();
+    this.fetchRdvHistory(this.page);
   }
   ngOnDestroy() {
     var body = document.getElementsByTagName("body")[0];
@@ -46,6 +57,62 @@ export class IndexComponent implements OnInit, OnDestroy {
       console.log(data.employees);
       this.employees = data.employees;
     });
+  }
+  fetchTodaysRdv() {
+    const today = new Date();
+
+    // Set dateInit to today's date
+    const dateInit = today.toISOString();
+
+    // Set dateFin to today's date at 23:59:59
+    today.setHours(23, 59, 59, 999);
+    const dateFin = today.toISOString();
+    this.rdvservice.getRdv({ 'clientId': '65c0c12041f49e5ca93ded6e', 'dateInit': dateInit, 'dateFin': dateFin, 'limit': 10, 'page': 1, 'dateSort': 1 }).subscribe(response => {
+      console.log(response);
+      this.todaysRdv = response.rdvs;
+    },
+      error => {
+        console.log(error);
+      });
+  }
+
+  fetchRdvHistory(page) {
+    const today = new Date();
+    const dateFin = today.toISOString();
+
+    const dateInit = new Date("1970-01-01").toISOString();
+
+    this.rdvservice.getRdv({ 'clientId': '65c0c12041f49e5ca93ded6e', 'dateInit': dateInit, 'dateFin': dateFin, 'limit': this.limit, 'page': page, 'dateSort': this.dateSort }).subscribe(response => {
+      console.log(response.rdvs);
+      if (this.page == 1) {
+        this.history = response.rdvs;
+      } else {
+        this.history = this.history.concat(response.rdvs);
+      }
+      this.totalPages = response.totalPages;
+    },
+      error => {
+        console.log(error);
+      });
+  }
+
+  flipDateSort() {
+    this.dateSort = this.dateSort * -1;
+    this.page = 1;
+    this.fetchRdvHistory(1);
+  }
+
+  onContainerScroll() {
+    const container = document.querySelector('.scrollable-table-container');
+    if (container) {
+      // Check if the user has scrolled to the bottom of the container
+      if (container.scrollTop + container.clientHeight >= container.scrollHeight) {
+        if (this.page < this.totalPages) {
+          this.page += 1;
+          this.fetchRdvHistory(this.page);
+        }
+      }
+    }
   }
 
   updateSelectedServices(service: any, isChecked: boolean) {
@@ -120,6 +187,8 @@ export class IndexComponent implements OnInit, OnDestroy {
         }
       );
     }
+
+
 
     // console.log(data);
 

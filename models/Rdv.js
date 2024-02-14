@@ -1,14 +1,18 @@
 const mongoose = require('mongoose');
 const rdvSchema = new mongoose.Schema({
     client: {
-        clientId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-        clientFirstName: { type: String, required: true },
-        clientLastName: { type: String, required: true }
+        _id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+        firstName: { type: String, required: true },
+        lastName: { type: String, required: true },
+        email: { type: String, unique: true, required: true },
+        phone: { type: String, required: true }
     },
     employee: {
-        employeeId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-        employeeFirstName: { type: String },
-        employeeLastName: { type: String }
+        _id: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+        firstName: { type: String, required: true },
+        lastName: { type: String, required: true },
+        email: { type: String, unique: true, required: true },
+        phone: { type: String, required: true }
     },
     services: [{
         _id: { type: mongoose.Schema.Types.ObjectId, ref: 'Service' },
