@@ -26,4 +26,9 @@ router.post('/new', async (req, res) => {
     }
 });
 
+router.get('/services', async (req, res, next) => {
+    var services = await Service.find();
+    return res.status(200).json({ services });
+});
+
 module.exports = router; 
