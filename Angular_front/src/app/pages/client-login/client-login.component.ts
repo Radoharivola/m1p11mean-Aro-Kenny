@@ -1,4 +1,6 @@
 import { Component, OnInit, OnDestroy, HostListener } from "@angular/core";
+import { UserService } from '../../services/user.service';
+import { Router } from "@angular/router";
 
 @Component({
   selector: 'app-client-login',
@@ -16,7 +18,9 @@ export class ClientLoginComponent implements OnInit, OnDestroy {
   focus3;
   focus4;
 
-  constructor() {}
+  formData: { username: string, password: string } = { username: '', password: '' };
+
+  constructor(private userService: UserService, private router: Router) {}
   @HostListener("document:mousemove", ["$event"])
   onMouseMove(e) {
     var squares1 = document.getElementById("square1");
@@ -90,5 +94,33 @@ export class ClientLoginComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     var body = document.getElementsByTagName("body")[0];
     body.classList.remove("register-page");
+  }
+
+  login() {
+    const data = {
+      "username": this.formData.username,
+      "password": this.formData.password
+    };
+    this.userService.login({ data }).subscribe(
+      response => {       
+        console.log(response);
+        this.router.navigate(['/home']);
+      },
+      error => {
+        console.log(error);
+      }
+    )
+  }
+
+  test() {
+    this.userService.test().subscribe(
+      response => {       
+        console.log(response);
+        //this.router.navigate(['/home']);
+      },
+      error => {
+        console.log(error);
+      }
+    )
   }
 }

@@ -14,15 +14,15 @@
                   <h4 class="card-title">Hey!</h4>
                 </div>
                 <div class="card-body">
-                  <form class="form">
+                  <form class="form" (ngSubmit)="login()">
                     <div class="input-group" [ngClass]="{ 'input-group-focus': focus0 === true }">
                       <div class="input-group-prepend">
                         <div class="input-group-text">
                           <i class="tim-icons icon-single-02"> </i>
                         </div>
                       </div>
-                      <input class="form-control" placeholder="identifiant" type="text" (focus)="focus0 = true"
-                        (blur)="focus0 = false" />
+                      <input class="form-control" placeholder="identifiant" name="username" type="text" (focus)="focus0 = true"
+                        (blur)="focus0 = false" [(ngModel)]="formData.username" />
                     </div>
                     
                     <div class="input-group" [ngClass]="{ 'input-group-focus': focus4 === true }">
@@ -31,8 +31,8 @@
                           <i class="tim-icons icon-lock-circle"> </i>
                         </div>
                       </div>
-                      <input class="form-control" placeholder="Mot de passe" type="text" (focus)="focus4 = true"
-                        (blur)="focus4 = false" />
+                      <input class="form-control" placeholder="Mot de passe" name="password" type="text" (focus)="focus4 = true"
+                        (blur)="focus4 = false" [(ngModel)]="formData.password"/>
                     </div>
                     <!-- <div class="form-check text-left">
                       <label class="form-check-label">
@@ -42,12 +42,10 @@
                         <a href="javascript:void(0)"> terms and conditions </a> .
                       </label>
                     </div> -->
+                    <div class="input-group">
+                      <input class="btn btn-danger btn-round btn-lg" type="submit" value="Login" />
+                    </div>
                   </form>
-                </div>
-                <div class="card-footer">
-                  <a class="btn btn-danger btn-round btn-lg" href="javascript:void(0)">
-                    Connexion
-                  </a>
                 </div>
               </div>
             </div>
