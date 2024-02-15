@@ -17,12 +17,17 @@ import { ModalModule } from "ngx-bootstrap/modal";
 import { JwBootstrapSwitchNg2Module } from "jw-bootstrap-switch-ng2";
 import { PopoverModule } from "ngx-bootstrap/popover";
 
+import { RelativeTimePipe } from '../pipes/relative-time.pipe';
+
+
 import { IndexComponent } from "./index/index.component";
 import { ProfilepageComponent } from "./profilepage/profilepage.component";
 import { RegisterpageComponent } from "./registerpage/registerpage.component";
 
 import { NavbarComponent } from './navbar/navbar.component';
 import { FooterComponent } from './footer/footer.component';
+import { SomeShitComponent } from './some-shit/some-shit.component';
+import { ClientLoginComponent } from './client-login/client-login.component';
 
 @NgModule({
   imports: [
@@ -41,14 +46,19 @@ import { FooterComponent } from './footer/footer.component';
     AlertModule.forRoot(),
     BsDatepickerModule.forRoot(),
     CarouselModule.forRoot(),
-    ModalModule.forRoot()
+    ModalModule.forRoot(),
+    
+
   ],
   declarations: [
     IndexComponent,
     ProfilepageComponent,
     RegisterpageComponent,
     NavbarComponent,
-    FooterComponent
+    FooterComponent,
+    SomeShitComponent,
+    ClientLoginComponent,
+    RelativeTimePipe
   ],
   exports: [
     IndexComponent,

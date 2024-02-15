@@ -6,6 +6,18 @@ var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+var authRouter = require('./routes/auth');
+var roleRouter = require('./routes/role');
+var serviceRouter = require('./routes/service');
+
+var offerRouter = require('./routes/offer');
+var protectedRouter = require('./routes/protected');
+var rdvRouter = require('./routes/rdv');
+var workScheduleRouter = require('./routes/workSchedule');
+var cors = require('cors')
+
+
+require('./models/db');
 
 var app = express();
 
@@ -18,17 +30,26 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(cors());
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/auth', authRouter);
+app.use('/protected', protectedRouter);
+app.use('/role', roleRouter);
+app.use('/service', serviceRouter);
+
+app.use('/offer', offerRouter);
+app.use('/rdv', rdvRouter);
+app.use('/workSchedule', workScheduleRouter);
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
