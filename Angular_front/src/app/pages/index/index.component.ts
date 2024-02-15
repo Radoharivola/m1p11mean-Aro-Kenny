@@ -4,6 +4,8 @@ import { RdvService } from '../../services/rdv.service';
 
 import { UserService } from '../../services/user.service';
 
+import { OfferService } from '../../services/offer.service';
+
 @Component({
   selector: "app-index",
   templateUrl: "index.component.html",
@@ -22,6 +24,8 @@ export class IndexComponent implements OnInit, OnDestroy {
   isSwitchOn: boolean = false;
   client = "65c0c12041f49e5ca93ded6e";
 
+
+  offers: any[];
   todaysRdv: any[];
   history: any[];
 
@@ -32,7 +36,7 @@ export class IndexComponent implements OnInit, OnDestroy {
   totalPages: number = 0;
 
 
-  constructor(private serviceService: ServiceService, private userService: UserService, private rdvservice: RdvService) { }
+  constructor(private serviceService: ServiceService, private userService: UserService, private rdvservice: RdvService, private offerservice: OfferService) { }
 
   ngOnInit() {
     var body = document.getElementsByTagName("body")[0];
@@ -41,12 +45,22 @@ export class IndexComponent implements OnInit, OnDestroy {
     this.fetchEmployees();
     this.fetchTodaysRdv();
     this.fetchRdvHistory(this.page);
+    this.fetchOffers();
   }
   ngOnDestroy() {
     var body = document.getElementsByTagName("body")[0];
     body.classList.remove("index-page");
   }
-
+  fetchOffers() {
+    this.offerservice.getOffers({ 'date': new Date().toISOString() }).subscribe(
+      response => {
+        this.offers=response.offers;
+      },
+      error => {
+        console.log(error);
+      }
+    );
+  }
   fetchServices() {
     this.serviceService.getServices().subscribe(data => {
       this.services = data.services;
@@ -187,9 +201,6 @@ export class IndexComponent implements OnInit, OnDestroy {
         }
       );
     }
-
-
-
     // console.log(data);
 
   }
