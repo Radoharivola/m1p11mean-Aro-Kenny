@@ -133,7 +133,7 @@
     <div class="section section-tabs">
       <div class="container">
         <div class="title">
-          <h3 class="mb-3">Actu</h3>
+          <h3 class="mb-3">Actualités</h3>
         </div>
         <div class="row">
           <div class="col-md-12 ml-auto col-xl-12 mr-auto">
@@ -143,22 +143,45 @@
                   <tab>
                     <ng-template tabHeading>
                       <i class="tim-icons icon-gift-2"> </i> Offres
+                      <span class="text-danger">({{offers.length}})</span>
+
                     </ng-template>
-                    <p>
-                      Efficiently unleash cross-media information without
-                      cross-media value. Quickly maximize timely deliverables
-                      for real-time schemas. <br />
+                    <div class="row" *ngIf="offers && offers.length > 0; else noOffers">
+                      <div class="col-lg-4 mb-lg-auto" *ngFor="let offer of offers">
+                        <div class="card card-register">
+                          <div class="card-body">
 
-                      <br />
-
-                      Dramatically maintain clicks-and-mortar solutions without
-                      functional solutions.
-                    </p>
+                            <div class="card">
+                              <div class="text-center card-body">
+                                <p class="text-white font-weight-light">{{offer.description}}</p>
+                                <h3 class="text-danger font-weight-light">-{{offer.reduction}}%</h3>
+                                <p class="text-warning font-weight-light">Expire {{offer.dateFin | relativeTime}}</p>
+                              </div>
+                            </div>
+                            <ul>
+                              <li *ngFor="let service of offer.services">
+                                <p class="text-white mt-4">{{service.name}}</p>
+                              </li>
+                            </ul>
+                          </div>
+                          <div class="card-footer text-center">
+                            <button class="btn btn-warning btn-round mr-1" type="button">
+                              Prendre rendez-vous
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <ng-template #noOffers>
+                      <div class="text-muted text-center">
+                        <p>Aucune offre pour le moment.</p>
+                      </div>
+                    </ng-template>
                   </tab>
                   <tab>
                     <ng-template tabHeading>
-                      <i class="tim-icons icon-alert-circle-exc"> </i> Rappels <span
-                        class="text-danger">({{todaysRdv.length}})</span>
+                      <i class="tim-icons icon-alert-circle-exc"> </i> Rappels
+                      <span class="text-danger">({{todaysRdv.length}})</span>
                     </ng-template>
 
                     <div class="row" *ngIf="todaysRdv && todaysRdv.length > 0; else noRdv">
@@ -193,11 +216,13 @@
                     <ng-template tabHeading>
                       <i class="tim-icons icon-notes"> </i> historique
                     </ng-template>
-                    <div *ngIf="history && history.length > 0; else noHistory" class="scrollable-table-container" (scroll)="onContainerScroll()">
+                    <div *ngIf="history && history.length > 0; else noHistory" class="scrollable-table-container"
+                      (scroll)="onContainerScroll()">
                       <table class="table" id="plain-table">
                         <thead class="text-danger">
                           <tr>
-                            <th class="header"><button class="btn btn-link btn-danger mr-1" (click)="flipDateSort()">Date</button></th>
+                            <th class="header"><button class="btn btn-link btn-danger mr-1"
+                                (click)="flipDateSort()">Date</button></th>
                             <th class="header">services</th>
                             <th class="header">employé</th>
                           </tr>
@@ -217,7 +242,7 @@
                           </tr>
                         </tbody>
                       </table>
-                      
+
                     </div>
                     <ng-template #noHistory>
                       <div class="text-muted text-center">
