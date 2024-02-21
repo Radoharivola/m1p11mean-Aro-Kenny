@@ -95,7 +95,7 @@ export const AdminLayoutRoutes: Routes = [
             path: 'new',
             component: NewEmployeeComponent
         },{
-            path: 'update',
+            path: 'update/:id',
             component: UpdateEmployeeComponent
         }]
     },
