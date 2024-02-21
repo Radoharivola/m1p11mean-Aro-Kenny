@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-manage-offers',
@@ -7,9 +8,11 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ManageOffersComponent implements OnInit {
 
-  constructor() { }
+  constructor(private router: Router) { }
 
   ngOnInit(): void {
   }
-
+  navigate() {
+    this.router.navigate(['/offers/new']);
+  }
 }

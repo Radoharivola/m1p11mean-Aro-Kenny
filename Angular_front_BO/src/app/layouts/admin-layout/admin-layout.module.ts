@@ -16,7 +16,10 @@ import { MatRippleModule } from '@angular/material/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSelectModule } from '@angular/material/select';
-
+import { NgxDropzoneModule } from 'ngx-dropzone';
+import { UpdateEmployeeComponent } from 'app/manage-employees/update-employee/update-employee.component';
+import { NewEmployeeComponent } from 'app/manage-employees/new-employee/new-employee.component';
+import { ManageEmployeesComponent } from 'app/manage-employees/manage-employees.component';
 @NgModule({
   imports: [
     CommonModule,
@@ -29,6 +32,7 @@ import { MatSelectModule } from '@angular/material/select';
     MatInputModule,
     MatSelectModule,
     MatTooltipModule,
+    NgxDropzoneModule
   ],
   declarations: [
     DashboardComponent,
@@ -38,6 +42,9 @@ import { MatSelectModule } from '@angular/material/select';
     IconsComponent,
     NotificationsComponent,
     UpgradeComponent,
+    UpdateEmployeeComponent,
+    NewEmployeeComponent,
+    ManageEmployeesComponent
   ]
 })
 

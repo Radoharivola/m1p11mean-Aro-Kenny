@@ -7,8 +7,58 @@ router.get('/', function (req, res, next) {
   return res.status(200).json({ message: "users router" });
 });
 
+// router.get('/employees', async (req, res, next) => {
+//   var employees = await User.find({ 'role.roleName': 'employee' })
+//   return res.status(200).json({ employees });
+// });
+
 router.get('/employees', async (req, res, next) => {
-  var employees = await User.find({ 'role.roleName': 'employee' })
-  return res.status(200).json({ employees });
+  const searchString = req.query.searchString; // Assuming the search string is passed as a query parameter
+  const sortBy = req.query.sortBy || 'name'; // Default sorting by name if sortBy parameter is not provided
+  const sortOrder = 1*req.query.sortOrder; // Sort order, defaulting to ascending
+  let query = { 'role.roleName': 'employee' };
+
+  // If search string is provided, construct the query to search by name, firstname, lastname, or email
+  if (searchString) {
+    query.$or = [
+      { name: { $regex: searchString, $options: 'i' } }, // Case-insensitive regex search for name
+      { firstname: { $regex: searchString, $options: 'i' } }, // Case-insensitive regex search for firstname
+      { lastname: { $regex: searchString, $options: 'i' } }, // Case-insensitive regex search for lastname
+      { email: { $regex: searchString, $options: 'i' } },
+      { phone: { $regex: searchString, $options: 'i' } } // Case-insensitive regex search for email
+    ];
+  }
+
+  try {
+    // Find employees matching the query and sort the results
+    const employees = await User.find(query).sort({ [sortBy]: sortOrder });
+
+    // Send response with the found employees
+    return res.status(200).json({ employees });
+  } catch (error) {
+    // Handle errors
+    console.error(error);
+    return res.status(500).json({ message: 'Internal Server Error' });
+  }
 });
+
+
+router.get('/employee/:id', async (req, res, next) => {
+  try {
+    // Attempt to find the employee by ID
+    const employee = await User.findOne({ _id: req.params.id });
+
+    // If employee is not found, return a 404 status
+    if (!employee) {
+      return res.status(404).json({ error: 'Employee not found' });
+    }
+
+    // If employee is found, return it with a 200 status
+    return res.status(200).json({ employee });
+  } catch (error) {
+    // If there's an error, return a 500 status with the error message
+    return res.status(500).json({ error: error.message });
+  }
+});
+
 module.exports = router;
