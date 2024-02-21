@@ -32,9 +32,33 @@ passwordSchema
 //         res.status(500).json({ error: 'Registration failed' });
 //     }
 // });
+const Jimp = require('jimp'); // Import Jimp for image processing
+const multer = require('multer');
+const path = require('path');
+const { v4: uuidv4 } = require('uuid');
+const ProfilePicture = require('../models/ProfilePicture');
+const fs = require('fs');
 
-router.post('/register', async (req, res) => {
+// Multer configuration for file upload
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'uploads/');
+    },
+    filename: (req, file, cb) => {
+        const uniqueFilename = uuidv4() + path.extname(file.originalname);
+        cb(null, uniqueFilename);
+    }
+});
+const upload = multer({ storage });
+
+router.post('/register', upload.single('pic'), async (req, res) => {
     try {
+
+        // Check if file uploaded successfully
+        if (!req.file) {
+            return res.status(404).json({ error: 'No file uploaded' });
+        }
+
         const { username, password, role, firstName, lastName, email, phone } = req.body;
         const foundRole = await Role.findOne({ name: role });
         if (!foundRole) {
@@ -60,7 +84,11 @@ router.post('/register', async (req, res) => {
         // Hash the password
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // Create a new user instance
+        const profilePictureFilename = req.file.filename;
+        const outputPath = path.join('uploads/', profilePictureFilename);
+        const image = await Jimp.read(req.file.path);
+        await image.resize(200, 200).writeAsync(outputPath);
+
         const user = new User({
             username,
             password: hashedPassword,
@@ -70,9 +98,17 @@ router.post('/register', async (req, res) => {
             email,
             phone
         });
-
-        // Save the user to the database
         await user.save();
+
+        const profilePicture = new ProfilePicture({
+            userId: user._id,
+            path: profilePictureFilename, // Store the filename in ProfilePicture model
+            date: new Date()
+        });
+        await profilePicture.save();
+
+
+
 
         // Respond with success message
         res.status(201).json({ message: 'User registered successfully' });
@@ -116,5 +152,147 @@ router.post('/login', async (req, res) => {
         res.status(500).json({ error: 'Login failed' });
     }
 });
+
+// Update user route
+router.put('/users/:userId', upload.single('pic'), async (req, res) => {
+    try {
+
+        // Check if file uploaded successfully
+        if (!req.file) {
+            return res.status(404).json({ error: 'No file uploaded' });
+        }
+
+        const userId = req.params.userId;
+        const { username, password, role, firstName, lastName, email, phone } = req.body;
+        const foundRole = await Role.findOne({ name: role });
+        if (!foundRole) {
+            return res.status(404).json({ error: 'Role not found' });
+        }
+        // Check if the user exists
+        const existingUser = await User.findById(userId);
+        if (!existingUser) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        // Check if the new username already exists (excluding the current user)
+        if (username !== existingUser.username) {
+            const existingUsername = await User.findOne({ username });
+            if (existingUsername) {
+                return res.status(409).json({ error: 'Username already exists' });
+            }
+        }
+
+        // Check if the new email already exists (excluding the current user)
+        if (email !== existingUser.email) {
+            const existingEmail = await User.findOne({ email });
+            if (existingEmail) {
+                return res.status(409).json({ error: 'Email already exists' });
+            }
+        }
+
+        const pp = await ProfilePicture.findOne({ userId });
+        console.log(pp.path)
+        const profilePictureFilename = pp.path;
+        const outputPath = path.join('uploads/', profilePictureFilename);
+        const image = await Jimp.read(req.file.path);
+        await image.resize(200, 200).writeAsync(outputPath);
+        // Prepare update data
+        const updateData = {
+            username,
+            role: { roleId: foundRole._id, roleName: foundRole.name },
+            firstName,
+            lastName,
+            email,
+            phone
+        };
+
+        const filenameToDelete = req.file.filename;
+
+        const filePath = path.join('uploads/', filenameToDelete); // Assuming the file is located in the 'uploads' directory
+
+        // Check if the file exists
+        fs.access(filePath, fs.constants.F_OK, (err) => {
+            if (err) {
+                console.error('File does not exist:', err);
+                return;
+            }
+
+            // Delete the file
+            fs.unlink(filePath, (err) => {
+                if (err) {
+                    console.error('Error deleting file:', err);
+                    return;
+                }
+                console.log('File deleted successfully');
+            });
+        });
+
+        // Check if password needs to be updated
+        if (password) {
+            // Validate password strength
+            if (!passwordSchema.validate(password)) {
+                return res.status(400).json({ error: 'Password does not meet requirements' });
+            }
+            // Hash the password
+            const hashedPassword = await bcrypt.hash(password, 10);
+            updateData.password = hashedPassword;
+        }
+
+        // Update the user in the database
+        const updatedUser = await User.findByIdAndUpdate(userId, updateData, { new: true });
+
+        // Respond with success message and updated user
+        res.status(200).json({ message: 'User updated successfully', user: updatedUser });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Update failed' });
+    }
+});
+
+
+router.delete('/users/:userId', async (req, res) => {
+    try {
+        const userId = req.params.userId;
+
+        // Check if the user exists
+        const existingUser = await User.findById(userId);
+        if (!existingUser) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        // Delete the associated profile picture if it exists
+        const profilePicture = await ProfilePicture.findOne({ userId });
+        if (profilePicture) {
+            const filePath = path.join('uploads/', profilePicture.path);
+
+            // Check if the file exists
+            fs.access(filePath, fs.constants.F_OK, async (err) => {
+                if (!err) {
+                    // Delete the file
+                    try {
+                        await fs.promises.unlink(filePath);
+                        console.log('Profile picture deleted successfully');
+                    } catch (unlinkErr) {
+                        console.error('Error deleting profile picture:', unlinkErr);
+                    }
+                } else {
+                    console.error('Profile picture file does not exist:', err);
+                }
+            });
+
+            // Delete the profile picture document from the database
+            await ProfilePicture.findOneAndDelete({ userId });
+        }
+
+        // Delete the user from the database
+        await User.findByIdAndDelete(userId);
+
+        res.status(200).json({ message: 'User and associated data deleted successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Deletion failed' });
+    }
+});
+
 
 module.exports = router; 

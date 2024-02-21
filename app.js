@@ -11,6 +11,8 @@ var roleRouter = require('./routes/role');
 var serviceRouter = require('./routes/service');
 
 var offerRouter = require('./routes/offer');
+var depenseRouter = require('./routes/depense');
+
 var protectedRouter = require('./routes/protected');
 var rdvRouter = require('./routes/rdv');
 var workScheduleRouter = require('./routes/workSchedule');
@@ -39,6 +41,7 @@ app.use('/protected', protectedRouter);
 app.use('/role', roleRouter);
 app.use('/service', serviceRouter);
 
+app.use('/depense', depenseRouter);
 app.use('/offer', offerRouter);
 app.use('/rdv', rdvRouter);
 app.use('/workSchedule', workScheduleRouter);
