@@ -15,7 +15,7 @@ router.get('/', function (req, res, next) {
 router.get('/employees', async (req, res, next) => {
   const searchString = req.query.searchString; // Assuming the search string is passed as a query parameter
   const sortBy = req.query.sortBy || 'name'; // Default sorting by name if sortBy parameter is not provided
-  const sortOrder = 1*req.query.sortOrder; // Sort order, defaulting to ascending
+  const sortOrder = 1 * req.query.sortOrder ? -1 : 1; // Sort order, defaulting to ascending
   let query = { 'role.roleName': 'employee' };
 
   // If search string is provided, construct the query to search by name, firstname, lastname, or email
