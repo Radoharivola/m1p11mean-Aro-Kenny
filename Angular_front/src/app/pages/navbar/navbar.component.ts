@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from "@angular/core";
 import { Router, NavigationEnd } from '@angular/router';
 import { filter, takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
-
+import { UserService } from "src/app/services/user.service";
 @Component({
   selector: 'app-navbar',
   templateUrl: './navbar.component.html',
@@ -10,11 +10,11 @@ import { Subject } from 'rxjs';
 })
 export class NavbarComponent implements OnInit {
   isCollapsed = true;
-
+  isLoggedIn: boolean = false;
   private unsubscribe$: Subject<void> = new Subject();
 
 
-  constructor(private router: Router) { }
+  constructor(private router: Router, private userservice: UserService) { }
 
   ngOnInit(): void {
     // Subscribe to router events
@@ -27,6 +27,8 @@ export class NavbarComponent implements OnInit {
         this.scrollToAppointment();
       }
     });
+
+    this.isLoggedIn = this.userservice.isLoggedIn();
   }
 
   ngOnDestroy(): void {

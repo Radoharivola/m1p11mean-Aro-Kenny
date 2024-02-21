@@ -1,8 +1,10 @@
 import { Component, OnInit, OnDestroy, HostListener } from "@angular/core";
-
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UserService } from "src/app/services/user.service";
 @Component({
   selector: "app-registerpage",
-  templateUrl: "registerpage.component.html"
+  templateUrl: "registerpage.component.html",
+  styleUrls: ['./registerpage.component.scss']
 })
 export class RegisterpageComponent implements OnInit, OnDestroy {
   isCollapsed = true;
@@ -12,7 +14,9 @@ export class RegisterpageComponent implements OnInit, OnDestroy {
   focus3;
   focus4;
 
-  constructor() {}
+  registrationForm: FormGroup;
+
+  constructor(private fb: FormBuilder,private userservice: UserService) {}
   @HostListener("document:mousemove", ["$event"])
   onMouseMove(e) {
     var squares1 = document.getElementById("square1");
@@ -82,9 +86,60 @@ export class RegisterpageComponent implements OnInit, OnDestroy {
     body.classList.add("register-page");
 
     this.onMouseMove(event);
+
+
+    // Initialize the form with FormBuilder
+    this.registrationForm = this.fb.group({
+      identifiant: ['', Validators.required],
+      nom: ['', Validators.required],
+      prenoms: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      motDePasse: ['', Validators.required]
+    });
   }
   ngOnDestroy() {
     var body = document.getElementsByTagName("body")[0];
     body.classList.remove("register-page");
+  }
+
+  onSubmit() {
+    // Check if the form is valid
+    if (this.registrationForm.valid) {
+      // console.log(this.registrationForm);
+      const formData = new FormData();
+      // formData.append('pic', this.files[0]);
+      formData.append('username', this.registrationForm.value.identifiant);
+      formData.append('password', this.registrationForm.value.motDePasse);
+      formData.append('role', "employee");
+      formData.append('firstName', this.registrationForm.value.prenom);
+      formData.append('lastName', this.registrationForm.value.nom);
+      formData.append('email', this.registrationForm.value.email);
+      formData.append('phone', this.registrationForm.value.telephone);
+
+      this.userservice.newUser({ formData }).subscribe(
+        response => {
+          // this.error = false;
+          // this.success = true;
+          // setTimeout(() => {
+          //   this.success = false;
+          // }, 5000);
+          // this.message = response.message;
+          console.log(response);
+        },
+        error => {
+          // this.success = false;
+          // this.error = true;
+          // setTimeout(() => {
+          //   this.error = false;
+          // }, 5000);
+          // this.message = error.error.message;
+          console.log(error);
+        }
+      );
+      console.log("Form submitted successfully");
+    } else {
+      // Mark all fields as touched to display errors
+      this.registrationForm.markAllAsTouched();
+    }
   }
 }

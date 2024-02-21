@@ -81,9 +81,9 @@ export class IndexComponent implements OnInit, OnDestroy {
     // Set dateFin to today's date at 23:59:59
     today.setHours(23, 59, 59, 999);
     const dateFin = today.toISOString();
-    this.rdvservice.getRdv({ 'clientId': '65c0c12041f49e5ca93ded6e', 'dateInit': dateInit, 'dateFin': dateFin, 'limit': 10, 'page': 1, 'dateSort': 1 }).subscribe(response => {
+    this.rdvservice.getRdv({ 'dateInit': dateInit, 'dateFin': dateFin, 'limit': 10, 'page': 1, 'dateSort': 1 }).subscribe(response => {
       console.log(response);
-      this.todaysRdv = response.rdvs;
+      this.todaysRdv = response.body.rdvs;
     },
       error => {
         console.log(error);
@@ -96,14 +96,14 @@ export class IndexComponent implements OnInit, OnDestroy {
 
     const dateInit = new Date("1970-01-01").toISOString();
 
-    this.rdvservice.getRdv({ 'clientId': '65c0c12041f49e5ca93ded6e', 'dateInit': dateInit, 'dateFin': dateFin, 'limit': this.limit, 'page': page, 'dateSort': this.dateSort }).subscribe(response => {
-      console.log(response.rdvs);
+    this.rdvservice.getRdv({ 'dateInit': dateInit, 'dateFin': dateFin, 'limit': this.limit, 'page': page, 'dateSort': this.dateSort }).subscribe(response => {
       if (this.page == 1) {
-        this.history = response.rdvs;
+        this.history = response.body.rdvs;
+        console.log(response.body.rdvs);
       } else {
-        this.history = this.history.concat(response.rdvs);
+        this.history = this.history.concat(response.body.rdvs);
       }
-      this.totalPages = response.totalPages;
+      this.totalPages = response.body.totalPages;
     },
       error => {
         console.log(error);
@@ -189,6 +189,7 @@ export class IndexComponent implements OnInit, OnDestroy {
             this.success = false;
           }, 5000);
           this.message = response.message;
+          this.fetchTodaysRdv();
           // console.log(response);
         },
         error => {

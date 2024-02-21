@@ -6,15 +6,20 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class RdvService {
-
+  httpOptions = {
+    headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+       
+    withCredentials: true, 
+    observe: 'response' as 'response'
+  };  
   constructor(private http: HttpClient) { }
 
   newRdv({ data }: { data: any; }): Observable<any> {
-    const headers = new HttpHeaders().set('Content-Type', 'application/json');
-    return this.http.post('http://127.0.0.1:3000/rdv/new', data, { headers });
+    
+    return this.http.post('http://127.0.0.1:3000/rdv/new', data, this.httpOptions);
   }
-  getRdv({ clientId, dateInit, dateFin, limit, page, dateSort }: { clientId: string, dateInit: string, dateFin: string, limit: number, page: number, dateSort: number }): Observable<any> {
+  getRdv({  dateInit, dateFin, limit, page, dateSort }: {  dateInit: string, dateFin: string, limit: number, page: number, dateSort: number }): Observable<any> {
     const headers = new HttpHeaders().set('Content-Type', 'application/json');
-    return this.http.get('http://127.0.0.1:3000/rdv/' + clientId + '/' + dateInit + '/' + dateFin + '/' + limit + '/' + page + '/' + dateSort, { headers });
+    return this.http.get('http://127.0.0.1:3000/rdv/' + dateInit + '/' + dateFin + '/' + limit + '/' + page + '/' + dateSort, this.httpOptions);
   }
 }

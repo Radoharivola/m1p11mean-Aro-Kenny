@@ -16,6 +16,46 @@
             </div>
             <div class="card-body">
               <tabset class="nav-tabs-danger justify-content-center tab-subcategories">
+                <tab>
+                  <ng-template tabHeading>
+                    <i class="tim-icons icon-notes"> </i> historique
+                  </ng-template>
+                  <div *ngIf="rdvs && rdvs.length > 0; else noRdv" class="scrollable-table-container"
+                    (scroll)="onContainerScroll()">
+                    <table class="table" id="plain-table">
+                      <thead class="text-danger">
+                        <tr>
+                          <th class="header"><button class="btn btn-link btn-danger mr-1"
+                              (click)="flipDateSort()">Date</button></th>
+                          <th class="header">services</th>
+                          <th class="header">employé</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr *ngFor="let rdv of rdvs">
+                          <td>{{rdv.date | relativeTime}}</td>
+                          <td>
+                            <ul>
+                              <li *ngFor="let service of rdv.services">
+                                <p class="text-white mt-4">{{service.name}}</p>
+                              </li>
+                            </ul>
+                          </td>
+                          <td>{{rdv.employee.firstName}} {{rdv.employee.lastName}}</td>
+
+                        </tr>
+                      </tbody>
+                    </table>
+
+                  </div>
+                  <ng-template #noRdv>
+                    <div class="text-muted text-center">
+                      <p>Aucun rendez-vous</p>
+                    </div>
+
+
+                  </ng-template>
+                </tab>
                 <tab heading="Rendez-vous">
                   <div class="table-responsive">
                     <table class="table tablesorter" id="plain-table">

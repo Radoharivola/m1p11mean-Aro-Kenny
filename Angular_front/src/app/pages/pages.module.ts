@@ -1,7 +1,7 @@
 import { BrowserModule } from "@angular/platform-browser";
 import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
-import { FormsModule } from "@angular/forms";
+import { FormsModule , ReactiveFormsModule} from "@angular/forms";
 import { RouterModule } from "@angular/router";
 
 import { BsDropdownModule } from "ngx-bootstrap/dropdown";
@@ -34,6 +34,7 @@ import { ClientLoginComponent } from './client-login/client-login.component';
     CommonModule,
     BrowserModule,
     FormsModule,
+    ReactiveFormsModule,
     RouterModule,
     BsDropdownModule.forRoot(),
     ProgressbarModule.forRoot(),
@@ -64,6 +65,7 @@ import { ClientLoginComponent } from './client-login/client-login.component';
     IndexComponent,
     ProfilepageComponent,
     RegisterpageComponent,
+    ClientLoginComponent,
     NavbarComponent,
     FooterComponent
   ],

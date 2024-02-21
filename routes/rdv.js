@@ -3,12 +3,14 @@ var router = express.Router();
 const WorkSchedule = require('../models/WorkSchedule');
 const Rdv = require('../models/Rdv');
 const User = require('../models/User');
+const verifyToken = require('../middleware/authMiddleware');
 // const Service = require('../models/Service');
 
-router.post('/new', async (req, res) => {
+router.post('/new', verifyToken, async (req, res) => {
     try {
         //in the next update client will be replaced req.userId user the protected route
-        const { client, employee, services, date, total, paid } = req.body;
+        const { employee, services, date, total, paid } = req.body;
+        const client = req.userId;
         const foundClient = await User.findOne({ _id: client });
         if (!foundClient) {
             return res.status(400).json({ error: 'Client not found' });
@@ -26,6 +28,7 @@ router.post('/new', async (req, res) => {
 
 
             const workSchedule = await WorkSchedule.findOne({ 'employee.employeeId': employee });
+            console.log(workSchedule);
             const wsEndTime = new Date(workSchedule.endTime);
             wsEndTime.setFullYear(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
 
@@ -160,14 +163,14 @@ router.post('/new', async (req, res) => {
     }
 });
 
-router.get('/:clientId/:dateInit/:dateFin/:limit/:page/:dateSort', async (req, res) => {
+router.get('/:dateInit/:dateFin/:limit/:page/:dateSort', verifyToken,async (req, res) => {
     try {
         const page = req.params.page || 1;
         const limit = parseInt(req.params.limit) || 10;
         const skip = (page - 1) * limit;
 
         //in the next update client will be replaced req.userId user the protected route
-        const clientId = req.params.clientId;
+        const clientId = req.userId;
         const formattedDate = new Date().toISOString();
 
         const dateOnly = formattedDate.split('T')[0];

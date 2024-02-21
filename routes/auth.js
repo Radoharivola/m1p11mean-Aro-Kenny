@@ -122,20 +122,21 @@ router.post('/register', upload.single('pic'), async (req, res) => {
 router.post('/login', async (req, res) => {
     try {
         const { username, password } = req.body;
+        console.log(password);
         const user = await User.findOne({ username });
         if (!user) {
-            return res.status(401).json({ error: 'Authentication failed' });
+            return res.status(401).json({ error: 'User not found', username: username });
         }
         const passwordMatch = await bcrypt.compare(password, user.password);
         if (!passwordMatch) {
-            return res.status(401).json({ error: 'Authentication failed' });
+            return res.status(401).json({ error: 'Password error' });
         }
         const token = jwt.sign({ userId: user._id }, 'your-secret-key', {
             expiresIn: '1h',
         });
         const serialized = cookie.serialize('token', token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
+            secure: false,
             sameSite: 'strict',
             maxAge: 60 * 60 * 24 * 30,
             path: '/',

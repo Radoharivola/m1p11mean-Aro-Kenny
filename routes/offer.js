@@ -86,7 +86,7 @@ router.get('/offers', async (req, res, next) => {
 
 router.get('/offers/:date', async (req, res, next) => {
     const dateToCheck = new Date(req.params.date).toISOString();
-    console.log(dateToCheck);
+
     const offers = await Offer.find({
         $and: [
             { dateDebut: { $lte: dateToCheck } }, // Check if dateDebut is less than or equal to given date
