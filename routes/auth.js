@@ -154,6 +154,46 @@ router.post('/login', async (req, res) => {
     }
 });
 
+router.post('/BOlogin', async (req, res) => {
+    try {
+        const { username, password } = req.body;
+        console.log(password);
+        const user = await User.findOne({ username });
+        if (!user) {
+            return res.status(401).json({ error: 'Employee/Manager not found', user: user });
+        }
+        if (user.role.roleName === 'client') {
+            return res.status(401).json({ error: 'Employee/Manager not found', user: user });
+        }
+        const passwordMatch = await bcrypt.compare(password, user.password);
+        if (!passwordMatch) {
+            return res.status(401).json({ error: 'Password error' });
+        }
+        const token = jwt.sign({ userId: user._id }, 'your-secret-key', {
+            expiresIn: '1h',
+        });
+        const serialized = cookie.serialize('token', token, {
+            httpOnly: true,
+            secure: true,
+            sameSite: 'none',
+            maxAge: 60 * 60 * 24 * 30,
+            path: '/',
+        });
+
+        const userData = {
+            username: user.username,
+            email: user.email,
+            role: user.role.roleName,
+            token: token,
+        };
+        res.setHeader('set-cookie', serialized);
+        res.status(200).json({ user: userData });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: 'Login failed' });
+    }
+});
+
 // Update user route
 router.put('/users/:userId', upload.single('pic'), async (req, res) => {
     try {

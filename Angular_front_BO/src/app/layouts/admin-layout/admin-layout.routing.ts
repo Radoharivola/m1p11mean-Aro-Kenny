@@ -25,6 +25,10 @@ import { ManageAchatsComponent } from '../../manage-achats/manage-achats.compone
 import { NewAchatComponent } from '../../manage-achats/new-achat/new-achat.component';
 import { UpdateAchatComponent } from '../../manage-achats/update-achat/update-achat.component';
 
+import { LoginComponent } from '../../login/login.component';
+import { AuthGuardService } from 'app/services/auth-guard.service';
+import { AuthGuardLoginService } from 'app/services/auth-guard-login.service';
+
 export const AdminLayoutRoutes: Routes = [
     // {
     //   path: '',
@@ -75,6 +79,8 @@ export const AdminLayoutRoutes: Routes = [
     { path: 'icons', component: IconsComponent },
     { path: 'notifications', component: NotificationsComponent },
     { path: 'upgrade', component: UpgradeComponent },
+    { path: 'login', component: LoginComponent, canActivate: [AuthGuardLoginService] },
+
     {
         path: 'services', children: [{
             path: 'list',
@@ -97,7 +103,7 @@ export const AdminLayoutRoutes: Routes = [
         },{
             path: 'update/:id',
             component: UpdateEmployeeComponent
-        }]
+        }], canActivate: [AuthGuardService]
     },
     {
         path: 'offers', children: [{
