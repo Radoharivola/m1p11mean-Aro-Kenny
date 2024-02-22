@@ -136,8 +136,8 @@ router.post('/login', async (req, res) => {
         });
         const serialized = cookie.serialize('token', token, {
             httpOnly: true,
-            secure: false,
-            sameSite: 'strict',
+            secure: true,
+            sameSite: 'none',
             maxAge: 60 * 60 * 24 * 30,
             path: '/',
         });

@@ -31,10 +31,12 @@ export class IndexComponent implements OnInit, OnDestroy {
 
   phoneRegex = /^[0-9]{10}$/;
 
-  formData: { date: string, employee: object, paid: number, numero: string } = { date: '', employee: null, paid: 0, numero: '' };
+  formData: { date: string, employee: string, paid: number, numero: string } = { date: '', employee: "null", paid: 0, numero: '' };
   limit: number = 10;
   totalPages: number = 0;
 
+
+  temp: string = '';
 
   constructor(private serviceService: ServiceService, private userService: UserService, private rdvservice: RdvService, private offerservice: OfferService) { }
 
@@ -54,7 +56,7 @@ export class IndexComponent implements OnInit, OnDestroy {
   fetchOffers() {
     this.offerservice.getOffers({ 'date': new Date().toISOString() }).subscribe(
       response => {
-        this.offers=response.offers;
+        this.offers = response.offers;
       },
       error => {
         console.log(error);
@@ -204,5 +206,26 @@ export class IndexComponent implements OnInit, OnDestroy {
     }
     // console.log(data);
 
+  }
+  tempId(id: string) {
+    this.temp = id;
+    console.log(this.temp);
+  }
+
+  // loadRdvData(id: string) {
+  //   this.rdvservice.get({ id }).subscribe(response => {
+  //     this.rdv = response.body.rdv;
+  //     this.formData.date=this.rdv.date;
+  //   }, err => {
+  //     console.log(err);
+  //   })
+  // }
+
+  delete() {
+    this.rdvservice.delete(this.temp).subscribe(response => {
+      this.page = 1;
+      this.fetchTodaysRdv();
+      this.temp = '';
+    }, error => { console.log(error); });
   }
 }

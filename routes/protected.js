@@ -3,14 +3,16 @@
 const express = require('express');
 const router = express.Router();
 const verifyToken = require('../middleware/authMiddleware');
+const User = require('../models/User');
 
 // const nodemailer = require('nodemailer');
 // const Offer = require('../models/Offer');
 // const User = require('../models/User');
 
 // Protected route
-router.get('/', verifyToken, (req, res) => {
-    res.status(200).json({ message: 'Protected route accessed' });
+router.get('/', verifyToken, async (req, res) => {
+    const user = await User.find({ _id: req.userId });
+    res.status(200).json({ message: 'Protected route accessed', user, id:req.userId });
 });
 
 

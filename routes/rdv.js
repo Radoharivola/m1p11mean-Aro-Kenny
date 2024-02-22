@@ -48,11 +48,11 @@ router.post('/new', verifyToken, async (req, res) => {
                     phone: foundClient.phone
                 },
                 employee: {
-                    _id: foundClient._id,
-                    firstName: foundClient.firstName,
-                    lastName: foundClient.lastName,
-                    email: foundClient.email,
-                    phone: foundClient.phone
+                    _id: foundEmployee._id,
+                    firstName: foundEmployee.firstName,
+                    lastName: foundEmployee.lastName,
+                    email: foundEmployee.email,
+                    phone: foundEmployee.phone
                 },
                 services: services,
                 date: startDate,
@@ -139,6 +139,42 @@ router.post('/new', verifyToken, async (req, res) => {
 
             var startDate = new Date(date);
             var addedDate = new Date(startDate.getTime() + sumOfDurations * 60000);
+            const result = await Rdv.find({
+                $and: [
+                    {
+                        $or: [
+                            {
+                                date: { $lte: startDate },
+                                dateFin: { $gt: startDate }
+                            },
+                            {
+                                date: { $lt: addedDate },
+                                dateFin: { $gte: addedDate }
+                            },
+                            {
+                                $and: [
+                                    { date: { $gte: startDate } },
+                                    { dateFin: { $lte: addedDate } }
+                                ]
+                            },
+                            {
+                                date: addedDate,
+                                dateFin: startDate
+                            }
+                        ]
+                    }
+                ]
+
+            });
+            const employeeIds = result.map(rdv => rdv.employee._id);
+            const employeesNotInRdv = await User.find({ 
+                _id: { $nin: employeeIds },
+                'role.roleName': 'employee' 
+            });
+            if (employeesNotInRdv.length === 0) {
+                return res.status(409).json({ message: "Aucun employé disponible" });
+            }
+            const found = employeesNotInRdv[0];
             const rdv = new Rdv({
                 client: {
                     _id: foundClient._id,
@@ -147,12 +183,54 @@ router.post('/new', verifyToken, async (req, res) => {
                     email: foundClient.email,
                     phone: foundClient.phone
                 },
+                employee: {
+                    _id: found._id,
+                    firstName: found.firstName,
+                    lastName: found.lastName,
+                    email: found.email,
+                    phone: found.phone
+                },
                 services: services,
                 date: startDate,
                 dateFin: addedDate,
                 total: total,
                 paid: paid,
             });
+            const result1 = await Rdv.findOne({
+                // this old code is working but it won't allow like really close schedules like ending at 9am and starting at 9am
+                // $or: [{date: { $lte: startDate },dateFin: { $gte: startDate }},{date: { $lte: addedDate },dateFin: { $gte: addedDate }},{$and: [{ date: { $gte: startDate } },{ dateFin: { $lte: addedDate } }] } ]
+                // end
+
+                $and: [
+                    { 'client._id': client },
+                    {
+                        $or: [
+                            {
+                                date: { $lte: startDate },
+                                dateFin: { $gt: startDate }
+                            },
+                            {
+                                date: { $lt: addedDate },
+                                dateFin: { $gte: addedDate }
+                            },
+                            {
+                                $and: [
+                                    { date: { $gte: startDate } },
+                                    { dateFin: { $lte: addedDate } }
+                                ]
+                            },
+                            {
+                                date: addedDate,
+                                dateFin: startDate
+                            }
+                        ]
+                    }
+                ]
+
+            }).limit(1);
+            if (result1) {
+                return res.status(409).json({ message: "Vous avez déja un rendez-vous prévu pour cette date.", rdv: result, selectedEmp: foundEmployee });
+            }
             await rdv.save();
 
             return res.status(200).json({ message: "Rendez-vous programmé!", rdv: rdv });
@@ -163,7 +241,7 @@ router.post('/new', verifyToken, async (req, res) => {
     }
 });
 
-router.get('/:dateInit/:dateFin/:limit/:page/:dateSort', verifyToken,async (req, res) => {
+router.get('/:dateInit/:dateFin/:limit/:page/:dateSort', verifyToken, async (req, res) => {
     try {
         const page = req.params.page || 1;
         const limit = parseInt(req.params.limit) || 10;
@@ -171,10 +249,12 @@ router.get('/:dateInit/:dateFin/:limit/:page/:dateSort', verifyToken,async (req,
 
         //in the next update client will be replaced req.userId user the protected route
         const clientId = req.userId;
+
         const formattedDate = new Date().toISOString();
 
         const dateOnly = formattedDate.split('T')[0];
         const foundClient = await User.findOne({ _id: clientId });
+        console.log(foundClient);
         if (!foundClient) {
             return res.status(400).json({ error: 'Client not found' });
         }
@@ -205,5 +285,42 @@ router.get('/:dateInit/:dateFin/:limit/:page/:dateSort', verifyToken,async (req,
 });
 
 
+router.delete('/rdvs/:rdvId', async (req, res) => {
+    try {
+        const rdvId = req.params.rdvId;
+        console.log(rdvId);
+        // Check if the user exists
+        const existingRdv = await Rdv.findById(rdvId);
+        if (!existingRdv) {
+            return res.status(404).json({ error: 'User not found' });
+        }        
+
+        // Delete the user from the database
+        await Rdv.findByIdAndDelete(rdvId);
+
+        res.status(200).json({ message: 'User and associated data deleted successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Deletion failed' });
+    }
+});
+
+
+router.get('/:rdvId', async (req, res) => {
+    try {
+        const rdvId = req.params.rdvId;
+        console.log(rdvId);
+        // Check if the user exists
+        const rdv = await Rdv.findById(rdvId);
+        if (!rdv) {
+            return res.status(404).json({ error: 'rd not found' });
+        }        
+
+        res.status(200).json({ rdv });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Deletion failed' });
+    }
+});
 
 module.exports = router;

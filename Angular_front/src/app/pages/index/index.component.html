@@ -57,8 +57,10 @@
                       </div>
                     </div>
                     <select class="form-control" name="employee" [(ngModel)]="formData.employee">
-                      <option value="" class="form-control">Employé non spécifié</option>
-                      <option [ngValue]="employee" class="form-control" *ngFor="let employee of employees">
+                      <option [ngValue]="null" class="form-control">
+                        Non spécifié
+                      </option>
+                      <option [ngValue]="employee._id" class="form-control" *ngFor="let employee of employees;" [selected]="employees[0]._id">
                         {{ employee.firstName }} {{employee.lastName }}
                       </option>
 
@@ -199,7 +201,8 @@
                             </ul>
                           </div>
                           <div class="card-footer">
-                            <button class="btn btn-warning btn-round mr-1" type="button">
+                            <button class="btn btn-warning btn-round mr-1" type="button" data-target="#myModal1"
+                            (click)="myModal1.show();tempId(rdv._id)">
                               Annuler
                             </button>
                           </div>
@@ -260,5 +263,28 @@
         </div>
       </div>
     </div>
+  </div>
+  <div class="section">
+    <div class="container">
+      <div aria-hidden="true" aria-labelledby="myModalLabel" bsModal
+        class="modal fade modal-mini modal-warning modal-mini" #myModal1="bs-modal" id="myModal1" role="dialog"
+        tabindex="-1">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-body">
+              <p>Supprimer ce rendez-vous?</p>
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-link btn-neutral" type="button" (click)="delete();myModal1.hide()">Oui</button>
+              <button class="btn btn-link btn-neutral" data-dismiss="modal" type="button"
+                (click)="myModal1.hide();tempId('')">
+                Annuler
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>

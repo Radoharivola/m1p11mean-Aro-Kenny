@@ -89,7 +89,7 @@ export class ClientLoginComponent implements OnInit, OnDestroy {
     this.onMouseMove(event);
 
     this.loginForm = this.fb.group({
-      identifiant: ['paul', Validators.required],
+      identifiant: ['karen', Validators.required],
       motDePasse: ['aZ12345678', Validators.required]
     });
     console.log("init login page");
