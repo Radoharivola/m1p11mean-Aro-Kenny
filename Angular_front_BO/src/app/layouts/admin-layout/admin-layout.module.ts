@@ -49,7 +49,7 @@ import { RelativeTimePipe } from '../../pipes/relative-time.pipe';
     NewEmployeeComponent,
     ManageEmployeesComponent,
     LoginComponent,
-    RelativeTimePipe
+    RelativeTimePipe,
   ]
 })
 

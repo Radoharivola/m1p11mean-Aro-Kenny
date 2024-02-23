@@ -290,6 +290,7 @@ router.get('/:dateInit/:dateFin/:limit/:page/:dateSort', verifyToken, async (req
 
 router.get('/emp/:dateInit/:dateFin/:limit/:page/:dateSort', verifyToken, async (req, res) => {
     try {
+        const done = req.query.done;
         const page = req.params.page || 1;
         const limit = parseInt(req.params.limit) || 10;
         const skip = (page - 1) * limit;
@@ -300,9 +301,9 @@ router.get('/emp/:dateInit/:dateFin/:limit/:page/:dateSort', verifyToken, async 
         const formattedDate = new Date().toISOString();
 
         const dateOnly = formattedDate.split('T')[0];
-        
+
         const dateSort = 1 * req.params.dateSort;
-       
+
         const totalRdvs = await Rdv.countDocuments({
             'employee._id': empId,
             date: { $gte: new Date(req.params.dateInit), $lt: new Date(req.params.dateFin) },
@@ -312,6 +313,7 @@ router.get('/emp/:dateInit/:dateFin/:limit/:page/:dateSort', verifyToken, async 
 
         const rdvs = await Rdv.find({
             'employee._id': empId,
+            done: done,
             date: { $gte: new Date(req.params.dateInit), $lt: new Date(req.params.dateFin) },
         }).sort({ date: dateSort }).skip(skip).limit(limit);
 
@@ -322,6 +324,21 @@ router.get('/emp/:dateInit/:dateFin/:limit/:page/:dateSort', verifyToken, async 
     }
 });
 
+
+router.put('/:rdvId', verifyToken,async (req, res) => {
+    try {
+        const rdvId = req.params.rdvId;
+        const data = req.body;
+        console.log(data);
+
+        const updatedRdv = await Rdv.findByIdAndUpdate(rdvId, data, { new: true });
+
+        res.status(200).json({ message: 'Rdv updated', updatedRdv });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Deletion failed' });
+    }
+});
 
 router.delete('/rdvs/:rdvId', async (req, res) => {
     try {

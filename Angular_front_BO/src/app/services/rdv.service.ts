@@ -16,7 +16,11 @@ export class RdvService {
   constructor(private http: HttpClient) { }
 
 
-  getRdv({ dateInit, dateFin, limit, page, dateSort }: { dateInit: string, dateFin: string, limit: number, page: number, dateSort: number }): Observable<any> {
-    return this.http.get('http://127.0.0.1:3000/rdv/emp/' + dateInit + '/' + dateFin + '/' + limit + '/' + page + '/' + dateSort, this.httpOptions);
+  getRdv({ dateInit, dateFin, limit, page, dateSort, done }: { dateInit: string, dateFin: string, limit: number, page: number, dateSort: number, done: boolean }): Observable<any> {
+    return this.http.get('http://127.0.0.1:3000/rdv/emp/' + dateInit + '/' + dateFin + '/' + limit + '/' + page + '/' + dateSort + '?done=' + done, this.httpOptions);
+  }
+
+  update({ data, id }: { data: any, id: any }): Observable<any> {
+    return this.http.put('http://127.0.0.1:3000/rdv/' + id, data, this.httpOptions);
   }
 }

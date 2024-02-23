@@ -154,6 +154,27 @@ router.post('/login', async (req, res) => {
     }
 });
 
+// User logout
+router.post('/logout', async (req, res) => {
+    try {
+        // Clear the authentication token stored in the client's browser
+        const serialized = cookie.serialize('token', '', {
+            httpOnly: true,
+            secure: true,
+            sameSite: 'none',
+            maxAge: 60 * 60 * 24 * 30,
+            path: '/',
+        });
+
+        // Set the cookie with an expired token
+        res.setHeader('set-cookie', serialized);
+        res.status(200).json({ message: serialized });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: 'Logout failed' });
+    }
+});
+
 router.post('/BOlogin', async (req, res) => {
     try {
         const { username, password } = req.body;

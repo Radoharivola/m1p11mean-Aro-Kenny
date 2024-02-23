@@ -38,6 +38,7 @@ export class LoginComponent implements OnInit {
           const user = response.body.user;
           localStorage.setItem('token', btoa(user.role));
           localStorage.setItem('username', user.username);
+          window.location.reload();
           this.router.navigate(['/']);
         },
         error => {

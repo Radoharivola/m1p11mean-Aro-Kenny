@@ -24,7 +24,7 @@
                             <i class="material-icons">today</i>
                         </div>
                         <p class="card-category">Cette semaine</p>
-                        <h3 class="card-title">49/50
+                        <h3 class="card-title">{{ weeksRdv?.length !== undefined ? weeksRdv?.length : 0 }}
                             <small>rdvs</small>
                         </h3>
                     </div>
@@ -106,7 +106,7 @@
                                 <table class="table">
                                     <thead>
                                         <th>
-                                            etat
+                                            
                                         </th>
                                         <th>
                                             <a (click)="flipTodayDateSort()" class="link">Date</a>
@@ -118,13 +118,13 @@
                                             annuler
                                         </th>
                                     </thead>
-                                    <tbody *ngIf="todaysRdv && todaysRdv.length > 0; else noRdv">
+                                    <tbody *ngIf="todaysRdv && todaysRdv.length > 0; else noToday">
                                         <tr *ngFor="let rdv of todaysRdv">
                                             <td>
                                                 <div class="form-check">
                                                     <label class="form-check-label">
                                                         <!-- <input class="form-check-input" type="checkbox" value="" checked> -->
-                                                        <input class="form-check-input" type="checkbox" value="true">
+                                                        <input class="form-check-input" type="checkbox" [checked]="rdv.done" (change)="toggleCheckbox($event.target.checked, rdv)">
                                                         <span class="form-check-sign">
                                                             <span class="check"></span>
                                                         </span>
@@ -147,8 +147,11 @@
                                         </tr>
 
                                     </tbody>
-                                    <ng-template #noRdv>
+                                    <ng-template #noToday>
                                         <tr>
+                                            <td>Aucun rendez-vous</td>
+                                            <td>Aucun rendez-vous</td>
+                                            <td>Aucun rendez-vous</td>
                                             <td>Aucun rendez-vous</td>
                                         </tr>
                                     </ng-template>
@@ -156,42 +159,62 @@
                             </div>
                             <div class="tab-pane" id="messages">
                                 <table class="table">
-                                    <tbody>
-                                        
-                                        <tr>
+                                    <thead>
+                                        <th>
+                                            
+                                        </th>
+                                        <th>
+                                            <a (click)="flipTodayDoneDateSort()" class="link">Date</a>
+                                        </th>
+                                        <th>
+                                            services
+                                        </th>
+                                        <th>
+                                            annuler
+                                        </th>
+                                    </thead>
+                                    <tbody *ngIf="todaysDoneRdv && todaysDoneRdv.length > 0; else noDone">
+                                        <tr *ngFor="let rdv of todaysDoneRdv">
                                             <td>
                                                 <div class="form-check">
                                                     <label class="form-check-label">
-                                                        <input class="form-check-input" type="checkbox" value="">
+                                                        <!-- <input class="form-check-input" type="checkbox" value="" checked> -->
+                                                        <input class="form-check-input" type="checkbox"  [checked]="rdv.done" (change)="toggleCheckbox($event.target.checked, rdv)">
                                                         <span class="form-check-sign">
                                                             <span class="check"></span>
                                                         </span>
                                                     </label>
                                                 </div>
                                             </td>
-                                            <td>Sign contract for "What are conference organizers afraid of?"</td>
+                                            <td>
+                                                {{ rdv.date | relativeTime}}
+                                            </td>
+                                            <td>
+                                                <span *ngFor="let service of rdv.services">{{service.name+' '}}</span>
+                                            </td>
                                             <td class="td-actions text-right">
-                                                <button mat-raised-button type="button" matTooltip="Edit Task"
-                                                    [matTooltipPosition]="'above'"
-                                                    class="btn btn-primary btn-link btn-sm btn-just-icon">
-                                                    <i class="material-icons">edit</i>
-                                                </button>
                                                 <button mat-raised-button type="button" matTooltip="Remove"
                                                     [matTooltipPosition]="'above'"
                                                     class="btn btn-danger btn-link btn-sm btn-just-icon">
-                                                    <i class="material-icons">close</i>
+                                                    <i class="material-icons">delete</i>
                                                 </button>
                                             </td>
                                         </tr>
+
                                     </tbody>
+                                    <ng-template #noDone>
+                                        <tr>
+                                            <td>-</td>
+                                            <td>-</td>
+                                            <td>-</td>
+                                            <td>-</td>
+                                        </tr>
+                                    </ng-template>
                                 </table>
                             </div>
                             <div class="tab-pane" id="settings">
                                 <table class="table">
                                     <thead>
-                                        <th>
-                                            etat
-                                        </th>
                                         <th>
                                             <a (click)="flipWeekDateSort()" class="link">Date</a>
                                         </th>
@@ -202,19 +225,8 @@
                                             annuler
                                         </th>
                                     </thead>
-                                    <tbody *ngIf="weeksRdv && weeksRdv.length > 0; else noRdv">
+                                    <tbody *ngIf="weeksRdv && weeksRdv.length > 0; else noWeek">
                                         <tr *ngFor="let rdv of weeksRdv">
-                                            <td>
-                                                <div class="form-check">
-                                                    <label class="form-check-label">
-                                                        <!-- <input class="form-check-input" type="checkbox" value="" checked> -->
-                                                        <input class="form-check-input" type="checkbox" value="">
-                                                        <span class="form-check-sign">
-                                                            <span class="check"></span>
-                                                        </span>
-                                                    </label>
-                                                </div>
-                                            </td>
                                             <td>
                                                 {{ rdv.date | relativeTime}}
                                             </td>
@@ -231,8 +243,11 @@
                                         </tr>
 
                                     </tbody>
-                                    <ng-template #noRdv>
+                                    <ng-template #noWeek>
                                         <tr>
+                                            <td>Aucun rendez-vous</td>
+                                            <td>Aucun rendez-vous</td>
+                                            <td>Aucun rendez-vous</td>
                                             <td>Aucun rendez-vous</td>
                                         </tr>
                                     </ng-template>
@@ -359,7 +374,7 @@
                                                 </button>
                                             </td>
                                         </tr>
-                                        
+
                                     </tbody>
                                 </table>
                             </div>

@@ -127,7 +127,15 @@ export class NavbarComponent implements OnInit {
         return 'Dashboard';
     }
     logout() {
-        this.userservice.logout();
+        this.userservice.logout().subscribe(response => {
+            console.log(response);
+            localStorage.removeItem('token');
+            localStorage.removeItem('username');
+            this.router.navigate(['/login']);
+            window.location.reload();
+        }, err => {
+            console.log(err);
+        });
 
     }
 

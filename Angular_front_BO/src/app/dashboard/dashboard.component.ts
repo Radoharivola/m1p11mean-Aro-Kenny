@@ -3,6 +3,7 @@ import { RdvService } from 'app/services/rdv.service';
 import * as Chartist from 'chartist';
 import { Router } from '@angular/router';
 import { UserService } from '../services/user.service';
+import { response } from 'express';
 
 
 @Component({
@@ -13,11 +14,13 @@ import { UserService } from '../services/user.service';
 export class DashboardComponent implements OnInit {
 
   todaysRdv: any[];
+  todaysDoneRdv: any[];
   weeksRdv: any[];
   weekDateSort: number = 1;
   todayDateSort: number = 1;
+  todayDoneDateSort: number = 1;
 
-  constructor(private rdvservice: RdvService, private router: Router,private userservice: UserService) { }
+  constructor(private rdvservice: RdvService, private router: Router, private userservice: UserService) { }
   startAnimationForLineChart(chart) {
     let seq: any, delays: any, durations: any;
     seq = 0;
@@ -158,6 +161,7 @@ export class DashboardComponent implements OnInit {
 
     this.fetchTodaysRdv();
     this.fetchThisWeeksRdv();
+    this.fetchTodaysDoneRdv();
   }
 
 
@@ -171,14 +175,34 @@ export class DashboardComponent implements OnInit {
     // Set dateFin to today's date at 23:59:59
     today.setHours(23, 59, 59, 999);
     const dateFin = today.toISOString();
-    this.rdvservice.getRdv({ 'dateInit': dateInit, 'dateFin': dateFin, 'limit': 100, 'page': 1, 'dateSort': this.todayDateSort }).subscribe(response => {
+    this.rdvservice.getRdv({ 'dateInit': dateInit, 'dateFin': dateFin, 'limit': 100, 'page': 1, 'dateSort': this.todayDateSort, 'done': false }).subscribe(response => {
       console.log(response.body.rdvs);
       this.todaysRdv = response.body.rdvs;
     },
       error => {
         console.log(error);
-          // Unauthorized error, redirect to login page
-          this.userservice.logout(); // Adjust the route as per your application
+        // Unauthorized error, redirect to login page
+        this.router.navigate(['/login']); // Adjust the route as per your application
+      });
+  }
+
+  fetchTodaysDoneRdv() {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    // Set dateInit to today's date
+    const dateInit = today.toISOString();
+
+    // Set dateFin to today's date at 23:59:59
+    today.setHours(23, 59, 59, 999);
+    const dateFin = today.toISOString();
+    this.rdvservice.getRdv({ 'dateInit': dateInit, 'dateFin': dateFin, 'limit': 100, 'page': 1, 'dateSort': this.todayDoneDateSort, 'done': true }).subscribe(response => {
+      console.log(response.body.rdvs);
+      this.todaysDoneRdv = response.body.rdvs;
+    },
+      error => {
+        console.log(error);
+        // Unauthorized error, redirect to login page
+        this.router.navigate(['/login']); // Adjust the route as per your application
       });
   }
 
@@ -190,6 +214,11 @@ export class DashboardComponent implements OnInit {
   flipTodayDateSort() {
     this.todayDateSort = this.todayDateSort * -1;
     this.fetchTodaysRdv();
+  }
+
+  flipTodayDoneDateSort() {
+    this.todayDoneDateSort = this.todayDoneDateSort * -1;
+    this.fetchTodaysDoneRdv();
   }
 
   fetchThisWeeksRdv() {
@@ -210,14 +239,31 @@ export class DashboardComponent implements OnInit {
     // Set time to end of the last day
     lastDayOfWeek.setHours(23, 59, 59, 999);
     const dateFin = lastDayOfWeek.toISOString();
-    this.rdvservice.getRdv({ 'dateInit': dateInit, 'dateFin': dateFin, 'limit': 100, 'page': 1, 'dateSort': this.weekDateSort }).subscribe(response => {
+    this.rdvservice.getRdv({ 'dateInit': dateInit, 'dateFin': dateFin, 'limit': 100, 'page': 1, 'dateSort': this.weekDateSort, 'done': false }).subscribe(response => {
       console.log(response);
       this.weeksRdv = response.body.rdvs;
     },
       error => {
         console.log(error);
-          // Unauthorized error, redirect to login page
-          this.userservice.logout(); // Adjust the route as per your application
+        // Unauthorized error, redirect to login page
+        this.router.navigate(['/login']); // Adjust the route as per your application
       });
+  }
+
+  toggleCheckbox(checked: boolean, rdv: object) {
+    rdv['done'] = checked;
+    this.update(rdv);
+  }
+
+  update(rdv: object) {
+    console.log(rdv);
+    this.rdvservice.update({ 'data': rdv, 'id': rdv['_id'] }).subscribe(response => {
+      console.log(response);
+      this.fetchTodaysDoneRdv();
+      this.fetchTodaysRdv();
+    }, error => {
+      console.log(error);
+      this.router.navigate(['/login']);
+    });
   }
 }

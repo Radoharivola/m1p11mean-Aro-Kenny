@@ -13,7 +13,7 @@ export class UserService {
     withCredentials: true,
     observe: 'response' as 'response'
   };
-  constructor(private http: HttpClient,private router: Router) { }
+  constructor(private http: HttpClient, private router: Router) { }
 
 
   getEmployees({ searchString, sortBy, sortOrder }): Observable<any> {
@@ -74,15 +74,12 @@ export class UserService {
 
   test(): boolean {
     // Check if the token exists in localStorage
+    console.log(localStorage.getItem('token'));
     return localStorage.getItem('token') !== null;
   }
 
-  logout() {
-    // Remove the token from localStorage upon logout
-    localStorage.removeItem('token');
-    localStorage.removeItem('username');
-    this.router.navigate(['/login']);
-    // return this.http.post('/api/logout', {});
+  logout(): Observable<any>{
+    return this.http.post('http://127.0.0.1:3000/auth/logout', null, this.httpOptions);
   }
 
 }
