@@ -42,7 +42,11 @@ export class ProfilepageComponent implements OnInit, OnDestroy {
     body.classList.remove("profile-page");
   }
 
-
+  flipDateSort() {
+    this.dateSort = this.dateSort * -1;
+    this.page = 1;
+    this.fetchRdv(1);
+  }
 
   fetchRdv(page) {
     const today = new Date();

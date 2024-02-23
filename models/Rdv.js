@@ -26,6 +26,8 @@ const rdvSchema = new mongoose.Schema({
     paid: { type: Number, required: true },
     date: { type: Date, required: true },
     dateFin: { type: Date, required: true },
+    done: { type: Boolean, required: true },
+    emailed: { type: Boolean, required: true },
 
 });
 module.exports = mongoose.model('Rdv', rdvSchema);

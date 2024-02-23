@@ -21,6 +21,7 @@ import { UpdateEmployeeComponent } from 'app/manage-employees/update-employee/up
 import { NewEmployeeComponent } from 'app/manage-employees/new-employee/new-employee.component';
 import { ManageEmployeesComponent } from 'app/manage-employees/manage-employees.component';
 import { LoginComponent } from '../../login/login.component';
+import { RelativeTimePipe } from '../../pipes/relative-time.pipe';
 
 @NgModule({
   imports: [
@@ -47,7 +48,8 @@ import { LoginComponent } from '../../login/login.component';
     UpdateEmployeeComponent,
     NewEmployeeComponent,
     ManageEmployeesComponent,
-    LoginComponent
+    LoginComponent,
+    RelativeTimePipe
   ]
 })
 

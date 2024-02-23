@@ -59,6 +59,8 @@ router.post('/new', verifyToken, async (req, res) => {
                 dateFin: addedDate,
                 total: total,
                 paid: paid,
+                done: false,
+                emailed: false
             });
             const result = await Rdv.findOne({
                 // this old code is working but it won't allow like really close schedules like ending at 9am and starting at 9am
@@ -167,9 +169,9 @@ router.post('/new', verifyToken, async (req, res) => {
 
             });
             const employeeIds = result.map(rdv => rdv.employee._id);
-            const employeesNotInRdv = await User.find({ 
+            const employeesNotInRdv = await User.find({
                 _id: { $nin: employeeIds },
-                'role.roleName': 'employee' 
+                'role.roleName': 'employee'
             });
             if (employeesNotInRdv.length === 0) {
                 return res.status(409).json({ message: "Aucun employé disponible" });
@@ -195,6 +197,8 @@ router.post('/new', verifyToken, async (req, res) => {
                 dateFin: addedDate,
                 total: total,
                 paid: paid,
+                done: false,
+                emailed: false
             });
             const result1 = await Rdv.findOne({
                 // this old code is working but it won't allow like really close schedules like ending at 9am and starting at 9am
@@ -284,6 +288,40 @@ router.get('/:dateInit/:dateFin/:limit/:page/:dateSort', verifyToken, async (req
     }
 });
 
+router.get('/emp/:dateInit/:dateFin/:limit/:page/:dateSort', verifyToken, async (req, res) => {
+    try {
+        const page = req.params.page || 1;
+        const limit = parseInt(req.params.limit) || 10;
+        const skip = (page - 1) * limit;
+
+        //in the next update client will be replaced req.userId user the protected route
+        const empId = req.userId;
+
+        const formattedDate = new Date().toISOString();
+
+        const dateOnly = formattedDate.split('T')[0];
+        
+        const dateSort = 1 * req.params.dateSort;
+       
+        const totalRdvs = await Rdv.countDocuments({
+            'employee._id': empId,
+            date: { $gte: new Date(req.params.dateInit), $lt: new Date(req.params.dateFin) },
+        });
+
+        const totalPages = Math.ceil(totalRdvs / limit);
+
+        const rdvs = await Rdv.find({
+            'employee._id': empId,
+            date: { $gte: new Date(req.params.dateInit), $lt: new Date(req.params.dateFin) },
+        }).sort({ date: dateSort }).skip(skip).limit(limit);
+
+        return res.status(200).json({ rdvs, totalPages });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error });
+    }
+});
+
 
 router.delete('/rdvs/:rdvId', async (req, res) => {
     try {
@@ -293,7 +331,7 @@ router.delete('/rdvs/:rdvId', async (req, res) => {
         const existingRdv = await Rdv.findById(rdvId);
         if (!existingRdv) {
             return res.status(404).json({ error: 'User not found' });
-        }        
+        }
 
         // Delete the user from the database
         await Rdv.findByIdAndDelete(rdvId);
@@ -314,7 +352,7 @@ router.get('/:rdvId', async (req, res) => {
         const rdv = await Rdv.findById(rdvId);
         if (!rdv) {
             return res.status(404).json({ error: 'rd not found' });
-        }        
+        }
 
         res.status(200).json({ rdv });
     } catch (error) {
