@@ -54,6 +54,7 @@ export class NavbarComponent implements OnInit {
       localStorage.removeItem('username');
       this.router.navigate(['/login']);
       window.location.reload();
+      //I just wanna add smt
       this.spinner.hide();
     }, err => {
       this.spinner.hide();
