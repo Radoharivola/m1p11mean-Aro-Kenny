@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { UserService } from 'app/services/user.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Observable } from 'rxjs';
 @Component({
   selector: 'app-update-employee',
@@ -17,17 +17,39 @@ export class UpdateEmployeeComponent implements OnInit {
 
   employee: any;
 
+
+
   files: File[] = [];
-  constructor(private fb: FormBuilder, private userservice: UserService, private route: ActivatedRoute) { }
+  constructor(private router: Router,private fb: FormBuilder, private userservice: UserService, private route: ActivatedRoute) { }
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
       this.employeeId = params['id'];
       this.userservice.getEmployee(this.employeeId).subscribe(data => {
-        this.employee = data.employee;
-        console.log(this.employee.firstName);
+        this.employee = data.body.employee;
+        // this.files.push(...data.body.profilePicture);
+
+        const base64Image = data.body.profilePicture;
+
+        // Reconvert base64 image to Blob
+        const byteCharacters = atob(base64Image);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        const blob = new Blob([byteArray], { type: 'image/jpeg' });
+        const imageFile = new File([blob], 'profile_picture.jpg', { type: 'image/jpeg' });
+        
+        this.files.push(imageFile);
+        console.log(data);
         this.initForm();
-      }, err => console.log(err));
+      }, err => {
+        // localStorage.removeItem('token');
+        // localStorage.removeItem('username');
+        // this.router.navigate(['/login']);
+        console.log(err);
+      });
     });
   }
 
@@ -74,7 +96,7 @@ export class UpdateEmployeeComponent implements OnInit {
     }
     if (this.employeeForm.valid) {
       // if (this.employeeForm.value.motDePasse != this.employeeForm.value.confirmerMotDePasse){ //   this.unmatched = true;// }
-      
+
       const formData = new FormData();
       formData.append('pic', this.files[0]);
       formData.append('username', this.employeeForm.value.identifiant);

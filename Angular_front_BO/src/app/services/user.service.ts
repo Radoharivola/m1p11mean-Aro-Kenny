@@ -17,11 +17,11 @@ export class UserService {
 
 
   getEmployees({ searchString, sortBy, sortOrder }): Observable<any> {
-    return this.http.get('http://127.0.0.1:3000/users/employees?searchString=' + searchString + '&sortBy=' + sortBy + '&sortOrder=' + sortOrder);
+    return this.http.get('http://127.0.0.1:3000/users/employees?searchString=' + searchString + '&sortBy=' + sortBy + '&sortOrder=' + sortOrder, this.httpOptions);
   }
 
   getEmployee(id: string): Observable<any> {
-    return this.http.get('http://127.0.0.1:3000/users/employee/' + id);
+    return this.http.get('http://127.0.0.1:3000/users/employee/' + id, this.httpOptions);
   }
 
   newEmployee({ formData }: { formData: FormData; }): Observable<any> {
@@ -29,7 +29,7 @@ export class UserService {
   }
 
   updateEmployee({ formData, id }: { formData: FormData, id: string; }): Observable<any> {
-    return this.http.put('http://127.0.0.1:3000/auth/users/' + id, formData);
+    return this.http.put('http://127.0.0.1:3000/auth/users/' + id, formData, { withCredentials: true });
   }
 
   deleteEmployee(id: string): Observable<any> {
@@ -78,7 +78,7 @@ export class UserService {
     return localStorage.getItem('token') !== null;
   }
 
-  logout(): Observable<any>{
+  logout(): Observable<any> {
     return this.http.post('http://127.0.0.1:3000/auth/logout', null, this.httpOptions);
   }
 

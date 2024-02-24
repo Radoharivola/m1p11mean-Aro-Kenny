@@ -38,6 +38,7 @@ const path = require('path');
 const { v4: uuidv4 } = require('uuid');
 const ProfilePicture = require('../models/ProfilePicture');
 const fs = require('fs');
+const verifyToken = require('../middleware/authMiddleware');
 
 // Multer configuration for file upload
 const storage = multer.diskStorage({
@@ -216,7 +217,7 @@ router.post('/BOlogin', async (req, res) => {
 });
 
 // Update user route
-router.put('/users/:userId', upload.single('pic'), async (req, res) => {
+router.put('/users/:userId', upload.single('pic'), verifyToken, async (req, res) => {
     try {
 
         // Check if file uploaded successfully
