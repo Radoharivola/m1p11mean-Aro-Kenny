@@ -5,6 +5,7 @@ import { RdvService } from '../../services/rdv.service';
 import { UserService } from '../../services/user.service';
 
 import { OfferService } from '../../services/offer.service';
+import { Router } from "@angular/router";
 
 @Component({
   selector: "app-index",
@@ -40,7 +41,7 @@ export class IndexComponent implements OnInit, OnDestroy {
 
 
 
-  constructor(private serviceService: ServiceService, private userService: UserService, private rdvservice: RdvService, private offerservice: OfferService) { }
+  constructor(private serviceService: ServiceService, private userService: UserService, private rdvservice: RdvService, private offerservice: OfferService, private route: Router) { }
 
   ngOnInit() {
     var body = document.getElementsByTagName("body")[0];
@@ -67,7 +68,7 @@ export class IndexComponent implements OnInit, OnDestroy {
     );
   }
 
-  setSelectedServices(services: any[],reduction: number) {
+  setSelectedServices(services: any[], reduction: number) {
     // this.selectedServices = services;
     // const totalPrice = this.selectedServices.reduce((total, service) => total + service.price, 0);
 
@@ -99,6 +100,14 @@ export class IndexComponent implements OnInit, OnDestroy {
       this.todaysRdv = response.body.rdvs;
     },
       error => {
+        this.userService.logout().subscribe(res => {
+          localStorage.removeItem('uToken');
+          localStorage.removeItem('username');
+          this.route.navigate(['/login']);
+        }, err => {
+          console.log(err);
+        }
+        );
         console.log(error);
       });
   }

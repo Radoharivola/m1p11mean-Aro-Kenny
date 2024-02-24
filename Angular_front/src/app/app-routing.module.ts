@@ -15,14 +15,16 @@ import { AuthGuardLoginService } from "./services/auth-guard-login.service";
 const routes: Routes = [
   { path: "", redirectTo: "home", pathMatch: "full" },
   { path: "home", component: IndexComponent, canActivate: [AuthGuardService] },
-  { path: "profile", component: ProfilepageComponent, canActivate: [AuthGuardService] },
-  { path: "register", component: RegisterpageComponent, 
-  // canActivate: [AuthGuardLoginService] 
-},
+  { path: "profile", component: ProfilepageComponent },
+  {
+    path: "register", component: RegisterpageComponent,
+    // canActivate: [AuthGuardLoginService] 
+  },
   { path: "someshit", component: SomeShitComponent, canActivate: [AuthGuardService] },
-  { path: "login", component: ClientLoginComponent, 
-  // canActivate: [AuthGuardLoginService] 
-},
+  {
+    path: "login", component: ClientLoginComponent,
+    // canActivate: [AuthGuardLoginService] 
+  },
 
 ];
 
