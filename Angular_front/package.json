@@ -65,6 +65,7 @@
   "private": false,
   "dependencies": {
     "@angular/animations": "11.0.5",
+    "@angular/cdk": "^17.2.1",
     "@angular/common": "11.0.5",
     "@angular/compiler": "11.0.5",
     "@angular/core": "11.0.5",
@@ -76,6 +77,8 @@
     "core-js": "3.8.2",
     "jw-bootstrap-switch-ng2": "2.0.5",
     "ngx-bootstrap": "6.2.0",
+    "ngx-dropzone": "^2.0.3",
+    "ngx-dropzone-wrapper": "^9.0.0",
     "node": "14.17.6",
     "nouislider": "14.6.3",
     "rxjs": "6.6.3",

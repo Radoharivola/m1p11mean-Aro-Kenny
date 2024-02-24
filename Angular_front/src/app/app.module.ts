@@ -8,6 +8,7 @@ import { HttpClientModule } from "@angular/common/http";
 
 
 import { PagesModule } from "./pages/pages.module";
+import { NgxDropzoneModule } from 'ngx-dropzone';
 
 
 @NgModule({
@@ -21,7 +22,8 @@ import { PagesModule } from "./pages/pages.module";
     HttpClientModule,
     RouterModule,
     AppRoutingModule,
-    PagesModule
+    PagesModule,
+    NgxDropzoneModule
   ],
   providers: [],
   bootstrap: [AppComponent]

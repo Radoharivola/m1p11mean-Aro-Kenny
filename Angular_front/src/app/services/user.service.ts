@@ -11,11 +11,17 @@ export class UserService {
     'Accept': 'application/json',
     // Add other headers if needed
   });
+  httpOptions = {
+    headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+
+    withCredentials: true,
+    observe: 'response' as 'response'
+  };
   constructor(private http: HttpClient) { }
 
 
   getEmployees(): Observable<any> {
-    return this.http.get('http://127.0.0.1:3000/users/employees');
+    return this.http.get('http://127.0.0.1:3000/users/employees', this.httpOptions);
   }
 
   newUser({ formData }: { formData: FormData; }): Observable<any> {
@@ -25,28 +31,32 @@ export class UserService {
   login({ data }: { data: any; }): Observable<any> {
     const httpOptions = {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
-         
-      withCredentials: true, 
+
+      withCredentials: true,
       observe: 'response' as 'response'
-    };  
+    };
     return this.http.post('http://127.0.0.1:3000/auth/login', data, httpOptions);
   }
 
   test(): Observable<any> {
     const httpOptions = {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
-         
-      withCredentials: true, 
+
+      withCredentials: true,
       observe: 'response' as 'response'
-    };  
+    };
     return this.http.get('http://127.0.0.1:3000/protected', httpOptions);
   }
 
   isLoggedIn(): boolean {
-    
+    const token = localStorage.getItem('uToken');
+    if (!token) return false;
 
     return true;
   }
 
+  logout(): Observable<any> {
+    return this.http.post('http://127.0.0.1:3000/auth/logout', null, this.httpOptions);
+  }
 
 }

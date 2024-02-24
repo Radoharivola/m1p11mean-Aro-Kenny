@@ -146,6 +146,7 @@ router.post('/login', async (req, res) => {
         const userData = {
             username: user.username,
             email: user.email,
+            role: user.role.roleName
         };
         res.setHeader('set-cookie', serialized);
         res.status(200).json({ user: userData });

@@ -113,6 +113,12 @@ export class ClientLoginComponent implements OnInit, OnDestroy {
           //   this.success = false;
           // }, 5000);
           // this.message = response.message;
+          const user = response.body.user;
+          localStorage.setItem('uToken', btoa(user.role));
+          localStorage.setItem('username', user.username);
+          console.log(localStorage.getItem('uToken'));
+          // window.location.reload();
+          // this.router.navigate(['/']);
           console.log(response);
         },
         error => {

@@ -38,6 +38,8 @@ export class IndexComponent implements OnInit, OnDestroy {
 
   temp: string = '';
 
+
+
   constructor(private serviceService: ServiceService, private userService: UserService, private rdvservice: RdvService, private offerservice: OfferService) { }
 
   ngOnInit() {
@@ -56,6 +58,7 @@ export class IndexComponent implements OnInit, OnDestroy {
   fetchOffers() {
     this.offerservice.getOffers({ 'date': new Date().toISOString() }).subscribe(
       response => {
+        console.log(response.offers);
         this.offers = response.offers;
       },
       error => {
@@ -63,6 +66,14 @@ export class IndexComponent implements OnInit, OnDestroy {
       }
     );
   }
+
+  setSelectedServices(services: any[],reduction: number) {
+    // this.selectedServices = services;
+    // const totalPrice = this.selectedServices.reduce((total, service) => total + service.price, 0);
+
+    // console.log(this.selectedServices);
+  }
+
   fetchServices() {
     this.serviceService.getServices().subscribe(data => {
       this.services = data.services;
@@ -70,8 +81,8 @@ export class IndexComponent implements OnInit, OnDestroy {
   }
   fetchEmployees() {
     this.userService.getEmployees().subscribe(data => {
-      console.log(data.employees);
-      this.employees = data.employees;
+      console.log(data.body.employees);
+      this.employees = data.body.employees;
     });
   }
   fetchTodaysRdv() {

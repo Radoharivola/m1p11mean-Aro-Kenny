@@ -19,9 +19,11 @@
                         <i class="tim-icons icon-badge"> </i>
                       </div>
                     </div>
-                    <input class="form-control" formControlName="identifiant" placeholder="identifiant" (focus)="focus0 = true"
-                        (blur)="focus0 = false" />
-                    <div *ngIf="registrationForm.get('identifiant').invalid && registrationForm.get('identifiant').touched" class="error-message">
+                    <input class="form-control" formControlName="identifiant" placeholder="identifiant"
+                      (focus)="focus0 = true" (blur)="focus0 = false" />
+                    <div
+                      *ngIf="registrationForm.get('identifiant').invalid && registrationForm.get('identifiant').touched"
+                      class="error-message">
                       Requis
                     </div>
                   </div>
@@ -32,8 +34,9 @@
                       </div>
                     </div>
                     <input class="form-control" formControlName="nom" placeholder="Nom" (focus)="focus1 = true"
-                        (blur)="focus1 = false" />
-                    <div *ngIf="registrationForm.get('nom').invalid && registrationForm.get('nom').touched" class="error-message">
+                      (blur)="focus1 = false" />
+                    <div *ngIf="registrationForm.get('nom').invalid && registrationForm.get('nom').touched"
+                      class="error-message">
                       Requis
                     </div>
                   </div>
@@ -44,8 +47,9 @@
                       </div>
                     </div>
                     <input class="form-control" formControlName="prenoms" placeholder="Prénoms" (focus)="focus2 = true"
-                        (blur)="focus2 = false" />
-                    <div *ngIf="registrationForm.get('prenoms').invalid && registrationForm.get('prenoms').touched" class="error-message">
+                      (blur)="focus2 = false" />
+                    <div *ngIf="registrationForm.get('prenoms').invalid && registrationForm.get('prenoms').touched"
+                      class="error-message">
                       Requis
                     </div>
                   </div>
@@ -56,8 +60,22 @@
                       </div>
                     </div>
                     <input class="form-control" formControlName="email" placeholder="Email" (focus)="focus3 = true"
-                        (blur)="focus3 = false" />
-                    <div *ngIf="registrationForm.get('email').invalid && registrationForm.get('email').touched" class="error-message">
+                      (blur)="focus3 = false" />
+                    <div *ngIf="registrationForm.get('email').invalid && registrationForm.get('email').touched"
+                      class="error-message">
+                      Requis
+                    </div>
+                  </div>
+                  <div class="input-group" [ngClass]="{ 'input-group-focus': focus5 === true }">
+                    <div class="input-group-prepend">
+                      <div class="input-group-text">
+                        <i class="tim-icons icon-mobile"> </i>
+                      </div>
+                    </div>
+                    <input class="form-control" formControlName="telephone" placeholder="Telephone"
+                      (focus)="focus5 = true" (blur)="focus5 = false" />
+                    <div *ngIf="registrationForm.get('telephone').invalid && registrationForm.get('telephone').touched"
+                      class="error-message">
                       Requis
                     </div>
                   </div>
@@ -67,11 +85,23 @@
                         <i class="tim-icons icon-key-25"> </i>
                       </div>
                     </div>
-                    <input class="form-control" formControlName="motDePasse" placeholder="Mot de passe" (focus)="focus4 = true"
-                        (blur)="focus4 = false" />
-                    <div *ngIf="registrationForm.get('motDePasse').invalid && registrationForm.get('motDePasse').touched" class="error-message">
+                    <input class="form-control" formControlName="motDePasse" placeholder="Mot de passe"
+                      (focus)="focus4 = true" (blur)="focus4 = false" />
+                    <div
+                      *ngIf="registrationForm.get('motDePasse').invalid && registrationForm.get('motDePasse').touched"
+                      class="error-message">
                       Requis
                     </div>
+                  </div>
+                  <ngx-dropzone (change)="onSelect($event)" accept="image/jpeg,image/jpg,image/png,image/gif"
+                    multiple="false" class="dropzone">
+                    <ngx-dropzone-label>Choisir photo de profil / déposer!</ngx-dropzone-label>
+                    <ngx-dropzone-image-preview ngProjectAs="ngx-dropzone-preview" *ngFor="let f of files" [file]="f"
+                      [removable]="true" (removed)="onRemove(f)">
+                    </ngx-dropzone-image-preview>
+                  </ngx-dropzone>
+                  <div *ngIf="fileEmpty" class="dz-error-message">
+                    Veuillez choisir une photo de profil
                   </div>
                 </form>
               </div>
