@@ -1,5 +1,5 @@
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
-import { NgModule } from "@angular/core";
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from "@angular/core";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { RouterModule } from "@angular/router";
 import { AppRoutingModule } from "./app-routing.module";
@@ -8,7 +8,6 @@ import { HttpClientModule } from "@angular/common/http";
 
 
 import { PagesModule } from "./pages/pages.module";
-import { NgxDropzoneModule } from 'ngx-dropzone';
 
 
 @NgModule({
@@ -23,8 +22,8 @@ import { NgxDropzoneModule } from 'ngx-dropzone';
     RouterModule,
     AppRoutingModule,
     PagesModule,
-    NgxDropzoneModule
   ],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   providers: [],
   bootstrap: [AppComponent]
 })

@@ -18,12 +18,12 @@ const routes: Routes = [
   { path: "profile", component: ProfilepageComponent },
   {
     path: "register", component: RegisterpageComponent,
-    // canActivate: [AuthGuardLoginService] 
+    canActivate: [AuthGuardLoginService] 
   },
   { path: "someshit", component: SomeShitComponent, canActivate: [AuthGuardService] },
   {
     path: "login", component: ClientLoginComponent,
-    // canActivate: [AuthGuardLoginService] 
+    canActivate: [AuthGuardLoginService] 
   },
 
 ];

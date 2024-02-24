@@ -1,6 +1,8 @@
 import { Component, OnInit, OnDestroy, HostListener } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { UserService } from "src/app/services/user.service";
+import { NgxSpinnerService } from "ngx-spinner";
+import { Router } from "@angular/router";
 
 @Component({
   selector: 'app-client-login',
@@ -16,8 +18,11 @@ export class ClientLoginComponent implements OnInit, OnDestroy {
   focus1;
   loading: boolean = false;
   loginForm: FormGroup;
+  error: boolean = false;
+  success: boolean = false;
+  message: string = '';
 
-  constructor(private fb: FormBuilder, private userservice: UserService) { }
+  constructor(private fb: FormBuilder, private userservice: UserService, private spinner: NgxSpinnerService, private router: Router) { }
   // @HostListener("document:mousemove", ["$event"])
   // onMouseMove(e) {
   //   var squares1 = document.getElementById("square1");
@@ -102,48 +107,50 @@ export class ClientLoginComponent implements OnInit, OnDestroy {
   }
 
   onSubmit() {
+    if (this.loginForm.valid) {
+      this.spinner.show();
+      const data = {
+        username: this.loginForm.value.identifiant,
+        password: this.loginForm.value.motDePasse
+      };
+      this.userservice.login({ data }).subscribe(
+        response => {
+          this.error = false;
+          this.success = true;
+          setTimeout(() => {
+            this.success = false;
+          }, 5000);
+          this.message = response.message;
+          const user = response.body.user;
+          localStorage.setItem('uToken', btoa(user.role));
+          localStorage.setItem('username', user.username);
+          console.log(localStorage.getItem('uToken'));
+          this.router.navigate(['/']);
+          window.location.reload();
+          console.log(response);
+          this.spinner.hide();
+        },
+        error => {
+          this.spinner.hide();
 
-    // if (this.loginForm.valid) {
-    //   const data = {
-    //     username: this.loginForm.value.identifiant,
-    //     password: this.loginForm.value.motDePasse
-    //   };
-    //   this.userservice.login({ data }).subscribe(
-    //     response => {
-    //       // this.error = false;
-    //       // this.success = true;
-    //       // setTimeout(() => {
-    //       //   this.success = false;
-    //       // }, 5000);
-    //       // this.message = response.message;
-    //       const user = response.body.user;
-    //       localStorage.setItem('uToken', btoa(user.role));
-    //       localStorage.setItem('username', user.username);
-    //       console.log(localStorage.getItem('uToken'));
-    //       // window.location.reload();
-    //       // this.router.navigate(['/']);
-    //       console.log(response);
-    //     },
-    //     error => {
-    //       // this.success = false;
-    //       // this.error = true;
-    //       // setTimeout(() => {
-    //       //   this.error = false;
-    //       // }, 5000);
-    //       // this.message = error.error.message;
-    //       console.log(error);
-    //     }
-    //   );
-    //   console.log("Form submitted successfully");
-    // } else {
-    //   console.log("not valid");
-    //   // Mark all fields as touched to display errors
-    //   this.loginForm.markAllAsTouched();
-    // }
-    this.loading=true;
-    setTimeout(() => {
-      this.loading = false;
-    }, 5000);
+          this.success = false;
+          this.error = true;
+          setTimeout(() => {
+            this.error = false;
+          }, 5000);
+          this.message = error.error.error
+          console.log(error.error.error);
+        }
+      );
+      console.log("Form submitted successfully");
+    } else {
+      console.log("not valid");
+      // Mark all fields as touched to display errors
+      this.loginForm.markAllAsTouched();
+    }
+    // setTimeout(() => {
+    //   /** spinner ends after 5 seconds */
+    // }, 5000);
   }
   // test() {
   //   this.userservice.test().subscribe(

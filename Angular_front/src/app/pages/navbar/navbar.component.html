@@ -25,22 +25,19 @@
       </div>
       <ul class="navbar-nav">
         <li class="nav-item p-0">
-          <a class="nav-link"  placement="bottom" target="_blank"
-            tooltip="Suivez-nous sur twitter">
+          <a class="nav-link" placement="bottom" target="_blank" tooltip="Suivez-nous sur twitter">
             <i class="fab fa-twitter"> </i>
             <p class="d-lg-none d-xl-none">Twitter</p>
           </a>
         </li>
         <li class="nav-item p-0">
-          <a class="nav-link"  placement="bottom" target="_blank"
-            tooltip="likez notre page facebook">
+          <a class="nav-link" placement="bottom" target="_blank" tooltip="likez notre page facebook">
             <i class="fab fa-facebook-square"> </i>
             <p class="d-lg-none d-xl-none">Facebook</p>
           </a>
         </li>
         <li class="nav-item p-0">
-          <a class="nav-link"  placement="bottom" target="_blank"
-            tooltip="On se follow sur Insta">
+          <a class="nav-link" placement="bottom" target="_blank" tooltip="On se follow sur Insta">
             <i class="fab fa-instagram"> </i>
             <p class="d-lg-none d-xl-none">Instagram</p>
           </a>
@@ -55,7 +52,7 @@
                 href="https://demos.creative-tim.com/blk-design-system-angular/#/documentation/overview">
                 <i class="tim-icons icon-paper"> </i> Documentation
               </a> -->
-            <a  class="dropdown-item" [routerLink]="['/register']">
+            <a *ngIf="!isLoggedIn" class="dropdown-item" [routerLink]="['/register']">
               <i class="tim-icons icon-bullet-list-67"> </i> S'inscrire
             </a>
             <!-- <a class="dropdown-item" [routerLink]="['/landing']">
@@ -64,10 +61,10 @@
             <a *ngIf="isLoggedIn" class="dropdown-item" [routerLink]="['/profile']">
               <i class="tim-icons icon-single-02"> </i> Profile
             </a>
-            <a *ngIf="isLoggedIn" class="dropdown-item" [routerLink]="['/home']">
+            <a *ngIf="isLoggedIn" class="dropdown-item" href="javascript:void(0)" (click)="logout()">
               <i class="tim-icons icon-simple-remove"> </i> Se déconnecter
             </a>
-            <a  class="dropdown-item" [routerLink]="['/login']">
+            <a *ngIf="!isLoggedIn" class="dropdown-item" [routerLink]="['/login']">
               <i class="tim-icons icon-simple-remove"> </i> Se connecter
             </a>
           </div>

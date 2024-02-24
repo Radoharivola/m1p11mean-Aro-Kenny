@@ -36,6 +36,7 @@ import { DROPZONE_CONFIG } from 'ngx-dropzone-wrapper';
 import { DropzoneConfigInterface } from 'ngx-dropzone-wrapper';
 
 import { NgxDropzoneModule } from 'ngx-dropzone';
+import { NgxSpinnerModule } from "ngx-spinner";
 
 
 const DEFAULT_DROPZONE_CONFIG: DropzoneConfigInterface = {
@@ -65,7 +66,8 @@ const DEFAULT_DROPZONE_CONFIG: DropzoneConfigInterface = {
     BsDatepickerModule.forRoot(),
     CarouselModule.forRoot(),
     ModalModule.forRoot(),
-    NgxDropzoneModule
+    NgxDropzoneModule,
+    NgxSpinnerModule
 
   ],
   declarations: [

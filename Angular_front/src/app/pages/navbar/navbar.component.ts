@@ -3,6 +3,8 @@ import { Router, NavigationEnd } from '@angular/router';
 import { filter, takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { UserService } from "src/app/services/user.service";
+import { NgxSpinnerService } from "ngx-spinner";
+
 @Component({
   selector: 'app-navbar',
   templateUrl: './navbar.component.html',
@@ -14,7 +16,7 @@ export class NavbarComponent implements OnInit {
   private unsubscribe$: Subject<void> = new Subject();
 
 
-  constructor(private router: Router, private userservice: UserService) { }
+  constructor(private spinner: NgxSpinnerService, private router: Router, private userservice: UserService) { }
 
   ngOnInit(): void {
     // Subscribe to router events
@@ -43,6 +45,19 @@ export class NavbarComponent implements OnInit {
       if (appointmentElement) {
         appointmentElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
+    });
+  }
+  logout() {
+    this.spinner.show();
+    this.userservice.logout().subscribe(res => {
+      localStorage.removeItem('uToken');
+      localStorage.removeItem('username');
+      this.router.navigate(['/login']);
+      window.location.reload();
+      this.spinner.hide();
+    }, err => {
+      this.spinner.hide();
+      console.log(err);
     });
   }
 
