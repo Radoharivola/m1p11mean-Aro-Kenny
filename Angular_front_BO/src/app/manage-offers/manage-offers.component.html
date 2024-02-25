@@ -14,37 +14,37 @@
                             <table class="table">
                                 <thead class=" text-primary">
                                     <th>
-                                        Nom
+                                        Service
                                     </th>
                                     <th>
-                                        Durée
+                                        Date debut
+                                    </th>
+                                    <th>
+                                        Date fin
                                     </th>
                                     <th>
                                         Description
                                     </th>
                                     <th>
-                                        Commission
-                                    </th>
-                                    <th>
-                                        Prix
+                                        Reduction
                                     </th>
                                 </thead>
                                 <tbody>
-                                    <tr>
+                                    <tr *ngFor="let offer of offers">
                                         <td>
                                             1
                                         </td>
                                         <td>
-                                            Dakota Rice
+                                            {{offer.dateDebut}}
                                         </td>
                                         <td>
-                                            Niger
+                                            {{offer.dateFin}}
                                         </td>
                                         <td>
-                                            Oud-Turnhout
+                                            {{offer.description}}
                                         </td>
                                         <td class="text-primary">
-                                            $36,738
+                                            -{{offer.reduction}}%
                                         </td>
                                     </tr>
                                 </tbody>

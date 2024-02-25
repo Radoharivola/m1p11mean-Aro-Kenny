@@ -20,6 +20,7 @@ import { NgxDropzoneModule } from 'ngx-dropzone';
 import { UpdateEmployeeComponent } from 'app/manage-employees/update-employee/update-employee.component';
 import { NewEmployeeComponent } from 'app/manage-employees/new-employee/new-employee.component';
 import { ManageEmployeesComponent } from 'app/manage-employees/manage-employees.component';
+import { ManageOffersComponent } from 'app/manage-offers/manage-offers.component';
 @NgModule({
   imports: [
     CommonModule,
@@ -44,7 +45,8 @@ import { ManageEmployeesComponent } from 'app/manage-employees/manage-employees.
     UpgradeComponent,
     UpdateEmployeeComponent,
     NewEmployeeComponent,
-    ManageEmployeesComponent
+    ManageEmployeesComponent,
+    ManageOffersComponent
   ]
 })
 
