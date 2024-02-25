@@ -31,6 +31,10 @@ import { AuthGuardLoginService } from 'app/services/auth-guard-login.service';
 
 import { AuthGuardAllService } from 'app/services/auth-guard-all.service';
 
+import { ManageWsComponent } from '../../manage-ws/manage-ws.component';
+import { NewWsComponent } from '../../manage-ws/new-ws/new-ws.component';
+import { UpdateWsComponent } from '../../manage-ws/update-ws/update-ws.component';
+
 export const AdminLayoutRoutes: Routes = [
     // {
     //   path: '',
@@ -129,6 +133,18 @@ export const AdminLayoutRoutes: Routes = [
         }, {
             path: 'update',
             component: UpdateAchatComponent
+        }]
+    },
+    {
+        path: 'ws', children: [{
+            path: 'list',
+            component: ManageWsComponent
+        }, {
+            path: 'new',
+            component: NewWsComponent
+        }, {
+            path: 'update',
+            component: UpdateWsComponent
         }]
     },
 ];

@@ -23,22 +23,32 @@ router.post('/new', verifyToken, async (req, res) => {
         if (foundEmployee) {
             const sumOfDurations = services.reduce((total, service) => total + service.duration, 0);
 
-            var startDate = new Date(date);
-            var addedDate = new Date(startDate.getTime() + sumOfDurations * 60000);
+            const startDate = new Date(date);
+            const addedDate = new Date(startDate.getTime() + sumOfDurations * 60000);
 
-
+            // Find the employee's work schedule
             const workSchedule = await WorkSchedule.findOne({ 'employee.employeeId': employee });
             console.log(workSchedule);
-            const wsEndTime = new Date(workSchedule.endTime);
+
+            // Find the relevant day's schedule based on the day of the week of the given date
+            const dayOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][startDate.getDay()];
+            const daySchedule = workSchedule.weeklySchedule.find(schedule => schedule.dayOfWeek === dayOfWeek);
+
+            if (!daySchedule) {
+                return res.status(409).json({ message: "Employee does not work on this day" });
+            }
+
+            const wsEndTime = new Date(daySchedule.endTime);
             wsEndTime.setFullYear(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
 
-            const wsStartTime = new Date(workSchedule.startTime);
+            const wsStartTime = new Date(daySchedule.startTime);
             wsStartTime.setFullYear(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
 
-            // comparing the selected date to the employee's work schedule
+            // comparing the selected date to the employee's work schedule for the specific day
             if (addedDate > wsEndTime || startDate < wsStartTime) {
-                return res.status(409).json({ message: "En dehors des horaires de travail de l'employé" });
+                return res.status(409).json({ message: "Outside of the employee's working hours" });
             }
+
             const rdv = new Rdv({
                 client: {
                     _id: foundClient._id,
@@ -325,7 +335,7 @@ router.get('/emp/:dateInit/:dateFin/:limit/:page/:dateSort', verifyToken, async 
 });
 
 
-router.put('/:rdvId', verifyToken,async (req, res) => {
+router.put('/:rdvId', verifyToken, async (req, res) => {
     try {
         const rdvId = req.params.rdvId;
         const data = req.body;

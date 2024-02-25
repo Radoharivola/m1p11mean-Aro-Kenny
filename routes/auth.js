@@ -255,41 +255,46 @@ router.put('/users/:userId', upload.single('pic'), verifyToken, async (req, res)
         }
 
         const pp = await ProfilePicture.findOne({ userId });
-        console.log(pp.path)
-        const profilePictureFilename = pp.path;
-        const outputPath = path.join('uploads/', profilePictureFilename);
-        const image = await Jimp.read(req.file.path);
-        await image.resize(200, 200).writeAsync(outputPath);
-        // Prepare update data
-        const updateData = {
-            username,
-            role: { roleId: foundRole._id, roleName: foundRole.name },
-            firstName,
-            lastName,
-            email,
-            phone
-        };
+        if (!pp) {
+            const profilePictureFilename = req.file.filename;
+            const outputPath = path.join('uploads/', profilePictureFilename);
+            const image = await Jimp.read(req.file.path);
+            await image.resize(200, 200).writeAsync(outputPath);
 
-        const filenameToDelete = req.file.filename;
+            const profilePicture = new ProfilePicture({
+                userId: userId,
+                path: profilePictureFilename, // Store the filename in ProfilePicture model
+                date: new Date()
+            });
+            await profilePicture.save();
+        } else {
+            const profilePictureFilename = pp.path;
+            const outputPath = path.join('uploads/', profilePictureFilename);
+            const image = await Jimp.read(req.file.path);
+            await image.resize(200, 200).writeAsync(outputPath);
 
-        const filePath = path.join('uploads/', filenameToDelete); // Assuming the file is located in the 'uploads' directory
 
-        // Check if the file exists
-        fs.access(filePath, fs.constants.F_OK, (err) => {
-            if (err) {
-                console.error('File does not exist:', err);
-                return;
-            }
+            const filenameToDelete = req.file.filename;
 
-            // Delete the file
-            fs.unlink(filePath, (err) => {
+            const filePath = path.join('uploads/', filenameToDelete); // Assuming the file is located in the 'uploads' directory
+
+            // Check if the file exists
+            fs.access(filePath, fs.constants.F_OK, (err) => {
                 if (err) {
-                    console.error('Error deleting file:', err);
+                    console.error('File does not exist:', err);
                     return;
                 }
-                console.log('File deleted successfully');
+
+                // Delete the file
+                fs.unlink(filePath, (err) => {
+                    if (err) {
+                        console.error('Error deleting file:', err);
+                        return;
+                    }
+                    console.log('File deleted successfully');
+                });
             });
-        });
+        }
 
         // Check if password needs to be updated
         if (password) {
@@ -301,7 +306,15 @@ router.put('/users/:userId', upload.single('pic'), verifyToken, async (req, res)
             const hashedPassword = await bcrypt.hash(password, 10);
             updateData.password = hashedPassword;
         }
-
+        // Prepare update data
+        const updateData = {
+            username,
+            role: { roleId: foundRole._id, roleName: foundRole.name },
+            firstName,
+            lastName,
+            email,
+            phone
+        };
         // Update the user in the database
         const updatedUser = await User.findByIdAndUpdate(userId, updateData, { new: true });
 

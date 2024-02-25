@@ -23,7 +23,6 @@ import { PagesModule } from "./pages/pages.module";
     AppRoutingModule,
     PagesModule,
   ],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   providers: [],
   bootstrap: [AppComponent]
 })
