@@ -79,4 +79,37 @@ router.get('/employee/:id', verifyToken, async (req, res, next) => {
   }
 });
 
+router.get('/emp/profile', verifyToken, async (req, res, next) => {
+  try {
+    // Attempt to find the employee by ID
+    const employee = await User.findOne({ _id: req.userId });
+
+    // If employee is not found, return a 404 status
+    if (!employee) {
+      return res.status(404).json({ error: 'Employee not found' });
+    }
+
+
+    // Find the corresponding profile picture for the user
+    var profilePicture = await ProfilePicture.findOne({ userId: employee._id });
+    // If profile picture is found
+    if (profilePicture) {
+      // Read the file data
+
+      const imageData = fs.readFileSync(`uploads/${profilePicture.path}`);
+      // Convert the file data to base64
+      const base64Image = Buffer.from(imageData).toString('base64');
+      // Add the base64 string to the employee object
+      profilePicture = base64Image;
+    }
+
+
+    // If employee is found, return it with a 200 status
+    return res.status(200).json({ employee, profilePicture });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ error });
+  }
+});
+
 module.exports = router;

@@ -29,6 +29,8 @@ import { LoginComponent } from '../../login/login.component';
 import { AuthGuardService } from 'app/services/auth-guard.service';
 import { AuthGuardLoginService } from 'app/services/auth-guard-login.service';
 
+import { AuthGuardAllService } from 'app/services/auth-guard-all.service';
+
 export const AdminLayoutRoutes: Routes = [
     // {
     //   path: '',
@@ -73,7 +75,7 @@ export const AdminLayoutRoutes: Routes = [
     //     }]
     // }
     { path: 'dashboard', component: DashboardComponent },
-    { path: 'user-profile', component: UserProfileComponent },
+    { path: 'user-profile', component: UserProfileComponent, canActivate: [AuthGuardAllService] },
     { path: 'table-list', component: TableListComponent },
     { path: 'typography', component: TypographyComponent },
     { path: 'icons', component: IconsComponent },
@@ -88,7 +90,7 @@ export const AdminLayoutRoutes: Routes = [
         }, {
             path: 'new',
             component: NewServiceComponent
-        },{
+        }, {
             path: 'update',
             component: UpdateServiceComponent
         }]
@@ -100,7 +102,7 @@ export const AdminLayoutRoutes: Routes = [
         }, {
             path: 'new',
             component: NewEmployeeComponent
-        },{
+        }, {
             path: 'update/:id',
             component: UpdateEmployeeComponent
         }], canActivate: [AuthGuardService]
@@ -112,7 +114,7 @@ export const AdminLayoutRoutes: Routes = [
         }, {
             path: 'new',
             component: NewOfferComponent
-        },{
+        }, {
             path: 'update',
             component: UpdateOfferComponent
         }]
@@ -124,7 +126,7 @@ export const AdminLayoutRoutes: Routes = [
         }, {
             path: 'new',
             component: NewAchatComponent
-        },{
+        }, {
             path: 'update',
             component: UpdateAchatComponent
         }]

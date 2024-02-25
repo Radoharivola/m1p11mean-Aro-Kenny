@@ -40,6 +40,10 @@ export class UserService {
     return this.http.post('http://127.0.0.1:3000/auth/BOlogin', data, this.httpOptions);
   }
 
+  myProfile(): Observable<any> {
+    return this.http.get('http://127.0.0.1:3000/users/emp/profile', this.httpOptions);
+  }
+
   // test(): Observable<any> {
   //   return this.http.get('http://127.0.0.1:3000/protected', this.httpOptions);
   // // }
