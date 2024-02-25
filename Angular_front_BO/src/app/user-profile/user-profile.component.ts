@@ -94,7 +94,7 @@ export class UserProfileComponent implements OnInit {
       return;
     }
     if (this.employeeForm.value.motDePasse === this.employeeForm.value.confirmerMotDePasse) {
-      console.log("null");
+      console.log("null" );
     } else {
       this.showNotification("Les mdp ne correspondent pas!", 'danger');
 
@@ -107,7 +107,7 @@ export class UserProfileComponent implements OnInit {
       formData.append('pic', this.files[0]);
       formData.append('username', this.employeeForm.value.identifiant);
       formData.append('password', this.employeeForm.value.motDePasse);
-      formData.append('role', "employee");
+      formData.append('role', this.employee.role.roleName);
       formData.append('firstName', this.employeeForm.value.prenom);
       formData.append('lastName', this.employeeForm.value.nom);
       formData.append('email', this.employeeForm.value.email);

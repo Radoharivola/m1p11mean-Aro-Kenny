@@ -103,7 +103,7 @@ export class UpdateEmployeeComponent implements OnInit {
       formData.append('pic', this.files[0]);
       formData.append('username', this.employeeForm.value.identifiant);
       formData.append('password', this.employeeForm.value.motDePasse);
-      formData.append('role', "employee");
+      formData.append('role', this.employee.role.roleName);
       formData.append('firstName', this.employeeForm.value.prenom);
       formData.append('lastName', this.employeeForm.value.nom);
       formData.append('email', this.employeeForm.value.email);

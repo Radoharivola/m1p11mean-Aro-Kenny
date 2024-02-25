@@ -24,6 +24,7 @@ import { LoginComponent } from '../../login/login.component';
 import { RelativeTimePipe } from '../../pipes/relative-time.pipe';
 import { MatIconModule } from '@angular/material/icon';
 import { ManageWsComponent } from 'app/manage-ws/manage-ws.component';
+import { UpdateWsComponent } from 'app/manage-ws/update-ws/update-ws.component';
 
 @NgModule({
   imports: [
@@ -53,7 +54,8 @@ import { ManageWsComponent } from 'app/manage-ws/manage-ws.component';
     ManageEmployeesComponent,
     LoginComponent,
     RelativeTimePipe,
-    ManageWsComponent
+    ManageWsComponent,
+    UpdateWsComponent
   ]
 })
 

@@ -143,7 +143,7 @@ export const AdminLayoutRoutes: Routes = [
             path: 'new',
             component: NewWsComponent
         }, {
-            path: 'update',
+            path: 'update/:id',
             component: UpdateWsComponent
         }]
     },
