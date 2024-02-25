@@ -22,6 +22,7 @@ import { NewEmployeeComponent } from 'app/manage-employees/new-employee/new-empl
 import { ManageEmployeesComponent } from 'app/manage-employees/manage-employees.component';
 import { LoginComponent } from '../../login/login.component';
 import { RelativeTimePipe } from '../../pipes/relative-time.pipe';
+import { MatIconModule } from '@angular/material/icon';
 
 @NgModule({
   imports: [
@@ -35,7 +36,8 @@ import { RelativeTimePipe } from '../../pipes/relative-time.pipe';
     MatInputModule,
     MatSelectModule,
     MatTooltipModule,
-    NgxDropzoneModule
+    NgxDropzoneModule,
+    MatIconModule
   ],
   declarations: [
     DashboardComponent,

@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, HostListener } from "@angular/core";
+import { Component, OnInit, OnDestroy, HostListener, ElementRef } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { UserService } from "src/app/services/user.service";
 import { NgxSpinnerService } from "ngx-spinner";
@@ -21,8 +21,9 @@ export class ClientLoginComponent implements OnInit, OnDestroy {
   error: boolean = false;
   success: boolean = false;
   message: string = '';
+  hidden: boolean = false;
 
-  constructor(private fb: FormBuilder, private userservice: UserService, private spinner: NgxSpinnerService, private router: Router) { }
+  constructor(private fb: FormBuilder, private userservice: UserService, private spinner: NgxSpinnerService, private router: Router, private elementRef: ElementRef) { }
   // @HostListener("document:mousemove", ["$event"])
   // onMouseMove(e) {
   //   var squares1 = document.getElementById("square1");
@@ -93,7 +94,7 @@ export class ClientLoginComponent implements OnInit, OnDestroy {
 
 
     this.loginForm = this.fb.group({
-      identifiant: ['karen', Validators.required],
+      identifiant: ['paul', Validators.required],
       motDePasse: ['aZ12345678', Validators.required]
     });
     console.log("init login page");
@@ -175,4 +176,12 @@ export class ClientLoginComponent implements OnInit, OnDestroy {
   //   );
   //   console.log(this.userservice.isLoggedIn());
   // }
+  togglePasswordVisibility(inputField: HTMLInputElement) {
+    if (this.hidden) {
+      this.hidden = false;
+    } else {
+      this.hidden = true;
+    }
+    inputField.type = inputField.type === 'text' ? 'password' : 'text';
+  }
 }

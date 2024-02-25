@@ -13,6 +13,8 @@ export class LoginComponent implements OnInit {
 
   loginForm: FormGroup;
   unmatched: boolean = false;
+  hidePassword: boolean = true;
+
 
   constructor(private fb: FormBuilder, private userservice: UserService, private router: Router) { }
 
@@ -23,6 +25,9 @@ export class LoginComponent implements OnInit {
     });
   }
 
+  togglePasswordVisibility() {
+    this.hidePassword = !this.hidePassword;
+}
 
   test() {
     if (this.loginForm.valid) {
