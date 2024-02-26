@@ -21,8 +21,11 @@ export class UpdateEmployeeComponent implements OnInit {
 
 
 
+
+
+
   files: File[] = [];
-  constructor(private router: Router,private fb: FormBuilder, private userservice: UserService, private route: ActivatedRoute) { }
+  constructor(private router: Router, private fb: FormBuilder, private userservice: UserService, private route: ActivatedRoute) { }
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
@@ -42,7 +45,7 @@ export class UpdateEmployeeComponent implements OnInit {
         const byteArray = new Uint8Array(byteNumbers);
         const blob = new Blob([byteArray], { type: 'image/jpeg' });
         const imageFile = new File([blob], 'profile_picture.jpg', { type: 'image/jpeg' });
-        
+
         this.files.push(imageFile);
         console.log(data);
         this.initForm();

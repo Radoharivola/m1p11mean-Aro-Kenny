@@ -3,8 +3,7 @@ import { RdvService } from 'app/services/rdv.service';
 import * as Chartist from 'chartist';
 import { Router } from '@angular/router';
 import { UserService } from '../services/user.service';
-import { response } from 'express';
-
+import { WsService } from 'app/services/ws.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -19,8 +18,8 @@ export class DashboardComponent implements OnInit {
   weekDateSort: number = 1;
   todayDateSort: number = 1;
   todayDoneDateSort: number = 1;
-
-  constructor(private rdvservice: RdvService, private router: Router, private userservice: UserService) { }
+  ws: any[]=[];
+  constructor(private rdvservice: RdvService, private router: Router, private userservice: UserService, private wsservice: WsService,) { }
   startAnimationForLineChart(chart) {
     let seq: any, delays: any, durations: any;
     seq = 0;
@@ -162,6 +161,7 @@ export class DashboardComponent implements OnInit {
     this.fetchTodaysRdv();
     this.fetchThisWeeksRdv();
     this.fetchTodaysDoneRdv();
+    this.fetchWs();
   }
 
 
@@ -204,6 +204,15 @@ export class DashboardComponent implements OnInit {
         // Unauthorized error, redirect to login page
         this.router.navigate(['/login']); // Adjust the route as per your application
       });
+  }
+
+  fetchWs() {
+    this.wsservice.getMyWs().subscribe(response => {
+      this.ws=response.body.ws;
+      console.log(this.ws);
+    }, error => {
+      console.log(error);
+    })
   }
 
   flipWeekDateSort() {

@@ -4,6 +4,7 @@ const router = express.Router();
 const WorkSchedule = require('../models/WorkSchedule');
 const User = require('../models/User');
 const mongoose = require('mongoose');
+const verifyToken = require('../middleware/authMiddleware');
 
 const ObjectId = mongoose.Types.ObjectId;
 
@@ -43,9 +44,39 @@ router.post('/new', async (req, res) => {
     }
 });
 
-router.get('/:id', async (req, res) => {
+router.get('/ws/:id', async (req, res) => {
     try {
         const id = req.params.id;
+
+        const ws = await WorkSchedule.findOne({ 'employee.employeeId': id });
+        if (!ws) {
+            return res.status(404).json({ error: 'workschedule not found' });
+        }
+        const formattedWeeklySchedule = ws.weeklySchedule.map(schedule => {
+            const startDateTime = new Date(schedule.startTime);
+            const endDateTime = new Date(schedule.endTime);
+
+            return {
+                day: schedule.dayOfWeek,
+                debutHour: startDateTime.getHours(), // Extract hour from startTime
+                debutMin: startDateTime.getMinutes(),
+                finHour: endDateTime.getHours(), // Extract hour from startTime
+                finMin: endDateTime.getMinutes(), // Extract minute from startTime // Extract minute from startTime
+                _id: schedule._id
+                // Add other properties as needed
+            };
+        });
+
+        return res.status(200).json({ id: ws._id, ws: formattedWeeklySchedule });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error });
+    }
+});
+
+router.get('/emp', verifyToken, async (req, res) => {
+    try {
+        const id = req.userId;
 
         const ws = await WorkSchedule.findOne({ 'employee.employeeId': id });
         if (!ws) {
@@ -126,7 +157,7 @@ router.put('/:id', async (req, res) => {
 
         const updated = await WorkSchedule.findByIdAndUpdate(id, ws, { new: true });
 
-        return res.status(200).json({ message: 'Horaires de travail mis à jour',ws: updated });
+        return res.status(200).json({ message: 'Horaires de travail mis à jour', ws: updated });
     } catch (error) {
         console.log(error);
         res.status(500).json({ error });
