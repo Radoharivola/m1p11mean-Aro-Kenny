@@ -4,22 +4,40 @@ import * as Chartist from 'chartist';
 import { Router } from '@angular/router';
 import { UserService } from '../services/user.service';
 import { WsService } from 'app/services/ws.service';
-
+import { StatService } from 'app/services/stat.service';
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent implements OnInit {
+  monthList: { index: number, month: string }[] = [
+    { index: 1, month: 'janvier' },
+    { index: 2, month: 'février' },
+    { index: 3, month: 'mars' },
+    { index: 4, month: 'avril' },
+    { index: 5, month: 'mai' },
+    { index: 6, month: 'juin' },
+    { index: 7, month: 'juillet' },
+    { index: 8, month: 'août' },
+    { index: 9, month: 'septembre' },
+    { index: 10, month: 'octobre' },
+    { index: 11, month: 'novembre' },
+    { index: 12, month: 'décembre' }
+  ];
+  currentYear: number = new Date().getFullYear();
+  currentMonth: number = new Date().getMonth() + 1;
 
+  // Generate the years array from the current year to 2024
+  years: number[];
   todaysRdv: any[];
   todaysDoneRdv: any[];
   weeksRdv: any[];
   weekDateSort: number = 1;
   todayDateSort: number = 1;
   todayDoneDateSort: number = 1;
-  ws: any[]=[];
-  constructor(private rdvservice: RdvService, private router: Router, private userservice: UserService, private wsservice: WsService,) { }
+  ws: any[] = [];
+  constructor(private rdvservice: RdvService, private router: Router, private userservice: UserService, private wsservice: WsService, private statservice: StatService) { }
   startAnimationForLineChart(chart) {
     let seq: any, delays: any, durations: any;
     seq = 0;
@@ -77,12 +95,70 @@ export class DashboardComponent implements OnInit {
     seq2 = 0;
   };
   ngOnInit() {
-    /* ----------==========     Daily Sales Chart initialization For Documentation    ==========---------- */
+    this.years = Array.from({ length: this.currentYear - 2010 }, (_, index) => this.currentYear - index);
+    this.fetchTodaysRdv();
+    this.fetchThisWeeksRdv();
+    this.fetchTodaysDoneRdv();
+    this.fetchWs();
 
+    this.nbrRdvPDPM(this.currentYear, this.currentMonth);
+    this.caPDPM(this.currentYear, this.currentMonth);
+    this.nbrRdvPMPY(this.currentYear);
+    this.caPMPY(this.currentYear);
+
+    this.monthRdvPDPM = this.currentMonth;
+    this.yearRdvPDPM = this.currentYear;
+
+    this.yearRdvPMPY = this.currentYear;
+
+    this.monthCaPDPM = this.currentMonth;
+    this.yearCaPDPM = this.currentYear;
+
+    this.yearCaPMPY = this.currentYear;
+  }
+
+  monthRdvPDPM: number;
+  yearRdvPDPM: number;
+  refreshRdvPDPM() {
+    this.nbrRdvPDPM(this.yearRdvPDPM, this.monthRdvPDPM);
+  }
+
+  yearRdvPMPY: number;
+  refreshRdvPMPY() {
+    this.nbrRdvPMPY(this.yearRdvPMPY);
+  }
+
+  monthCaPDPM: number;
+  yearCaPDPM: number;
+  refreshCaPDPM() {
+    this.caPDPM(this.yearCaPDPM, this.monthCaPDPM);
+  }
+
+  yearCaPMPY: number;
+  refreshCaPMPY() {
+    this.caPMPY(this.yearCaPMPY);
+  }
+
+  nbrRdvPDPM(year: number, month?: any) {
+    this.statservice.get(year, month).subscribe(res => {
+      const data = res.body.appointmentsCounts;
+      var labels = [];
+      var series = [];
+      data.forEach((d) => {
+        labels.push(d.day);
+        series.push(d.appointmentsCount);
+      })
+
+      this.initrdvPDPM(labels, series);
+    }, err => {
+      console.log(err);
+    });
+  }
+  initrdvPDPM(labels, series) {
     const dataDailySalesChart: any = {
-      labels: ['M', 'T', 'W', 'T', 'F', 'S', 'S'],
+      labels: labels,
       series: [
-        [12, 17, 7, 17, 23, 18, 38]
+        series
       ]
     };
 
@@ -91,46 +167,36 @@ export class DashboardComponent implements OnInit {
         tension: 0
       }),
       low: 0,
-      high: 50, // creative tim: we recommend you to set the high sa the biggest value + something for a better look
+      high: Math.max(...series) + 2, // creative tim: we recommend you to set the high sa the biggest value + something for a better look
       chartPadding: { top: 0, right: 0, bottom: 0, left: 0 },
     }
 
     var dailySalesChart = new Chartist.Line('#dailySalesChart', dataDailySalesChart, optionsDailySalesChart);
 
     this.startAnimationForLineChart(dailySalesChart);
+  }
 
+  nbrRdvPMPY(year: number) {
+    this.statservice.get(year, '').subscribe(res => {
+      console.log(res);
+      const data = res.body.appointmentsCountsByMonth;
+      var labels = [];
+      var series = [];
+      data.forEach((d) => {
+        labels.push(d.month);
+        series.push(d.appointmentsCount);
+      })
 
-    /* ----------==========     Completed Tasks Chart initialization    ==========---------- */
-
-    const dataCompletedTasksChart: any = {
-      labels: ['12p', '3p', '6p', '9p', '12p', '3a', '6a', '9a'],
-      series: [
-        [230, 750, 450, 300, 280, 240, 200, 190]
-      ]
-    };
-
-    const optionsCompletedTasksChart: any = {
-      lineSmooth: Chartist.Interpolation.cardinal({
-        tension: 0
-      }),
-      low: 0,
-      high: 1000, // creative tim: we recommend you to set the high sa the biggest value + something for a better look
-      chartPadding: { top: 0, right: 0, bottom: 0, left: 0 }
-    }
-
-    var completedTasksChart = new Chartist.Line('#completedTasksChart', dataCompletedTasksChart, optionsCompletedTasksChart);
-
-    // start animation for the Completed Tasks Chart - Line Chart
-    this.startAnimationForLineChart(completedTasksChart);
-
-
-
-    /* ----------==========     Emails Subscription Chart initialization    ==========---------- */
-
+      this.initrdvPMPY(labels, series);
+    }, err => {
+      console.log(err);
+    });
+  }
+  initrdvPMPY(labels, series) {
     var datawebsiteViewsChart = {
-      labels: ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
+      labels: labels,
       series: [
-        [542, 443, 320, 780, 553, 453, 326, 434, 568, 610, 756, 895]
+        series
 
       ]
     };
@@ -139,7 +205,7 @@ export class DashboardComponent implements OnInit {
         showGrid: false
       },
       low: 0,
-      high: 1000,
+      high: Math.max(...series) + 5,
       chartPadding: { top: 0, right: 5, bottom: 0, left: 0 }
     };
     var responsiveOptions: any[] = [
@@ -156,15 +222,85 @@ export class DashboardComponent implements OnInit {
 
     //start animation for the Emails Subscription Chart
     this.startAnimationForBarChart(websiteViewsChart);
-
-
-    this.fetchTodaysRdv();
-    this.fetchThisWeeksRdv();
-    this.fetchTodaysDoneRdv();
-    this.fetchWs();
   }
 
+  caPDPM(year: number, month?: any) {
+    this.statservice.getCa(year, month).subscribe(res => {
+      const data = res.body.turnoverByDay;
 
+      var labels = [];
+      var series = [];
+      data.forEach((d) => {
+        labels.push(d.day);
+        series.push(d.dailyTurnover);
+      })
+
+      this.initCaPDPM(labels, series);
+    }, err => {
+      console.log(err);
+    });
+  }
+  initCaPDPM(labels, series) {
+    const dataCompletedTasksChart: any = {
+      labels: labels,
+      series: [
+        series
+      ]
+    };
+
+    const optionsCompletedTasksChart: any = {
+      lineSmooth: Chartist.Interpolation.cardinal({
+        tension: 0
+      }),
+      low: Math.min(...series),
+      high: Math.max(...series) + 5000, // creative tim: we recommend you to set the high sa the biggest value + something for a better look
+      chartPadding: { top: 0, right: 0, bottom: 0, left: 50 }
+    }
+
+
+    var completedTasksChart = new Chartist.Line('#completedTasksChart', dataCompletedTasksChart, optionsCompletedTasksChart);
+
+    // start animation for the Completed Tasks Chart - Line Chart
+    this.startAnimationForLineChart(completedTasksChart);
+  }
+
+  caPMPY(year: number) {
+    this.statservice.getCa(year, '').subscribe(res => {
+      const data = res.body.turnoverByMonth;
+
+      var labels = [];
+      var series = [];
+      data.forEach((d) => {
+        labels.push(d.month);
+        series.push(d.monthlyTurnover);
+      })
+
+      this.initCaPMPY(labels, series);
+    }, err => {
+      console.log(err);
+    });
+  }
+  initCaPMPY(labels, series) {
+    const dataCompletedTasksChart: any = {
+      labels: labels,
+      series: [
+        series
+      ]
+    };
+
+    const optionsCompletedTasksChart: any = {
+      lineSmooth: Chartist.Interpolation.cardinal({
+        tension: 0
+      }),
+      low: Math.min(...series),
+      high: Math.max(...series) + 100000, // creative tim: we recommend you to set the high sa the biggest value + something for a better look
+      chartPadding: { top: 0, right: 0, bottom: 0, left: 50 }
+    }
+    var completedTasksChart = new Chartist.Line('#capmpy', dataCompletedTasksChart, optionsCompletedTasksChart);
+
+    // start animation for the Completed Tasks Chart - Line Chart
+    this.startAnimationForLineChart(completedTasksChart);
+  }
 
   fetchTodaysRdv() {
     const today = new Date();
@@ -208,7 +344,7 @@ export class DashboardComponent implements OnInit {
 
   fetchWs() {
     this.wsservice.getMyWs().subscribe(response => {
-      this.ws=response.body.ws;
+      this.ws = response.body.ws;
       console.log(this.ws);
     }, error => {
       console.log(error);

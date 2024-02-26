@@ -388,4 +388,164 @@ router.get('/:rdvId', async (req, res) => {
     }
 });
 
+router.get('/stat/:year/:month?', async (req, res) => {
+    const { year, month } = req.params;
+
+    // Convert year to an integer
+    const yearInt = parseInt(year);
+
+    // Check if year is a valid integer
+    if (isNaN(yearInt)) {
+        return res.status(400).json({ error: 'Invalid year' });
+    }
+
+    try {
+        if (month) {
+            // If month is specified, return appointment counts for each day of the specified month
+            const monthInt = parseInt(month);
+
+            // Check if month is a valid integer
+            if (isNaN(monthInt) || monthInt < 1 || monthInt > 12) {
+                return res.status(400).json({ error: 'Invalid month' });
+            }
+
+            // Calculate the number of days in the specified month
+            const daysInMonth = new Date(yearInt, monthInt, 0).getDate();
+
+            // Initialize an array to store appointment counts for each day
+            const appointmentsCounts = [];
+
+            // Loop through each day of the month
+            for (let day = 1; day <= daysInMonth; day++) {
+                // Calculate the start and end dates for the current day
+                const startDate = new Date(yearInt, monthInt - 1, day);
+                const endDate = new Date(yearInt, monthInt - 1, day, 23, 59, 59);
+
+                // Query appointments for the current day
+                const appointmentsCount = await Rdv.countDocuments({
+                    date: { $gte: startDate, $lte: endDate }
+                });
+
+                // Add the appointment count for the current day to the array
+                appointmentsCounts.push({ day, appointmentsCount });
+            }
+
+            // Return the list of appointment counts for each day of the month
+            res.json({ year: yearInt, month: monthInt, appointmentsCounts });
+        } else {
+            // If month is not specified, return appointment counts for each month of the year
+            const appointmentsCountsByMonth = [];
+
+            // Loop through each month of the year
+            for (let month = 1; month <= 12; month++) {
+                const daysInMonth = new Date(yearInt, month, 0).getDate();
+
+                // Calculate the start and end dates for the current month
+                const startDate = new Date(yearInt, month - 1, 1);
+                const endDate = new Date(yearInt, month - 1, daysInMonth, 23, 59, 59);
+
+                // Query appointments for the current month
+                const appointmentsCount = await Rdv.countDocuments({
+                    date: { $gte: startDate, $lte: endDate }
+                });
+
+                // Add the appointment count for the current month to the array
+                appointmentsCountsByMonth.push({ month, appointmentsCount });
+            }
+
+            // Return the list of appointment counts for each month of the year
+            res.json({ year: yearInt, appointmentsCountsByMonth });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+
+
+router.get('/ca/:year/:month?', async (req, res) => {
+    const { year, month } = req.params;
+
+    // Convert year to an integer
+    const yearInt = parseInt(year);
+
+    // Check if year is a valid integer
+    if (isNaN(yearInt)) {
+        return res.status(400).json({ error: 'Invalid year' });
+    }
+
+    try {
+        if (month) {
+            // If month is specified, return turnover for each day of the specified month
+            const monthInt = parseInt(month);
+
+            // Check if month is a valid integer
+            if (isNaN(monthInt) || monthInt < 1 || monthInt > 12) {
+                return res.status(400).json({ error: 'Invalid month' });
+            }
+
+            // Calculate the number of days in the specified month
+            const daysInMonth = new Date(yearInt, monthInt, 0).getDate();
+
+            // Initialize an array to store turnover for each day
+            const turnoverByDay = [];
+
+            // Loop through each day of the month
+            for (let day = 1; day <= daysInMonth; day++) {
+                // Calculate the start and end dates for the current day
+                const startDate = new Date(yearInt, monthInt - 1, day);
+                const endDate = new Date(yearInt, monthInt - 1, day, 23, 59, 59);
+
+                // Query appointments for the current day
+                const appointments = await Rdv.find({
+                    date: { $gte: startDate, $lte: endDate }
+                });
+
+                // Calculate the turnover for the current day
+                const dailyTurnover = appointments.reduce((total, appointment) => {
+                    return total + appointment.total - appointment.paid;
+                }, 0);
+
+                // Add the turnover for the current day to the array
+                turnoverByDay.push({ day, dailyTurnover });
+            }
+
+            // Return the list of turnover for each day of the month
+            res.json({ year: yearInt, month: monthInt, turnoverByDay });
+        } else {
+            // If month is not specified, return turnover for each month of the year
+            const turnoverByMonth = [];
+
+            // Loop through each month of the year
+            for (let month = 1; month <= 12; month++) {
+                const daysInMonth = new Date(yearInt, month, 0).getDate();
+
+                // Calculate the start and end dates for the current month
+                const startDate = new Date(yearInt, month - 1, 1);
+                const endDate = new Date(yearInt, month - 1, daysInMonth, 23, 59, 59);
+
+                // Query appointments for the current month
+                const appointments = await Rdv.find({
+                    date: { $gte: startDate, $lte: endDate }
+                });
+
+                // Calculate the turnover for the current month
+                const monthlyTurnover = appointments.reduce((total, appointment) => {
+                    return total + appointment.total - appointment.paid;
+                }, 0);
+
+                // Add the turnover for the current month to the array
+                turnoverByMonth.push({ month, monthlyTurnover });
+            }
+
+            // Return the list of turnover for each month of the year
+            res.json({ year: yearInt, turnoverByMonth });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
 module.exports = router;
