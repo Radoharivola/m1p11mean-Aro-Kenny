@@ -1,7 +1,7 @@
 // routes/auth.js
 const express = require('express');
 const router = express.Router();
-const Offer= require('../models/Offer')
+const Offer = require('../models/Offer')
 // User registration
 router.post('/new', async (req, res) => {
     try {
@@ -13,8 +13,8 @@ router.post('/new', async (req, res) => {
             reduction
         } = req.body;
 
-        const dateD=new Date(dateDebut).toISOString();
-        const dateF=new Date(dateFin).toISOString();
+        const dateD = new Date(dateDebut).toISOString();
+        const dateF = new Date(dateFin).toISOString();
         const offer = new Offer({
             services,
             dateDebut: dateD,
@@ -33,8 +33,7 @@ router.post('/new', async (req, res) => {
 router.put('/update/:offerId', async (req, res) => {
     try {
         const { services, dateDebut, dateFin, description, reduction } = req.body;
-        const  offerId  = req.params.offerId;
-        console.log(offerId);
+        const offerId = req.params.offerId;
         const dateD = new Date(dateDebut).toISOString();
         const dateF = new Date(dateFin).toISOString();
 
@@ -80,8 +79,29 @@ router.delete('/delete/:offerId', async (req, res) => {
 
 
 router.get('/offers', async (req, res, next) => {
-    var offers = await Offer.find();
-    return res.status(200).json({ offers });
+    const searchString = req.query.searchString; // Assuming the search string is passed as a query parameter
+    const sortBy = req.query.sortBy || 'description'; // Default sorting by name if sortBy parameter is not provided
+    const sortOrder = (1 * req.query.sortOrder); // Sort order, defaulting to ascending
+    let query = {};
+    console.log(sortOrder);
+    // If search string is provided, construct the query to search by name, firstname, lastname, or email
+    if (searchString) {
+        query.$or = [
+            { description: { $regex: searchString, $options: 'i' } }
+        ];
+    }
+
+    try {
+        // Find employees matching the query and sort the results
+        const offers = await Offer.find(query).sort({ [sortBy]: sortOrder });
+        console.log(offers);
+        // Send response with the found offers
+        return res.status(200).json({ offers });
+    } catch (error) {
+        // Handle errors
+        console.error(error);
+        return res.status(500).json({ message: 'Internal Server Error' });
+    }
 });
 
 router.get('/offers/:date', async (req, res, next) => {
@@ -95,5 +115,18 @@ router.get('/offers/:date', async (req, res, next) => {
     });
     return res.status(200).json({ offers });
 });
+router.get('/offer/:id', async (req, res, next) => {
+    try {
+        const offer = await Offer.findOne({ _id: req.params.id });
+        if (!offer) {
+            return res.status(404).json({ error: 'Offer not found' });
+        }
+        return res.status(200).json({ offer });
+    } catch (error) {
+        // Pass the error to the next middleware
+        next(error);
+    }
+});
+
 
 module.exports = router; 

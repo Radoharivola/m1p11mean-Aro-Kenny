@@ -25,6 +25,9 @@ import { RelativeTimePipe } from '../../pipes/relative-time.pipe';
 import { MatIconModule } from '@angular/material/icon';
 import { ManageWsComponent } from 'app/manage-ws/manage-ws.component';
 import { UpdateWsComponent } from 'app/manage-ws/update-ws/update-ws.component';
+import { ManageOffersComponent } from 'app/manage-offers/manage-offers.component';
+import { NewOfferComponent } from 'app/manage-offers/new-offer/new-offer.component';
+import { UpdateOfferComponent } from 'app/manage-offers/update-offer/update-offer.component';
 
 @NgModule({
   imports: [
@@ -55,7 +58,10 @@ import { UpdateWsComponent } from 'app/manage-ws/update-ws/update-ws.component';
     LoginComponent,
     RelativeTimePipe,
     ManageWsComponent,
-    UpdateWsComponent
+    UpdateWsComponent,
+    ManageOffersComponent,
+    NewOfferComponent,
+    UpdateOfferComponent
   ]
 })
 

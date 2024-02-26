@@ -119,7 +119,7 @@ export const AdminLayoutRoutes: Routes = [
             path: 'new',
             component: NewOfferComponent
         }, {
-            path: 'update',
+            path: 'update/:id',
             component: UpdateOfferComponent
         }]
     },
