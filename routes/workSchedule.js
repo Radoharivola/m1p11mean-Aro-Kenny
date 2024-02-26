@@ -3,6 +3,10 @@ const express = require('express');
 const router = express.Router();
 const WorkSchedule = require('../models/WorkSchedule');
 const User = require('../models/User');
+const mongoose = require('mongoose');
+
+const ObjectId = mongoose.Types.ObjectId;
+
 // User registration
 router.post('/new', async (req, res) => {
     try {
@@ -72,11 +76,34 @@ router.get('/:id', async (req, res) => {
 router.put('/:id', async (req, res) => {
     try {
         const id = req.params.id;
-        const { weeklySchedule } = req.body;
-        console.log(weeklySchedule);
-        const ws = await WorkSchedule.findOne({ _id: id });
+        const { weeklySchedule, employeeId } = req.body;
+        const employee = await User.findOne({ _id: employeeId });
+        if (!employee) {
+
+            return res.status(404).json({ error: 'employee not found' });
+        }
+        const ws = await WorkSchedule.findOne({ 'employee.employeeId': employeeId });
         if (!ws) {
-            return res.status(404).json({ error: 'workschedule not found' });
+            const processedWeeklySchedule = weeklySchedule.map(schedule => {
+                const startTimeParts = schedule.startTime.split(':');
+                const endTimeParts = schedule.endTime.split(':');
+                return {
+                    dayOfWeek: schedule.dayOfWeek,
+                    startTime: new Date(`1970-01-01T${padWithZeros(parseInt(startTimeParts[0]))}:${padWithZeros(parseInt(startTimeParts[1]))}:00`),
+                    endTime: new Date(`1970-01-01T${padWithZeros(parseInt(endTimeParts[0]))}:${padWithZeros(parseInt(endTimeParts[1]))}:00`)
+                };
+            });
+            const workSchedule = new WorkSchedule({
+                employee: {
+                    employeeId: employee._id,
+                    employeeFirstName: employee.firstName,
+                    employeeLastName: employee.lastName,
+                },
+                weeklySchedule: processedWeeklySchedule
+            });
+            const ws = await workSchedule.save();
+
+            return res.status(200).json({ message: 'Horaires de travail mis à jour', ws });
         }
 
 
@@ -99,7 +126,7 @@ router.put('/:id', async (req, res) => {
 
         const updated = await WorkSchedule.findByIdAndUpdate(id, ws, { new: true });
 
-        return res.status(200).json({ ws: updated });
+        return res.status(200).json({ message: 'Horaires de travail mis à jour',ws: updated });
     } catch (error) {
         console.log(error);
         res.status(500).json({ error });

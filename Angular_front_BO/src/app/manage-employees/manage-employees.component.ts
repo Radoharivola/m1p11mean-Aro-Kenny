@@ -30,6 +30,7 @@ export class ManageEmployeesComponent implements OnInit {
   fetchEmployees() {
     this.userservice.getEmployees({ 'searchString': this.searchString, 'sortBy': this.sortBy, 'sortOrder': this.sortOrder }).subscribe(data => {
       this.employees = data.body.employees;
+      console.log(data);
     }, error => {
       localStorage.removeItem('token');
       localStorage.removeItem('username');
@@ -38,6 +39,7 @@ export class ManageEmployeesComponent implements OnInit {
     })
   }
   setSort(arg0: string) {
+    console.log(this.sortOrder);
     this.sortOrder = -1 * this.sortOrder;
     this.sortBy = arg0;
     this.fetchEmployees();

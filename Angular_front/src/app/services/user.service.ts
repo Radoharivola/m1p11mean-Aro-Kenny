@@ -21,7 +21,7 @@ export class UserService {
 
 
   getEmployees(): Observable<any> {
-    return this.http.get('http://127.0.0.1:3000/users/employees', this.httpOptions);
+    return this.http.get('http://127.0.0.1:3000/users/employees?sortBy=name&sortOrder=-1', this.httpOptions);
   }
 
   newUser({ formData }: { formData: FormData; }): Observable<any> {
