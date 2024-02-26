@@ -11,6 +11,7 @@ router.post('/new', async (req, res) => {
             duration,
             commission, 
             description } = req.body;
+            console.log(req.body);
         const service = new Service({
             name,
             price, 
@@ -21,21 +22,23 @@ router.post('/new', async (req, res) => {
         await service.save();
         res.status(201).json({ message: 'service registered successfully' });
     } catch (error) {
-        console.log(error);
+        //console.log(error);
         res.status(500).json({ error: 'Registration failed' });
     }
 });
 
 router.put('/update/:serviceId', async (req, res) => {
     try {
-        const { name, duration, description } = req.body;
+        const { name, duration, price, commission, description } = req.body;
         const serviceId = req.params.serviceId;
 
         const updatedService = await Service.findByIdAndUpdate(
             serviceId,
             {
                 name,
+                price, 
                 duration,
+                commission, 
                 description
             },
             { new: true }
@@ -74,5 +77,23 @@ router.get('/services', async (req, res, next) => {
     var services = await Service.find();
     return res.status(200).json({ services });
 });
+
+router.get('/service/:id', async (req, res, next) => {
+    try {
+      // Attempt to find the employee by ID
+      const service = await Service.findOne({ _id: req.params.id });
+  
+      // If employee is not found, return a 404 status
+      if (!service) {
+        return res.status(404).json({ error: 'Service not found' });
+      }
+  
+      // If employee is found, return it with a 200 status
+      return res.status(200).json({ service });
+    } catch (error) {
+      // If there's an error, return a 500 status with the error message
+      return res.status(500).json({ error: error.message });
+    }
+  });
 
 module.exports = router; 

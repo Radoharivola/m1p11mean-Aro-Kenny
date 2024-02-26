@@ -1,4 +1,10 @@
 import { Component, OnInit } from '@angular/core';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
+import { Observable } from 'rxjs';
+import { ServiceService } from 'app/services/service.service';
+import { Router, NavigationEnd } from '@angular/router';
+
 
 @Component({
   selector: 'app-update-service',
@@ -7,9 +13,89 @@ import { Component, OnInit } from '@angular/core';
 })
 export class UpdateServiceComponent implements OnInit {
 
-  constructor() { }
+  serviceId: string;
+  serviceForm: FormGroup;
+
+  service: any;
+
+  constructor(private router: Router, private fb: FormBuilder, private serviceService: ServiceService, private route: ActivatedRoute) { }
 
   ngOnInit(): void {
+    this.route.params.subscribe(params => {
+      this.serviceId = params['id'];
+      this.serviceService.getService(this.serviceId).subscribe(data => {
+        this.service = data.service;
+        //console.log(this.service.name);
+        this.initForm();
+      }, err => console.log(err));
+    });
+  }
+
+  initForm() {
+    this.serviceForm = this.fb.group({
+      nom: [this.service.name, Validators.required],
+      duration: [this.service.duration, Validators.required],
+      price: [this.service.price, Validators.required],
+      commission: [this.service.commission, Validators.required],
+      description: [this.service.description, Validators.required]
+    });
+    //console.log(this.serviceForm.value.nom);
+  }
+
+  onSubmit() {
+  
+    if (this.serviceForm.valid) {
+      // if (this.employeeForm.value.motDePasse != this.employeeForm.value.confirmerMotDePasse){ //   this.unmatched = true;// }
+      
+      // const formData = new FormData();
+      // formData.append('name', this.serviceForm.value.nom);
+      // formData.append('duration', this.serviceForm.value.duration);
+      // formData.append('price', this.serviceForm.value.price);
+      // formData.append('commission', this.serviceForm.value.commission);
+      // formData.append('description', this.serviceForm.value.description);
+
+      const data = {
+        name: this.serviceForm.value.nom,
+        duration: this.serviceForm.value.duration,
+        price: this.serviceForm.value.price,
+        commission: this.serviceForm.value.commission,
+        description: this.serviceForm.value.description,
+      }
+      
+      console.log(this.serviceForm.value.commission);
+      this.serviceService.updateService({ 'data': data, 'id': this.serviceId }).subscribe(
+        response => {
+          // this.error = false;
+          // this.success = true;
+          // setTimeout(() => {
+          //   this.success = false;
+          // }, 5000);
+          // this.message = response.message;
+          console.log(response);
+        },
+        error => {
+          // this.success = false;
+          // this.error = true;
+          // setTimeout(() => {
+          //   this.error = false;
+          // }, 5000);
+          // this.message = error.error.message;
+          console.log("fy");
+        }
+      );
+      this.router.navigate(['/services/list']);
+    } else {
+      this.markFormGroupTouched(this.serviceForm);
+    }
+  }
+
+  markFormGroupTouched(formGroup: FormGroup) {
+    Object.values(formGroup.controls).forEach(control => {
+      control.markAsTouched();
+      if (control instanceof FormGroup) {
+        this.markFormGroupTouched(control);
+      }
+    });
   }
 
 }

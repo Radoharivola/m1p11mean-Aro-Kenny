@@ -2,49 +2,74 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-12">
+                <button mat-raised-button type="submit" class="btn btn-info btn-round pull-right btn-just-icon"
+                    (click)="navigateToAdd()">
+                    <i class="material-icons">add</i>
+                </button>
                 <div class="card">
-                    <div class="card-header card-header-danger">
-                        <button mat-raised-button type="submit" class="btn btn-primary pull-left">
-                            Ajouter
-                        </button>
-
-                    </div>
+                    <!-- <div class="card-header">
+                        <form class="navbar-form">
+                            <div class="input-group">
+                                <input type="text"  class="form-control" placeholder="Recherche..." #searchInput (input)="updateSearchString(searchInput.value)">
+                            </div>
+                        </form>
+                    </div> -->
                     <div class="card-body">
+
                         <div class="table-responsive">
                             <table class="table">
-                                <thead class=" text-primary">
-                                    <th>
-                                        Nom
+                                <thead class="text-danger text-center">
+                                    <th><button class="btn btn-link btn-danger"
+                                            >Nom</button>
+
+                                    </th>
+                                    <th><button class="btn btn-link btn-danger"
+                                            >Durée</button>
                                     </th>
                                     <th>
-                                        Durée
+                                        <button class="btn btn-link btn-danger"
+                                            >Description</button>
                                     </th>
                                     <th>
-                                        Description
+                                        <button class="btn btn-link btn-danger"
+                                            >Comission</button>
                                     </th>
                                     <th>
-                                        Commission
+                                        <button class="btn btn-link btn-danger">Price</button>
                                     </th>
                                     <th>
-                                        Prix
+
                                     </th>
                                 </thead>
                                 <tbody>
-                                    <tr>
+                                    <tr *ngFor="let service of services" class="text-center">
                                         <td>
-                                            1
+                                            {{service.name}}
                                         </td>
                                         <td>
-                                            Dakota Rice
+                                            {{service.duration}}
                                         </td>
                                         <td>
-                                            Niger
+                                            {{service.description}}
                                         </td>
                                         <td>
-                                            Oud-Turnhout
+                                            {{service.commission}}
                                         </td>
-                                        <td class="text-primary">
-                                            $36,738
+                                        <td>
+                                            {{service.price}}
+                                        </td>
+                                        <td>
+                                            <button mat-raised-button type="submit"
+                                                class="btn btn-info btn-round btn-just-icon"
+                                                (click)="navigateToUpdate(service._id)">
+                                                <i class="material-icons">edit</i>
+                                                <div class="ripple-container"></div>
+                                            </button> <button mat-raised-button type="submit"
+                                                class="btn btn-danger btn-round btn-just-icon"
+                                                (click)="delete(service._id)">
+                                                <i class="material-icons">delete</i>
+                                                <div class="ripple-container"></div>
+                                            </button>
                                         </td>
                                     </tr>
                                 </tbody>
