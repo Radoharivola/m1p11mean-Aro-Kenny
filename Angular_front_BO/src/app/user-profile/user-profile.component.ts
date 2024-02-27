@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/f
 import { UserService } from 'app/services/user.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Router } from '@angular/router';
+
 declare var $: any;
 
 @Component({
