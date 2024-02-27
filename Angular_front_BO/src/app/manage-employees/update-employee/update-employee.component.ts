@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { UserService } from 'app/services/user.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Observable } from 'rxjs';
+declare var $: any;
+
 @Component({
   selector: 'app-update-employee',
   templateUrl: './update-employee.component.html',
@@ -17,17 +19,40 @@ export class UpdateEmployeeComponent implements OnInit {
 
   employee: any;
 
+
+
+
   files: File[] = [];
-  constructor(private fb: FormBuilder, private userservice: UserService, private route: ActivatedRoute) { }
+  constructor(private router: Router,private fb: FormBuilder, private userservice: UserService, private route: ActivatedRoute) { }
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
       this.employeeId = params['id'];
       this.userservice.getEmployee(this.employeeId).subscribe(data => {
-        this.employee = data.employee;
-        console.log(this.employee.firstName);
+        this.employee = data.body.employee;
+        // this.files.push(...data.body.profilePicture);
+
+        const base64Image = data.body.profilePicture;
+
+        // Reconvert base64 image to Blob
+        const byteCharacters = atob(base64Image);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        const blob = new Blob([byteArray], { type: 'image/jpeg' });
+        const imageFile = new File([blob], 'profile_picture.jpg', { type: 'image/jpeg' });
+        
+        this.files.push(imageFile);
+        console.log(data);
         this.initForm();
-      }, err => console.log(err));
+      }, err => {
+        // localStorage.removeItem('token');
+        // localStorage.removeItem('username');
+        // this.router.navigate(['/login']);
+        console.log(err);
+      });
     });
   }
 
@@ -74,12 +99,12 @@ export class UpdateEmployeeComponent implements OnInit {
     }
     if (this.employeeForm.valid) {
       // if (this.employeeForm.value.motDePasse != this.employeeForm.value.confirmerMotDePasse){ //   this.unmatched = true;// }
-      
+
       const formData = new FormData();
       formData.append('pic', this.files[0]);
       formData.append('username', this.employeeForm.value.identifiant);
       formData.append('password', this.employeeForm.value.motDePasse);
-      formData.append('role', "employee");
+      formData.append('role', this.employee.role.roleName);
       formData.append('firstName', this.employeeForm.value.prenom);
       formData.append('lastName', this.employeeForm.value.nom);
       formData.append('email', this.employeeForm.value.email);
@@ -93,6 +118,8 @@ export class UpdateEmployeeComponent implements OnInit {
           //   this.success = false;
           // }, 5000);
           // this.message = response.message;
+          this.showNotification('Employé mis à jour', 'success');
+
           console.log(response);
         },
         error => {
@@ -102,6 +129,8 @@ export class UpdateEmployeeComponent implements OnInit {
           //   this.error = false;
           // }, 5000);
           // this.message = error.error.message;
+          this.showNotification(error.error.error, 'danger');
+
           console.log("foryyyy");
         }
       );
@@ -115,6 +144,34 @@ export class UpdateEmployeeComponent implements OnInit {
       if (control instanceof FormGroup) {
         this.markFormGroupTouched(control);
       }
+    });
+  }
+  showNotification(message: string, type: string) {
+    // const type = ['','info','success','warning','danger'];
+
+    const color = Math.floor((Math.random() * 4) + 1);
+
+    $.notify({
+      icon: "notifications",
+      message: message
+
+    }, {
+      type: type,
+      timer: 4000,
+      placement: {
+        from: 'top',
+        align: 'center'
+      },
+      template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+        '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+        '<i class="material-icons" data-notify="icon">notifications</i> ' +
+        '<span data-notify="title">{1}</span> ' +
+        '<span data-notify="message">{2}</span>' +
+        '<div class="progress" data-notify="progressbar">' +
+        '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+        '</div>' +
+        '<a href="{3}" target="{4}" data-notify="url"></a>' +
+        '</div>'
     });
   }
 }

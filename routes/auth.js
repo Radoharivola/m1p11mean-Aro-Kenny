@@ -38,6 +38,7 @@ const path = require('path');
 const { v4: uuidv4 } = require('uuid');
 const ProfilePicture = require('../models/ProfilePicture');
 const fs = require('fs');
+const verifyToken = require('../middleware/authMiddleware');
 
 // Multer configuration for file upload
 const storage = multer.diskStorage({
@@ -122,21 +123,22 @@ router.post('/register', upload.single('pic'), async (req, res) => {
 router.post('/login', async (req, res) => {
     try {
         const { username, password } = req.body;
+        console.log(password);
         const user = await User.findOne({ username });
         if (!user) {
-            return res.status(401).json({ error: 'Authentication failed' });
+            return res.status(401).json({ error: 'User not found', username: username });
         }
         const passwordMatch = await bcrypt.compare(password, user.password);
         if (!passwordMatch) {
-            return res.status(401).json({ error: 'Authentication failed' });
+            return res.status(401).json({ error: 'Password error' });
         }
         const token = jwt.sign({ userId: user._id }, 'your-secret-key', {
             expiresIn: '1h',
         });
         const serialized = cookie.serialize('token', token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict',
+            secure: true,
+            sameSite: 'none',
             maxAge: 60 * 60 * 24 * 30,
             path: '/',
         });
@@ -144,6 +146,68 @@ router.post('/login', async (req, res) => {
         const userData = {
             username: user.username,
             email: user.email,
+            role: user.role.roleName
+        };
+        res.setHeader('set-cookie', serialized);
+        res.status(200).json({ user: userData });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: 'Login failed' });
+    }
+});
+
+// User logout
+router.post('/logout', async (req, res) => {
+    try {
+        // Clear the authentication token stored in the client's browser
+        const serialized = cookie.serialize('token', '', {
+            httpOnly: true,
+            secure: true,
+            sameSite: 'none',
+            maxAge: 60 * 60 * 24 * 30,
+            path: '/',
+        });
+
+        // Set the cookie with an expired token
+        res.setHeader('set-cookie', serialized);
+        res.status(200).json({ message: serialized });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: 'Logout failed' });
+    }
+});
+
+router.post('/BOlogin', async (req, res) => {
+    try {
+        const { username, password } = req.body;
+        console.log(password);
+        const user = await User.findOne({ username });
+        if (!user) {
+            return res.status(401).json({ error: 'Employee/Manager not found', user: user });
+        }
+        if (user.role.roleName === 'client') {
+            return res.status(401).json({ error: 'Employee/Manager not found', user: user });
+        }
+        const passwordMatch = await bcrypt.compare(password, user.password);
+        if (!passwordMatch) {
+            return res.status(401).json({ error: 'Password error' });
+        }
+        const token = jwt.sign({ userId: user._id }, 'your-secret-key', {
+            expiresIn: '1h',
+        });
+        const serialized = cookie.serialize('token', token, {
+            httpOnly: true,
+            secure: true,
+            sameSite: 'none',
+            maxAge: 60 * 60 * 24 * 30,
+            path: '/',
+        });
+
+        const userData = {
+            username: user.username,
+            email: user.email,
+            role: user.role.roleName,
+            token: token,
         };
         res.setHeader('set-cookie', serialized);
         res.status(200).json({ user: userData });
@@ -154,7 +218,7 @@ router.post('/login', async (req, res) => {
 });
 
 // Update user route
-router.put('/users/:userId', upload.single('pic'), async (req, res) => {
+router.put('/users/:userId', upload.single('pic'), verifyToken, async (req, res) => {
     try {
 
         // Check if file uploaded successfully
@@ -191,41 +255,46 @@ router.put('/users/:userId', upload.single('pic'), async (req, res) => {
         }
 
         const pp = await ProfilePicture.findOne({ userId });
-        console.log(pp.path)
-        const profilePictureFilename = pp.path;
-        const outputPath = path.join('uploads/', profilePictureFilename);
-        const image = await Jimp.read(req.file.path);
-        await image.resize(200, 200).writeAsync(outputPath);
-        // Prepare update data
-        const updateData = {
-            username,
-            role: { roleId: foundRole._id, roleName: foundRole.name },
-            firstName,
-            lastName,
-            email,
-            phone
-        };
+        if (!pp) {
+            const profilePictureFilename = req.file.filename;
+            const outputPath = path.join('uploads/', profilePictureFilename);
+            const image = await Jimp.read(req.file.path);
+            await image.resize(200, 200).writeAsync(outputPath);
 
-        const filenameToDelete = req.file.filename;
+            const profilePicture = new ProfilePicture({
+                userId: userId,
+                path: profilePictureFilename, // Store the filename in ProfilePicture model
+                date: new Date()
+            });
+            await profilePicture.save();
+        } else {
+            const profilePictureFilename = pp.path;
+            const outputPath = path.join('uploads/', profilePictureFilename);
+            const image = await Jimp.read(req.file.path);
+            await image.resize(200, 200).writeAsync(outputPath);
 
-        const filePath = path.join('uploads/', filenameToDelete); // Assuming the file is located in the 'uploads' directory
 
-        // Check if the file exists
-        fs.access(filePath, fs.constants.F_OK, (err) => {
-            if (err) {
-                console.error('File does not exist:', err);
-                return;
-            }
+            const filenameToDelete = req.file.filename;
 
-            // Delete the file
-            fs.unlink(filePath, (err) => {
+            const filePath = path.join('uploads/', filenameToDelete); // Assuming the file is located in the 'uploads' directory
+
+            // Check if the file exists
+            fs.access(filePath, fs.constants.F_OK, (err) => {
                 if (err) {
-                    console.error('Error deleting file:', err);
+                    console.error('File does not exist:', err);
                     return;
                 }
-                console.log('File deleted successfully');
+
+                // Delete the file
+                fs.unlink(filePath, (err) => {
+                    if (err) {
+                        console.error('Error deleting file:', err);
+                        return;
+                    }
+                    console.log('File deleted successfully');
+                });
             });
-        });
+        }
 
         // Check if password needs to be updated
         if (password) {
@@ -237,7 +306,15 @@ router.put('/users/:userId', upload.single('pic'), async (req, res) => {
             const hashedPassword = await bcrypt.hash(password, 10);
             updateData.password = hashedPassword;
         }
-
+        // Prepare update data
+        const updateData = {
+            username,
+            role: { roleId: foundRole._id, roleName: foundRole.name },
+            firstName,
+            lastName,
+            email,
+            phone
+        };
         // Update the user in the database
         const updatedUser = await User.findByIdAndUpdate(userId, updateData, { new: true });
 

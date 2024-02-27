@@ -1,7 +1,7 @@
 import { BrowserModule } from "@angular/platform-browser";
-import { NgModule } from "@angular/core";
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from "@angular/core";
 import { CommonModule } from "@angular/common";
-import { FormsModule } from "@angular/forms";
+import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { RouterModule } from "@angular/router";
 
 import { BsDropdownModule } from "ngx-bootstrap/dropdown";
@@ -29,11 +29,30 @@ import { FooterComponent } from './footer/footer.component';
 import { SomeShitComponent } from './some-shit/some-shit.component';
 import { ClientLoginComponent } from './client-login/client-login.component';
 
+
+
+import { DropzoneModule } from 'ngx-dropzone-wrapper';
+import { DROPZONE_CONFIG } from 'ngx-dropzone-wrapper';
+import { DropzoneConfigInterface } from 'ngx-dropzone-wrapper';
+
+import { NgxDropzoneModule } from 'ngx-dropzone';
+import { NgxSpinnerModule } from "ngx-spinner";
+
+
+const DEFAULT_DROPZONE_CONFIG: DropzoneConfigInterface = {
+  // Change this to your upload POST address:
+  url: 'https://httpbin.org/post',
+  maxFilesize: 50,
+  acceptedFiles: 'image/*'
+};
+
 @NgModule({
   imports: [
+    DropzoneModule,
     CommonModule,
     BrowserModule,
     FormsModule,
+    ReactiveFormsModule,
     RouterModule,
     BsDropdownModule.forRoot(),
     ProgressbarModule.forRoot(),
@@ -47,9 +66,12 @@ import { ClientLoginComponent } from './client-login/client-login.component';
     BsDatepickerModule.forRoot(),
     CarouselModule.forRoot(),
     ModalModule.forRoot(),
-    
+    NgxDropzoneModule,
+    NgxSpinnerModule
 
   ],
+
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   declarations: [
     IndexComponent,
     ProfilepageComponent,
@@ -64,9 +86,13 @@ import { ClientLoginComponent } from './client-login/client-login.component';
     IndexComponent,
     ProfilepageComponent,
     RegisterpageComponent,
+    ClientLoginComponent,
     NavbarComponent,
     FooterComponent
   ],
-  providers: []
+  providers: [{
+    provide: DROPZONE_CONFIG,
+    useValue: DEFAULT_DROPZONE_CONFIG
+  }]
 })
-export class PagesModule {}
+export class PagesModule { }

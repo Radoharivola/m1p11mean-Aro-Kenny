@@ -25,6 +25,16 @@ import { ManageAchatsComponent } from '../../manage-achats/manage-achats.compone
 import { NewAchatComponent } from '../../manage-achats/new-achat/new-achat.component';
 import { UpdateAchatComponent } from '../../manage-achats/update-achat/update-achat.component';
 
+import { LoginComponent } from '../../login/login.component';
+import { AuthGuardService } from 'app/services/auth-guard.service';
+import { AuthGuardLoginService } from 'app/services/auth-guard-login.service';
+
+import { AuthGuardAllService } from 'app/services/auth-guard-all.service';
+
+import { ManageWsComponent } from '../../manage-ws/manage-ws.component';
+import { NewWsComponent } from '../../manage-ws/new-ws/new-ws.component';
+import { UpdateWsComponent } from '../../manage-ws/update-ws/update-ws.component';
+
 export const AdminLayoutRoutes: Routes = [
     // {
     //   path: '',
@@ -69,12 +79,14 @@ export const AdminLayoutRoutes: Routes = [
     //     }]
     // }
     { path: 'dashboard', component: DashboardComponent },
-    { path: 'user-profile', component: UserProfileComponent },
+    { path: 'user-profile', component: UserProfileComponent, canActivate: [AuthGuardAllService] },
     { path: 'table-list', component: TableListComponent },
     { path: 'typography', component: TypographyComponent },
     { path: 'icons', component: IconsComponent },
     { path: 'notifications', component: NotificationsComponent },
     { path: 'upgrade', component: UpgradeComponent },
+    { path: 'login', component: LoginComponent, canActivate: [AuthGuardLoginService] },
+
     {
         path: 'services', children: [{
             path: 'list',
@@ -82,7 +94,7 @@ export const AdminLayoutRoutes: Routes = [
         }, {
             path: 'new',
             component: NewServiceComponent
-        },{
+        }, {
             path: 'update',
             component: UpdateServiceComponent
         }]
@@ -94,10 +106,10 @@ export const AdminLayoutRoutes: Routes = [
         }, {
             path: 'new',
             component: NewEmployeeComponent
-        },{
+        }, {
             path: 'update/:id',
             component: UpdateEmployeeComponent
-        }]
+        }], canActivate: [AuthGuardService]
     },
     {
         path: 'offers', children: [{
@@ -106,8 +118,8 @@ export const AdminLayoutRoutes: Routes = [
         }, {
             path: 'new',
             component: NewOfferComponent
-        },{
-            path: 'update',
+        }, {
+            path: 'update/:id',
             component: UpdateOfferComponent
         }]
     },
@@ -118,9 +130,21 @@ export const AdminLayoutRoutes: Routes = [
         }, {
             path: 'new',
             component: NewAchatComponent
-        },{
+        }, {
             path: 'update',
             component: UpdateAchatComponent
+        }]
+    },
+    {
+        path: 'ws', children: [{
+            path: 'list',
+            component: ManageWsComponent
+        }, {
+            path: 'new',
+            component: NewWsComponent
+        }, {
+            path: 'update/:id',
+            component: UpdateWsComponent
         }]
     },
 ];

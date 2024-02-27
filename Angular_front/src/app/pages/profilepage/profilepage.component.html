@@ -16,6 +16,61 @@
             </div>
             <div class="card-body">
               <tabset class="nav-tabs-danger justify-content-center tab-subcategories">
+                <tab>
+                  <ng-template tabHeading>
+                    <i class="tim-icons icon-notes"> </i> historique
+                  </ng-template>
+                  <div *ngIf="rdvs && rdvs.length > 0; else noRdv" class="scrollable-table-container"
+                    (scroll)="onContainerScroll()">
+                    <table class="table" id="plain-table">
+                      <thead class="text-danger">
+                        <tr>
+                          <th class="header"><button class="btn btn-link btn-danger mr-1"
+                              (click)="flipDateSort()">Date</button></th>
+                          <th class="header">services</th>
+                          <th class="header">employé</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr *ngFor="let rdv of rdvs">
+                          <td>{{rdv.date | relativeTime}}</td>
+                          <td>
+                            <ul>
+                              <li *ngFor="let service of rdv.services">
+                                <p class="text-white mt-4">{{service.name}}</p>
+                              </li>
+                            </ul>
+                          </td>
+                          <td>{{rdv.employee.firstName}} {{rdv.employee.lastName}}</td>
+                          <td>
+                            <!-- <button class="btn btn-default btn-icon mr-1" type="button" data-target="#myModal" (click)="myModal.show();loadRdvData(rdv._id)"> -->
+                            <button class="btn btn-default btn-icon mr-1" type="button" data-target="#myModal"
+                              (click)="myModal.show();">
+                              <i class="tim-icons icon-settings-gear-63"> </i>
+                            </button>
+                            <!-- <button class="btn btn-danger btn-icon mr-1" type="button" (click)="delete(rdv._id)">
+                              <i class="tim-icons icon-trash-simple"> </i>
+                            </button> -->
+                            <button class="btn btn-danger btn-icon mr-1" type="button" data-target="#myModal1"
+                              (click)="myModal1.show();tempId(rdv._id)">
+                              <i class="tim-icons icon-trash-simple"> </i>
+                            </button>
+
+
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+
+                  </div>
+                  <ng-template #noRdv>
+                    <div class="text-muted text-center">
+                      <p>Aucun rendez-vous</p>
+                    </div>
+
+
+                  </ng-template>
+                </tab>
                 <tab heading="Rendez-vous">
                   <div class="table-responsive">
                     <table class="table tablesorter" id="plain-table">
@@ -103,7 +158,139 @@
   </div>
   <div class="section">
     <div class="container">
+      <div aria-hidden="true" aria-labelledby="myModalLabel" bsModal class="modal fade" #myModal="bs-modal" id="myModal"
+        role="dialog" tabindex="-1">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header justify-content-center">
+              <button aria-hidden="true" class="close" data-dismiss="modal" type="button" (click)="myModal.hide()">
+                <i class="tim-icons icon-simple-remove"> </i>
+              </button>
+              <h4 class="title title-up">Modifier rendez-vous</h4>
+            </div>
+            <div class="modal-body text-center">
+              EDIT RDV
+              <!-- <div class="card card-register">
 
+                <div class="card-body">
+                  <form class="form" (ngSubmit)="submitForm()">
+  
+                    <div class="input-group">
+                      <div class="input-group-prepend">
+                        <div class="input-group-text">
+                          <i class="tim-icons icon-calendar-60"> </i>
+                        </div>
+                      </div>
+                      <input class="form-control" type="datetime-local" name="date" [(ngModel)]="formData.date"
+                        required />
+                    </div>
+                    <div class="input-group">
+                      <div class="input-group-prepend">
+                        <div class="input-group-text">
+                          <i class="tim-icons icon-single-02"> </i>
+                        </div>
+                      </div>
+                      <select class="form-control" name="employee" [(ngModel)]="formData.employee">
+                        <option [ngValue]="null" class="form-control">
+                          Non spécifié
+                        </option>
+                        <option [ngValue]="employee._id" class="form-control" *ngFor="let employee of employees;" [selected]="employees[0]._id">
+                          {{ employee.firstName }} {{employee.lastName }}
+                        </option>
+  
+                      </select>
+                    </div>
+                    <hr />
+  
+                    <p class="category">Veuillez choisir les Services</p>
+                    <span class="category">Total: {{ totalPrice | currency }}</span>
+  
+                    <div class="row" *ngIf="services">
+                      <div class="col-md-6" *ngFor="let service of services">
+                        <div class="form-check">
+                          <label class="form-check-label">
+                            <input class="form-check-input" type="checkbox"
+                              (change)="updateSelectedServices(service, $event.target.checked)" />
+                            <span class="form-check-sign"> </span> {{service.name}}
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                    <hr />
+                    <div class="input-group">
+                      <span class="category">Avance (mobile money)</span>
+                      <bSwitch [switch-on-color]="'blue'" [switch-on-text]="'oui'" [switch-off-text]="'non'"
+                        [switch-off-color]="'danger'" [(ngModel)]="isSwitchOn" name="bswitch"></bSwitch>
+                    </div>
+                    <div *ngIf="isSwitchOn">
+                      <div class="input-group">
+                        <div class="input-group-prepend">
+                          <div class="input-group-text">
+                            <i class="tim-icons icon-single-02"> </i>
+                          </div>
+                        </div>
+                        <input class="form-control" placeholder="Numero" type="text" pattern="[0-9]{10}"
+                          title="Please enter a valid phone number (10 digits)" name="numero"
+                          [(ngModel)]="formData.numero" required />
+                      </div>
+                      <div class="input-group">
+                        <div class="input-group-prepend">
+                          <div class="input-group-text">
+                            <i class="tim-icons icon-money-coins"> </i>
+                          </div>
+                        </div>
+                        <input class="form-control" placeholder="Montant" type="number" name="paid"
+                          [(ngModel)]="formData.paid" />
+                      </div>
+                    </div>
+                    <alert *ngIf="error" class="alert-with-icon" [type]="'warning alert-with-icon'" [dismissible]="true">
+                      <span class="tim-icons icon-alert-circle-exc" data-notify="icon"> </span>
+                      <span>
+                        <b> Oups! </b> {{message}}
+                      </span>
+                    </alert>
+                    <alert *ngIf="success" class="alert-with-icon" [type]="'success alert-with-icon'"
+                      [dismissible]="true">
+                      <span class="tim-icons icon-check-2" data-notify="icon"> </span>
+                      <span>
+                        <b> Yay! </b> {{message}}
+                      </span>
+                    </alert>
+                    <div class="input-group">
+                      <input class="btn btn-danger btn-round btn-lg" type="submit" value="Valider" />
+                    </div>
+                  </form>
+                </div>
+              </div> -->
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-default" type="button">Valider</button>
+              <button class="btn btn-danger" data-dismiss="modal" type="button" (click)="myModal.hide()">
+                Annuler
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div aria-hidden="true" aria-labelledby="myModalLabel" bsModal
+        class="modal fade modal-mini modal-warning modal-mini" #myModal1="bs-modal" id="myModal1" role="dialog"
+        tabindex="-1">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-body">
+              <p>Supprimer ce rendez-vous?</p>
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-link btn-neutral" type="button" (click)="delete();myModal1.hide()">Oui</button>
+              <button class="btn btn-link btn-neutral" data-dismiss="modal" type="button"
+                (click)="myModal1.hide();tempId('')">
+                Annuler
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
+
   </div>
 </div>
