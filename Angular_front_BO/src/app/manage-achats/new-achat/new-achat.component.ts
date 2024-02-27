@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AchatsService } from 'app/services/achats.service';
 import { DatePipe } from '@angular/common';
+import { Router, NavigationEnd } from '@angular/router';
 declare var $: any;
 
 
@@ -14,7 +15,7 @@ export class NewAchatComponent implements OnInit {
 
   achatsForm: FormGroup;
 
-  constructor(private fb: FormBuilder, private achatsService: AchatsService, private datePipe: DatePipe) { }
+  constructor(private router: Router, private fb: FormBuilder, private achatsService: AchatsService, private datePipe: DatePipe) { }
 
   ngOnInit(): void {
     this.achatsForm = this.fb.group({
@@ -52,7 +53,7 @@ export class NewAchatComponent implements OnInit {
           //   this.success = false;
           // }, 5000);
           // this.message = response.message;
-          this.showNotification('Nouvel Achats ajouté', 'success');
+          this.showNotification('Nouvel Achat ajouté', 'success');
           console.log(response);
         },
         error => {
@@ -66,6 +67,7 @@ export class NewAchatComponent implements OnInit {
           console.log(error);
         }
       );
+      this.router.navigate(['/achats/list']);
     } else {
       console.log(this.achatsForm);
 

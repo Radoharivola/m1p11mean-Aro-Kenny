@@ -61,7 +61,7 @@ export class UpdateAchatComponent implements OnInit {
           //   this.success = false;
           // }, 5000);
           // this.message = response.message;
-          this.showNotification('Achats mise à jour', 'success');
+          this.showNotification('Achat mise à jour', 'success');
 
           console.log(response);
         },
@@ -77,6 +77,7 @@ export class UpdateAchatComponent implements OnInit {
           console.log("foryyyy");
         }
       );
+      this.router.navigate(['/achats/list']);
     } else {
       this.markFormGroupTouched(this.achatsForm);
     }
