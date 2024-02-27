@@ -41,7 +41,6 @@ import { BrowserModule } from "@angular/platform-browser";
 @NgModule({
   imports: [
     CommonModule,
-    BrowserModule,
     RouterModule.forChild(AdminLayoutRoutes),
     FormsModule,
     ReactiveFormsModule,
@@ -83,9 +82,6 @@ import { BrowserModule } from "@angular/platform-browser";
     UpdateOfferComponent,
     UpdateAchatComponent
   ],
-  exports: [
-    ManageAchatsComponent
-  ]
 })
 
 export class AdminLayoutModule { }
