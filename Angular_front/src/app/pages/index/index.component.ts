@@ -5,6 +5,7 @@ import { RdvService } from '../../services/rdv.service';
 import { UserService } from '../../services/user.service';
 
 import { OfferService } from '../../services/offer.service';
+import { Router } from "@angular/router";
 
 @Component({
   selector: "app-index",
@@ -31,12 +32,16 @@ export class IndexComponent implements OnInit, OnDestroy {
 
   phoneRegex = /^[0-9]{10}$/;
 
-  formData: { date: string, employee: object, paid: number, numero: string } = { date: '', employee: null, paid: 0, numero: '' };
+  formData: { date: string, employee: string, paid: number, numero: string } = { date: '', employee: "null", paid: 0, numero: '' };
   limit: number = 10;
   totalPages: number = 0;
 
 
-  constructor(private serviceService: ServiceService, private userService: UserService, private rdvservice: RdvService, private offerservice: OfferService) { }
+  temp: string = '';
+
+
+
+  constructor(private serviceService: ServiceService, private userService: UserService, private rdvservice: RdvService, private offerservice: OfferService, private route: Router) { }
 
   ngOnInit() {
     var body = document.getElementsByTagName("body")[0];
@@ -54,13 +59,22 @@ export class IndexComponent implements OnInit, OnDestroy {
   fetchOffers() {
     this.offerservice.getOffers({ 'date': new Date().toISOString() }).subscribe(
       response => {
-        this.offers=response.offers;
+        console.log(response.offers);
+        this.offers = response.offers;
       },
       error => {
         console.log(error);
       }
     );
   }
+
+  setSelectedServices(services: any[], reduction: number) {
+    // this.selectedServices = services;
+    // const totalPrice = this.selectedServices.reduce((total, service) => total + service.price, 0);
+
+    // console.log(this.selectedServices);
+  }
+
   fetchServices() {
     this.serviceService.getServices().subscribe(data => {
       this.services = data.services;
@@ -68,8 +82,8 @@ export class IndexComponent implements OnInit, OnDestroy {
   }
   fetchEmployees() {
     this.userService.getEmployees().subscribe(data => {
-      console.log(data.employees);
-      this.employees = data.employees;
+      console.log(data.body.employees);
+      this.employees = data.body.employees;
     });
   }
   fetchTodaysRdv() {
@@ -81,11 +95,19 @@ export class IndexComponent implements OnInit, OnDestroy {
     // Set dateFin to today's date at 23:59:59
     today.setHours(23, 59, 59, 999);
     const dateFin = today.toISOString();
-    this.rdvservice.getRdv({ 'clientId': '65c0c12041f49e5ca93ded6e', 'dateInit': dateInit, 'dateFin': dateFin, 'limit': 10, 'page': 1, 'dateSort': 1 }).subscribe(response => {
+    this.rdvservice.getRdv({ 'dateInit': dateInit, 'dateFin': dateFin, 'limit': 10, 'page': 1, 'dateSort': 1 }).subscribe(response => {
       console.log(response);
-      this.todaysRdv = response.rdvs;
+      this.todaysRdv = response.body.rdvs;
     },
       error => {
+        this.userService.logout().subscribe(res => {
+          localStorage.removeItem('uToken');
+          localStorage.removeItem('username');
+          this.route.navigate(['/login']);
+        }, err => {
+          console.log(err);
+        }
+        );
         console.log(error);
       });
   }
@@ -96,14 +118,14 @@ export class IndexComponent implements OnInit, OnDestroy {
 
     const dateInit = new Date("1970-01-01").toISOString();
 
-    this.rdvservice.getRdv({ 'clientId': '65c0c12041f49e5ca93ded6e', 'dateInit': dateInit, 'dateFin': dateFin, 'limit': this.limit, 'page': page, 'dateSort': this.dateSort }).subscribe(response => {
-      console.log(response.rdvs);
+    this.rdvservice.getRdv({ 'dateInit': dateInit, 'dateFin': dateFin, 'limit': this.limit, 'page': page, 'dateSort': this.dateSort }).subscribe(response => {
       if (this.page == 1) {
-        this.history = response.rdvs;
+        this.history = response.body.rdvs;
+        console.log(response.body.rdvs);
       } else {
-        this.history = this.history.concat(response.rdvs);
+        this.history = this.history.concat(response.body.rdvs);
       }
-      this.totalPages = response.totalPages;
+      this.totalPages = response.body.totalPages;
     },
       error => {
         console.log(error);
@@ -189,6 +211,7 @@ export class IndexComponent implements OnInit, OnDestroy {
             this.success = false;
           }, 5000);
           this.message = response.message;
+          this.fetchTodaysRdv();
           // console.log(response);
         },
         error => {
@@ -203,5 +226,26 @@ export class IndexComponent implements OnInit, OnDestroy {
     }
     // console.log(data);
 
+  }
+  tempId(id: string) {
+    this.temp = id;
+    console.log(this.temp);
+  }
+
+  // loadRdvData(id: string) {
+  //   this.rdvservice.get({ id }).subscribe(response => {
+  //     this.rdv = response.body.rdv;
+  //     this.formData.date=this.rdv.date;
+  //   }, err => {
+  //     console.log(err);
+  //   })
+  // }
+
+  delete() {
+    this.rdvservice.delete(this.temp).subscribe(response => {
+      this.page = 1;
+      this.fetchTodaysRdv();
+      this.temp = '';
+    }, error => { console.log(error); });
   }
 }

@@ -18,6 +18,11 @@ var rdvRouter = require('./routes/rdv');
 var workScheduleRouter = require('./routes/workSchedule');
 var cors = require('cors')
 
+const cron = require('node-cron');
+const nodemailer = require('nodemailer');
+const Rdv = require('./models/Rdv');
+
+const Offer = require('./models/Offer');
 
 require('./models/db');
 
@@ -32,7 +37,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(cors());
+
+const corsOptions = {
+  origin: ['http://localhost:4200', 'http://localhost:4201'],
+  credentials: true
+}
+app.use(cors(corsOptions));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
@@ -61,5 +71,80 @@ app.use(function (err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+
+// cron.schedule('* * * * *', async () => {
+//   console.log('llllll');
+//   // Find all appointments 1 hour from now
+//   const oneHourFromNow = new Date(Date.now() + 60 * 60 * 1000);
+//   const rdvs = await Rdv.find({ date: { $gt: new Date(), $lte: oneHourFromNow } });
+//   console.log(rdvs);
+//   rdvs.forEach(async (rdv) => {
+//     try {
+//       await sendEmail(rdv.client.email, 'Rendez-vous Manjatiana', `Vous avez un rendez-vous prévu à ${rdv.date}.`);
+//     } catch (error) {
+//       console.error('Error sending email:', error);
+//     }
+//   });
+// });
+
+
+// cron.schedule('* * * * *', async () => {
+
+//   try {
+//     // Find offers for today
+//     const dateToCheck = new Date().toISOString();
+
+//     const offers = await Offer.find({
+//         $and: [
+//             { dateDebut: { $lte: dateToCheck } }, // Check if dateDebut is less than or equal to given date
+//             { dateFin: { $gte: dateToCheck } }    // Check if dateFin is greater than or equal to given date
+//         ]
+//     });
+//     console.log(offers);
+//     if (offers.length === 0) {
+//         console.log('No offers available for today.');
+//         return;
+//     }
+
+//     // Find clients with role 'client'
+//     const clients = await User.find({ 'role.roleName': 'client' });
+//     console.log(clients);
+//     // Send email to each client
+//     clients.forEach(async (client) => {
+//         offers.forEach(async (offer) => {
+//             try {
+//                 await sendEmail(client.email, 'Offre spéciale', offer.description);
+//             } catch (error) {
+//                 console.error('Error sending email:', error);
+//             }
+//         });
+//     });
+// } catch (error) {
+//     console.error('Error checking offers:', error);
+// }
+// });
+
+async function sendEmail(to, subject, body) {
+  // Configure nodemailer with your email service details
+  let transporter = nodemailer.createTransport({
+    host: 'smtp.zoho.com',
+    port: 587,
+    secure: false,
+    auth: {
+      user: 'renyudark@zohomail.com',
+      pass: 'Gofuckurself420!!'
+    }
+  });
+
+  // Send mail with defined transport object
+  let info = await transporter.sendMail({
+    from: 'renyudark@zohomail.com',
+    to: to,
+    subject: subject,
+    text: body
+  });
+
+  console.log('Email sent:', info.messageId);
+}
 
 module.exports = app;

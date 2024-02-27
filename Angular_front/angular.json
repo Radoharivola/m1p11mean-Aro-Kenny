@@ -36,6 +36,7 @@
               "node_modules/ngx-bootstrap/datepicker/bs-datepicker.css",
               "src/assets/scss/blk-design-system.scss",
               "src/assets/demo/demo.css"
+
             ],
             "scripts": []
           },

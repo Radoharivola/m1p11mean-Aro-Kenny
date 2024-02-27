@@ -57,8 +57,11 @@
                       </div>
                     </div>
                     <select class="form-control" name="employee" [(ngModel)]="formData.employee">
-                      <option value="" class="form-control">Employé non spécifié</option>
-                      <option [ngValue]="employee" class="form-control" *ngFor="let employee of employees">
+                      <option [ngValue]="null" class="form-control">
+                        Non spécifié
+                      </option>
+                      <option [ngValue]="employee._id" class="form-control" *ngFor="let employee of employees;"
+                        [selected]="employees[0]._id">
                         {{ employee.firstName }} {{employee.lastName }}
                       </option>
 
@@ -143,7 +146,7 @@
                   <tab>
                     <ng-template tabHeading>
                       <i class="tim-icons icon-gift-2"> </i> Offres
-                      <span class="text-danger">({{offers.length}})</span>
+                      <span class="text-danger">{{offers?.length}}</span>
 
                     </ng-template>
                     <div class="row" *ngIf="offers && offers.length > 0; else noOffers">
@@ -165,7 +168,8 @@
                             </ul>
                           </div>
                           <div class="card-footer text-center">
-                            <button class="btn btn-warning btn-round mr-1" type="button">
+                            <button class="btn btn-warning btn-round mr-1" type="button"
+                              (click)="setSelectedServices(offer.services,offer.reduction)">
                               Prendre rendez-vous
                             </button>
                           </div>
@@ -180,8 +184,8 @@
                   </tab>
                   <tab>
                     <ng-template tabHeading>
-                      <i class="tim-icons icon-alert-circle-exc"> </i> Rappels
-                      <span class="text-danger">({{todaysRdv.length}})</span>
+                      <i class="tim-icons icon-alert-circle-exc"> </i> Today
+                      <span class="text-danger">{{todaysRdv?.length}}</span>
                     </ng-template>
 
                     <div class="row" *ngIf="todaysRdv && todaysRdv.length > 0; else noRdv">
@@ -199,7 +203,8 @@
                             </ul>
                           </div>
                           <div class="card-footer">
-                            <button class="btn btn-warning btn-round mr-1" type="button">
+                            <button class="btn btn-warning btn-round mr-1" type="button" data-target="#myModal1"
+                              (click)="myModal1.show();tempId(rdv._id)">
                               Annuler
                             </button>
                           </div>
@@ -260,5 +265,28 @@
         </div>
       </div>
     </div>
+  </div>
+  <div class="section">
+    <div class="container">
+      <div aria-hidden="true" aria-labelledby="myModalLabel" bsModal
+        class="modal fade modal-mini modal-warning modal-mini" #myModal1="bs-modal" id="myModal1" role="dialog"
+        tabindex="-1">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-body">
+              <p>Supprimer ce rendez-vous?</p>
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-link btn-neutral" type="button" (click)="delete();myModal1.hide()">Oui</button>
+              <button class="btn btn-link btn-neutral" data-dismiss="modal" type="button"
+                (click)="myModal1.hide();tempId('')">
+                Annuler
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>

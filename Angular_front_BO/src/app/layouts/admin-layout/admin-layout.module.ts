@@ -20,11 +20,21 @@ import { NgxDropzoneModule } from 'ngx-dropzone';
 import { UpdateEmployeeComponent } from 'app/manage-employees/update-employee/update-employee.component';
 import { NewEmployeeComponent } from 'app/manage-employees/new-employee/new-employee.component';
 import { ManageEmployeesComponent } from 'app/manage-employees/manage-employees.component';
+
 import { ManageServicesComponent } from 'app/manage-services/manage-services.component';
 import { NewServiceComponent } from 'app/manage-services/new-service/new-service.component';
 import { UpdateServiceComponent } from 'app/manage-services/update-service/update-service.component';
 import { ManageAchatsComponent } from 'app/manage-achats/manage-achats.component';
 import { NewAchatComponent } from 'app/manage-achats/new-achat/new-achat.component';
+import { LoginComponent } from '../../login/login.component';
+import { RelativeTimePipe } from '../../pipes/relative-time.pipe';
+import { MatIconModule } from '@angular/material/icon';
+import { ManageWsComponent } from 'app/manage-ws/manage-ws.component';
+import { UpdateWsComponent } from 'app/manage-ws/update-ws/update-ws.component';
+import { ManageOffersComponent } from 'app/manage-offers/manage-offers.component';
+import { NewOfferComponent } from 'app/manage-offers/new-offer/new-offer.component';
+import { UpdateOfferComponent } from 'app/manage-offers/update-offer/update-offer.component';
+
 @NgModule({
   imports: [
     CommonModule,
@@ -37,7 +47,8 @@ import { NewAchatComponent } from 'app/manage-achats/new-achat/new-achat.compone
     MatInputModule,
     MatSelectModule,
     MatTooltipModule,
-    NgxDropzoneModule
+    NgxDropzoneModule,
+    MatIconModule
   ],
   declarations: [
     DashboardComponent,
@@ -50,11 +61,20 @@ import { NewAchatComponent } from 'app/manage-achats/new-achat/new-achat.compone
     UpdateEmployeeComponent,
     NewEmployeeComponent,
     ManageEmployeesComponent,
+
     ManageServicesComponent,
     NewServiceComponent,
     UpdateServiceComponent,
     ManageAchatsComponent,
     NewAchatComponent
+
+    LoginComponent,
+    RelativeTimePipe,
+    ManageWsComponent,
+    UpdateWsComponent,
+    ManageOffersComponent,
+    NewOfferComponent,
+    UpdateOfferComponent
   ]
 })
 

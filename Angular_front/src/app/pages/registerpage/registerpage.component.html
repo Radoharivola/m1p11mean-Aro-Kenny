@@ -10,71 +10,103 @@
             <div class="card card-register">
               <div class="card-header">
                 <img alt="Card image" class="card-img" src="assets/img/square1-red.png" />
-
-                <!-- <h4 class="card-title">Register</h4> -->
               </div>
               <div class="card-body">
-                <form class="form">
+                <form class="form" [formGroup]="registrationForm" (ngSubmit)="onSubmit()">
                   <div class="input-group" [ngClass]="{ 'input-group-focus': focus0 === true }">
                     <div class="input-group-prepend">
                       <div class="input-group-text">
-                        <i class="tim-icons icon-single-02"> </i>
+                        <i class="tim-icons icon-badge"> </i>
                       </div>
                     </div>
-                    <input class="form-control" placeholder="identifiant" type="text" (focus)="focus0 = true"
-                      (blur)="focus0 = false" />
+                    <input class="form-control" formControlName="identifiant" placeholder="identifiant"
+                      (focus)="focus0 = true" (blur)="focus0 = false" />
+                    <div
+                      *ngIf="registrationForm.get('identifiant').invalid && registrationForm.get('identifiant').touched"
+                      class="error-message">
+                      Requis
+                    </div>
                   </div>
                   <div class="input-group" [ngClass]="{ 'input-group-focus': focus1 === true }">
                     <div class="input-group-prepend">
                       <div class="input-group-text">
-                        <i class="tim-icons icon-single-02"> </i>
+                        <i class="tim-icons icon-triangle-right-17"> </i>
                       </div>
                     </div>
-                    <input class="form-control" placeholder="Nom" type="text" (focus)="focus1 = true"
+                    <input class="form-control" formControlName="nom" placeholder="Nom" (focus)="focus1 = true"
                       (blur)="focus1 = false" />
+                    <div *ngIf="registrationForm.get('nom').invalid && registrationForm.get('nom').touched"
+                      class="error-message">
+                      Requis
+                    </div>
                   </div>
                   <div class="input-group" [ngClass]="{ 'input-group-focus': focus2 === true }">
                     <div class="input-group-prepend">
                       <div class="input-group-text">
-                        <i class="tim-icons icon-single-02"> </i>
+                        <i class="tim-icons icon-triangle-right-17"> </i>
                       </div>
                     </div>
-                    <input class="form-control" placeholder="Prénoms" type="text" (focus)="focus2 = true"
+                    <input class="form-control" formControlName="prenoms" placeholder="Prénoms" (focus)="focus2 = true"
                       (blur)="focus2 = false" />
+                    <div *ngIf="registrationForm.get('prenoms').invalid && registrationForm.get('prenoms').touched"
+                      class="error-message">
+                      Requis
+                    </div>
                   </div>
-                  
                   <div class="input-group" [ngClass]="{ 'input-group-focus': focus3 === true }">
                     <div class="input-group-prepend">
                       <div class="input-group-text">
                         <i class="tim-icons icon-email-85"> </i>
                       </div>
                     </div>
-                    <input class="form-control" placeholder="Email" type="text" (focus)="focus3 = true"
+                    <input class="form-control" formControlName="email" placeholder="Email" (focus)="focus3 = true"
                       (blur)="focus3 = false" />
+                    <div *ngIf="registrationForm.get('email').invalid && registrationForm.get('email').touched"
+                      class="error-message">
+                      Requis
+                    </div>
+                  </div>
+                  <div class="input-group" [ngClass]="{ 'input-group-focus': focus5 === true }">
+                    <div class="input-group-prepend">
+                      <div class="input-group-text">
+                        <i class="tim-icons icon-mobile"> </i>
+                      </div>
+                    </div>
+                    <input class="form-control" formControlName="telephone" placeholder="Telephone"
+                      (focus)="focus5 = true" (blur)="focus5 = false" />
+                    <div *ngIf="registrationForm.get('telephone').invalid && registrationForm.get('telephone').touched"
+                      class="error-message">
+                      Requis
+                    </div>
                   </div>
                   <div class="input-group" [ngClass]="{ 'input-group-focus': focus4 === true }">
                     <div class="input-group-prepend">
                       <div class="input-group-text">
-                        <i class="tim-icons icon-lock-circle"> </i>
+                        <i class="tim-icons icon-key-25"> </i>
                       </div>
                     </div>
-                    <input class="form-control" placeholder="Mot de passe" type="text" (focus)="focus4 = true"
-                      (blur)="focus4 = false" />
+                    <input class="form-control" formControlName="motDePasse" placeholder="Mot de passe"
+                      (focus)="focus4 = true" (blur)="focus4 = false" />
+                    <div
+                      *ngIf="registrationForm.get('motDePasse').invalid && registrationForm.get('motDePasse').touched"
+                      class="error-message">
+                      Requis
+                    </div>
                   </div>
-                  <!-- <div class="form-check text-left">
-                    <label class="form-check-label">
-                      <input class="form-check-input" type="checkbox" />
-
-                      <span class="form-check-sign"> </span> I agree to the
-                      <a href="javascript:void(0)"> terms and conditions </a> .
-                    </label>
-                  </div> -->
+                  <ngx-dropzone (change)="onSelect($event)" accept="image/jpeg,image/jpg,image/png,image/gif"
+                    multiple="false" class="dropzone">
+                    <ngx-dropzone-label>Choisir photo de profil / déposer!</ngx-dropzone-label>
+                    <ngx-dropzone-image-preview ngProjectAs="ngx-dropzone-preview" *ngFor="let f of files" [file]="f"
+                      [removable]="true" (removed)="onRemove(f)">
+                    </ngx-dropzone-image-preview>
+                  </ngx-dropzone>
+                  <div *ngIf="fileEmpty" class="dz-error-message">
+                    Veuillez choisir une photo de profil
+                  </div>
                 </form>
               </div>
               <div class="card-footer">
-                <a class="btn btn-danger btn-round btn-lg" href="javascript:void(0)">
-                  S'inscrire
-                </a>
+                <button type="submit" class="btn btn-danger btn-round btn-lg" (click)="onSubmit()">S'inscrire</button>
               </div>
             </div>
           </div>

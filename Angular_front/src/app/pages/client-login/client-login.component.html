@@ -1,40 +1,72 @@
 <div class="wrapper">
-    <div class="page-header">
-      <div class="page-header-image"></div>
-      <div class="content">
-        <div class="container">
-          <div class="row">
-            <div class="col-lg-5 col-md-6 offset-lg-0 offset-md-3">
-              <div class="square square-7" id="square7"></div>
-              <div class="square square-8" id="square8"></div>
-              <div class="card card-register">
-                <div class="card-header">
-                  <img alt="Card image" class="card-img" src="assets/img/square1-red.png" />
-  
-                  <h4 class="card-title">Hey!</h4>
-                </div>
-                <div class="card-body">
-                  <form class="form">
-                    <div class="input-group" [ngClass]="{ 'input-group-focus': focus0 === true }">
-                      <div class="input-group-prepend">
-                        <div class="input-group-text">
-                          <i class="tim-icons icon-single-02"> </i>
-                        </div>
+
+  <div class="page-header">
+
+    <div class="page-header-image"></div>
+    <div class="content">
+
+      <div class="container">
+
+        <div class="row">
+          <div class="col-lg-5 col-md-6 offset-lg-0 offset-md-3">
+            <div class="square square-7" id="square7"></div>
+            <div class="square square-8" id="square8"></div>
+            <div class="card card-register">
+              <div class="card-header">
+                <img alt="Card image" class="card-img" src="assets/img/square1-red.png" />
+
+                <h4 class="card-title">Hey!</h4>
+              </div>
+              <div class="card-body">
+                <form class="form" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+                  <div class="input-group" [ngClass]="{ 'input-group-focus': focus0 === true }">
+                    <div class="input-group-prepend">
+                      <div class="input-group-text">
+                        <i class="tim-icons icon-single-02"> </i>
                       </div>
-                      <input class="form-control" placeholder="identifiant" type="text" (focus)="focus0 = true"
-                        (blur)="focus0 = false" />
                     </div>
-                    
-                    <div class="input-group" [ngClass]="{ 'input-group-focus': focus4 === true }">
-                      <div class="input-group-prepend">
-                        <div class="input-group-text">
-                          <i class="tim-icons icon-lock-circle"> </i>
-                        </div>
+                    <input class="form-control" formControlName="identifiant" placeholder="identifiant"
+                      (focus)="focus0 = true" (blur)="focus0 = false" />
+                    <div *ngIf="loginForm.get('identifiant').invalid && loginForm.get('identifiant').touched"
+                      class="error-message">
+                      Requis
+                    </div>
+                  </div>
+
+                  <div class="input-group" [ngClass]="{ 'input-group-focus': focus1 === true }">
+                    <div class="input-group-prepend">
+                      <div class="input-group-text">
+                        <i class="tim-icons icon-lock-circle"> </i>
                       </div>
-                      <input class="form-control" placeholder="Mot de passe" type="text" (focus)="focus4 = true"
-                        (blur)="focus4 = false" />
                     </div>
-                    <!-- <div class="form-check text-left">
+                    <input #passwordInput type="password" class="form-control pass" formControlName="motDePasse"
+                      placeholder="Mot de passe" (focus)="focus1 = true" (blur)="focus1 = false" />
+                    <div class="input-group-append">
+                      <span class="input-group-text">
+                        <i *ngIf="hidden" class="fa fa-eye" aria-hidden="true"
+                          (click)="togglePasswordVisibility(passwordInput)"></i>
+                        <i *ngIf="!hidden" class="fa fa-eye-slash" aria-hidden="true"
+                          (click)="togglePasswordVisibility(passwordInput)"></i>
+
+                      </span>
+                    </div>
+                    <div *ngIf="loginForm.get('motDePasse').invalid && loginForm.get('motDePasse').touched"
+                      class="error-message">
+                      Requis
+                    </div>
+                  </div>
+                  <alert *ngIf="error" class="alert" [type]="'danger alert'" [dismissible]="true">
+                    <span> {{message}}
+                    </span>
+                  </alert>
+                  <alert *ngIf="success" class="alert-with-icon" [type]="'success alert-with-icon'"
+                    [dismissible]="true">
+                    <span class="tim-icons icon-check-2" data-notify="icon"> </span>
+                    <span>
+                      <b> Yay! </b> {{message}}
+                    </span>
+                  </alert>
+                  <!-- <div class="form-check text-left">
                       <label class="form-check-label">
                         <input class="form-check-input" type="checkbox" />
   
@@ -42,24 +74,24 @@
                         <a href="javascript:void(0)"> terms and conditions </a> .
                       </label>
                     </div> -->
-                  </form>
-                </div>
-                <div class="card-footer">
-                  <a class="btn btn-danger btn-round btn-lg" href="javascript:void(0)">
-                    Connexion
-                  </a>
-                </div>
+                  <ngx-spinner type="ball-scale-multiple" color="#fd5d93" bdColor="rgba(0, 0, 0, 0.8)"></ngx-spinner>
+
+                  <input type="submit" class="btn btn-danger btn-round btn-lg" />
+                </form>
+                <!-- <button (click)="test()">Test</button> -->
               </div>
+
             </div>
           </div>
-          <div class="register-bg"></div>
-          <div class="square square-1" id="square1"></div>
-          <div class="square square-2" id="square2"></div>
-          <div class="square square-3" id="square3"></div>
-          <div class="square square-4" id="square4"></div>
-          <div class="square square-5" id="square5"></div>
-          <div class="square square-6" id="square6"></div>
         </div>
+        <div class="register-bg"></div>
+        <div class="square square-1" id="square1"></div>
+        <div class="square square-2" id="square2"></div>
+        <div class="square square-3" id="square3"></div>
+        <div class="square square-4" id="square4"></div>
+        <div class="square square-5" id="square5"></div>
+        <div class="square square-6" id="square6"></div>
       </div>
     </div>
   </div>
+</div>
