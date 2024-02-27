@@ -106,6 +106,7 @@ export class DashboardComponent implements OnInit {
     this.caPDPM(this.currentYear, this.currentMonth);
     this.nbrRdvPMPY(this.currentYear);
     this.caPMPY(this.currentYear);
+    this.benefits(this.currentYear);
 
     this.monthRdvPDPM = this.currentMonth;
     this.yearRdvPDPM = this.currentYear;
@@ -116,6 +117,8 @@ export class DashboardComponent implements OnInit {
     this.yearCaPDPM = this.currentYear;
 
     this.yearCaPMPY = this.currentYear;
+
+    this.yearBenefits = this.currentYear;
   }
 
   monthRdvPDPM: number;
@@ -139,7 +142,47 @@ export class DashboardComponent implements OnInit {
   refreshCaPMPY() {
     this.caPMPY(this.yearCaPMPY);
   }
+  yearBenefits: number;
+  refreshYearBenefits() {
+    this.benefits(this.yearBenefits);
+  }
+  benefits(year: number) {
+    this.statservice.getBenefits(year).subscribe(res => {
+      const data = res.body.monthlyBenefits;
+      var labels = [];
+      var series = [];
+      data.forEach((d) => {
+        labels.push(d.month);
+        series.push(d.benefits);
+        console.log(series);
+      })
 
+      this.initBenefits(labels, series);
+    }, err => {
+      console.log(err);
+    });
+  }
+  initBenefits(labels, series) {
+    const dataDailySalesChart: any = {
+      labels: labels,
+      series: [
+        series
+      ]
+    };
+
+    const optionsDailySalesChart: any = {
+      lineSmooth: Chartist.Interpolation.cardinal({
+        tension: 0
+      }),
+      low: 0,
+      high: Math.max(...series), // creative tim: we recommend you to set the high sa the biggest value + something for a better look
+      chartPadding: { top: 0, right: 0, bottom: 10, left: 20 },
+    }
+
+    var dailySalesChart = new Chartist.Line('#benefits', dataDailySalesChart, optionsDailySalesChart);
+
+    this.startAnimationForLineChart(dailySalesChart);
+  }
   nbrRdvPDPM(year: number, month?: any) {
     this.statservice.get(year, month).subscribe(res => {
       const data = res.body.appointmentsCounts;
@@ -168,8 +211,8 @@ export class DashboardComponent implements OnInit {
         tension: 0
       }),
       low: 0,
-      high: Math.max(...series) + 2, // creative tim: we recommend you to set the high sa the biggest value + something for a better look
-      chartPadding: { top: 0, right: 0, bottom: 0, left: 0 },
+      high: Math.max(...series), // creative tim: we recommend you to set the high sa the biggest value + something for a better look
+      chartPadding: { top: 30, right: 0, bottom: 0, left: 20 },
     }
 
     var dailySalesChart = new Chartist.Line('#dailySalesChart', dataDailySalesChart, optionsDailySalesChart);
@@ -206,8 +249,8 @@ export class DashboardComponent implements OnInit {
         showGrid: false
       },
       low: 0,
-      high: Math.max(...series) + 5,
-      chartPadding: { top: 0, right: 5, bottom: 0, left: 0 }
+      high: Math.max(...series),
+      chartPadding: { top: 30, right: 5, bottom: 0, left: 20 }
     };
     var responsiveOptions: any[] = [
       ['screen and (max-width: 640px)', {
@@ -254,8 +297,8 @@ export class DashboardComponent implements OnInit {
         tension: 0
       }),
       low: Math.min(...series),
-      high: Math.max(...series) + 5000, // creative tim: we recommend you to set the high sa the biggest value + something for a better look
-      chartPadding: { top: 0, right: 0, bottom: 0, left: 50 }
+      high: Math.max(...series), // creative tim: we recommend you to set the high sa the biggest value + something for a better look
+      chartPadding: { top: 30, right: 0, bottom: 10, left: 50 }
     }
 
 
@@ -294,8 +337,8 @@ export class DashboardComponent implements OnInit {
         tension: 0
       }),
       low: Math.min(...series),
-      high: Math.max(...series) + 100000, // creative tim: we recommend you to set the high sa the biggest value + something for a better look
-      chartPadding: { top: 0, right: 0, bottom: 0, left: 50 }
+      high: Math.max(...series), // creative tim: we recommend you to set the high sa the biggest value + something for a better look
+      chartPadding: { top: 30, right: 0, bottom: 10, left: 50 }
     }
     var completedTasksChart = new Chartist.Line('#capmpy', dataCompletedTasksChart, optionsCompletedTasksChart);
 
@@ -339,10 +382,10 @@ export class DashboardComponent implements OnInit {
       this.todaysDoneRdv.forEach(today => {
         today.services.forEach(service => {
           console.log(service);
-          comission=service.price*service.commission/100;
+          comission = service.price * service.commission / 100;
         });
       });
-      this.commission=comission;
+      this.commission = comission;
     },
       error => {
         console.log(error);
