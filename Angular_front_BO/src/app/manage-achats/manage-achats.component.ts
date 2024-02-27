@@ -20,8 +20,8 @@ export class ManageAchatsComponent implements OnInit {
     this.router.navigate(['/achats/new']);
   }
 
-  navigateToUpdate() {
-    this.router.navigate(['/achats/update']);
+  navigateToUpdate(id: string) {
+    this.router.navigate(['/achats/update', id]);
   }
 
   fetchAchats() {

@@ -6,6 +6,12 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class AchatsService {
+  httpOptions = {
+    headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+
+    withCredentials: true,
+    observe: 'response' as 'response'
+  };
 
   constructor(private http: HttpClient) { }
 
@@ -21,4 +27,12 @@ export class AchatsService {
     return this.http.delete('http://127.0.0.1:3000/depense/delete/'+id);
   }
 
+  update({ data, id }: { data: any, id: any }): Observable<any> {
+    return this.http.put('http://127.0.0.1:3000/depense/update/'+id, data, this.httpOptions);
+
+  }
+
+  getAchat({ id }: { id: any }): Observable<any> {
+    return this.http.get('http://127.0.0.1:3000/depense/achats/' + id, this.httpOptions);
+  }
 }

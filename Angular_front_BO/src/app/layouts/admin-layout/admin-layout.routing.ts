@@ -136,7 +136,7 @@ export const AdminLayoutRoutes: Routes = [
             path: 'new',
             component: NewAchatComponent
         }, {
-            path: 'update',
+            path: 'update/:id',
             component: UpdateAchatComponent
         }]
     },

@@ -34,7 +34,7 @@ import { UpdateWsComponent } from 'app/manage-ws/update-ws/update-ws.component';
 import { ManageOffersComponent } from 'app/manage-offers/manage-offers.component';
 import { NewOfferComponent } from 'app/manage-offers/new-offer/new-offer.component';
 import { UpdateOfferComponent } from 'app/manage-offers/update-offer/update-offer.component';
-
+import { UpdateAchatComponent } from 'app/manage-achats/update-achat/update-achat.component';
 @NgModule({
   imports: [
     CommonModule,
@@ -74,7 +74,8 @@ import { UpdateOfferComponent } from 'app/manage-offers/update-offer/update-offe
     UpdateWsComponent,
     ManageOffersComponent,
     NewOfferComponent,
-    UpdateOfferComponent
+    UpdateOfferComponent,
+    UpdateAchatComponent
   ]
 })
 
