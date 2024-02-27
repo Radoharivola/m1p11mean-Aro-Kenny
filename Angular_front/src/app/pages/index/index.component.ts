@@ -175,17 +175,17 @@ export class IndexComponent implements OnInit, OnDestroy {
       this.message = "Veuillez choisir une date!";
       return;
     }
-    if (this.isSwitchOn) {
-      if (!this.phoneRegex.test(this.formData.numero)) {
-        this.success = false;
-        this.error = true;
-        setTimeout(() => {
-          this.error = false;
-        }, 5000);
-        this.message = "Numero de telephone invalide!";
-      }
-      return;
-    }
+    // if (this.isSwitchOn) {
+    //   if (!this.phoneRegex.test(this.formData.numero)) {
+    //     this.success = false;
+    //     this.error = true;
+    //     setTimeout(() => {
+    //       this.error = false;
+    //     }, 5000);
+    //     this.message = "Numero de telephone invalide!";
+    //   }
+    //   return;
+    // }
     if (this.selectedServices.length == 0 || this.totalPrice == 0) {
       this.success = false;
       this.error = true;
@@ -200,7 +200,7 @@ export class IndexComponent implements OnInit, OnDestroy {
         "employee": this.formData.employee,
         "services": this.selectedServices,
         "total": this.totalPrice,
-        "paid": this.formData.paid,
+        "paid": this.totalPrice,
         "date": this.formData.date
       };
       this.rdvservice.newRdv({ data }).subscribe(

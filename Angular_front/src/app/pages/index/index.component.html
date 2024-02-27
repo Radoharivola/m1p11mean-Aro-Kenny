@@ -84,12 +84,12 @@
                     </div>
                   </div>
                   <hr />
-                  <div class="input-group">
+                  <!-- <div class="input-group">
                     <span class="category">Avance (mobile money)</span>
                     <bSwitch [switch-on-color]="'blue'" [switch-on-text]="'oui'" [switch-off-text]="'non'"
                       [switch-off-color]="'danger'" [(ngModel)]="isSwitchOn" name="bswitch"></bSwitch>
-                  </div>
-                  <div *ngIf="isSwitchOn">
+                  </div> -->
+                  <!-- <div *ngIf="isSwitchOn">
                     <div class="input-group">
                       <div class="input-group-prepend">
                         <div class="input-group-text">
@@ -109,7 +109,7 @@
                       <input class="form-control" placeholder="Montant" type="number" name="paid"
                         [(ngModel)]="formData.paid" />
                     </div>
-                  </div>
+                  </div> -->
                   <alert *ngIf="error" class="alert-with-icon" [type]="'warning alert-with-icon'" [dismissible]="true">
                     <span class="tim-icons icon-alert-circle-exc" data-notify="icon"> </span>
                     <span>

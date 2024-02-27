@@ -3,6 +3,8 @@ var router = express.Router();
 const WorkSchedule = require('../models/WorkSchedule');
 const Rdv = require('../models/Rdv');
 const User = require('../models/User');
+const Bank = require('../models/Bank');
+
 const verifyToken = require('../middleware/authMiddleware');
 // const Service = require('../models/Service');
 
@@ -14,6 +16,15 @@ router.post('/new', verifyToken, async (req, res) => {
         const foundClient = await User.findOne({ _id: client });
         if (!foundClient) {
             return res.status(400).json({ error: 'Client not found' });
+        }
+
+        let bank = await Bank.findOne({ 'client._id': foundClient._id });
+        if (!bank) {
+            return res.status(409).json({ message: "Votre solde est insuffisant" });
+        }
+        if (bank.solde < total) {
+            return res.status(409).json({ message: "Votre solde est insuffisant" });
+
         }
         // const foundService = await Service.findOne({ _id: service });
         // if (!foundService) {
@@ -142,9 +153,12 @@ router.post('/new', verifyToken, async (req, res) => {
             if (result1) {
                 return res.status(409).json({ message: "Vous avez déja un rendez-vous prévu pour cette date.", rdv: result, selectedEmp: foundEmployee });
             }
-            await rdv.save();
+            bank.solde -= total;
 
-            return res.status(200).json({ message: "Rendez-vous programmé!", rdv: rdv });
+            await rdv.save();
+            await bank.save();
+
+            return res.status(200).json({ message: "Rendez-vous programmé!", rdv: rdv, bank: bank });
         } else {
             // return res.status(409).json({ message: "no emp"});
             const sumOfDurations = services.reduce((total, service) => total + service.duration, 0);
@@ -245,9 +259,12 @@ router.post('/new', verifyToken, async (req, res) => {
             if (result1) {
                 return res.status(409).json({ message: "Vous avez déja un rendez-vous prévu pour cette date.", rdv: result, selectedEmp: foundEmployee });
             }
-            await rdv.save();
+            bank.solde -= total;
 
-            return res.status(200).json({ message: "Rendez-vous programmé!", rdv: rdv });
+            await rdv.save();
+            await bank.save();
+
+            return res.status(200).json({ message: "Rendez-vous programmé!", rdv: rdv, bank: bank });
         }
     } catch (error) {
         console.error(error);
