@@ -27,6 +27,7 @@ export class DashboardComponent implements OnInit {
   ];
   currentYear: number = new Date().getFullYear();
   currentMonth: number = new Date().getMonth() + 1;
+  commission: number;
 
   // Generate the years array from the current year to 2024
   years: number[];
@@ -334,6 +335,14 @@ export class DashboardComponent implements OnInit {
     this.rdvservice.getRdv({ 'dateInit': dateInit, 'dateFin': dateFin, 'limit': 100, 'page': 1, 'dateSort': this.todayDoneDateSort, 'done': true }).subscribe(response => {
       console.log(response.body.rdvs);
       this.todaysDoneRdv = response.body.rdvs;
+      var comission = 0;
+      this.todaysDoneRdv.forEach(today => {
+        today.services.forEach(service => {
+          console.log(service);
+          comission=service.price*service.commission/100;
+        });
+      });
+      this.commission=comission;
     },
       error => {
         console.log(error);
