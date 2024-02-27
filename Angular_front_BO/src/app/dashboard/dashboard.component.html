@@ -299,13 +299,13 @@
                     <div class="card-body">
                         <h4 class="card-title">Nombre de renez-vous journalier/mois</h4>
                         <p class="card-category">
-                            <select [(ngModel)]="monthRdvPDPM" (change)="refreshRdvPDPM()">
+                            <select class="shit" [(ngModel)]="monthRdvPDPM" (change)="refreshRdvPDPM()">
                                 <option *ngFor="let month of monthList" [value]="month.index"
                                     [attr.selected]="month.index === currentMonth ? true : null">
                                     {{ month.month }}
                                 </option>
                             </select>
-                            <select [(ngModel)]="yearRdvPDPM" (change)="refreshRdvPDPM()">
+                            <select class="shit" [(ngModel)]="yearRdvPDPM" (change)="refreshRdvPDPM()">
                                 <option *ngFor="let year of years" value="{{year}}">{{year}}</option>
                             </select>
                         </p>
@@ -319,7 +319,7 @@
                     </div>
                     <div class="card-body">
                         <h4 class="card-title">Nombre de rendez-vous mensuel</h4>
-                        <select [(ngModel)]="yearRdvPMPY" (change)="refreshRdvPMPY()">
+                        <select class="shit" [(ngModel)]="yearRdvPMPY" (change)="refreshRdvPMPY()">
                             <option *ngFor="let year of years" value="{{year}}">{{year}}</option>
                         </select>
                     </div>
@@ -334,7 +334,7 @@
                     </div>
                     <div class="card-body">
                         <h4 class="card-title">Chiffre d'affaire mensuel</h4>
-                        <select [(ngModel)]="yearCaPMPY" (change)="refreshCaPMPY()">
+                        <select class="shit" [(ngModel)]="yearCaPMPY" (change)="refreshCaPMPY()">
                             <option *ngFor="let year of years" value="{{year}}">{{year}}</option>
                         </select>
                     </div>
@@ -347,13 +347,13 @@
                     </div>
                     <div class="card-body">
                         <h4 class="card-title">Chiffre d'affaire journalier/mois</h4>
-                        <select [(ngModel)]="monthCaPDPM" (change)="refreshCaPDPM()">
+                        <select class="shit" [(ngModel)]="monthCaPDPM" (change)="refreshCaPDPM()">
                             <option *ngFor="let month of monthList" [value]="month.index"
                                 [attr.selected]="month.index === currentMonth ? true : null">
                                 {{ month.month }}
                             </option>
                         </select>
-                        <select [(ngModel)]="yearCaPDPM" (change)="refreshCaPDPM()">
+                        <select class="shit" [(ngModel)]="yearCaPDPM" (change)="refreshCaPDPM()">
                             <option *ngFor="let year of years" value="{{year}}">{{year}}</option>
                         </select>
                     </div>
@@ -367,7 +367,7 @@
                     </div>
                     <div class="card-body">
                         <h4 class="card-title">Bénéfices mensuels</h4>
-                        <select [(ngModel)]="yearBenefits" (change)="refreshYearBenefits()">
+                        <select class="shit" [(ngModel)]="yearBenefits" (change)="refreshYearBenefits()">
                             <option *ngFor="let year of years" value="{{year}}">{{year}}</option>
                         </select>
                     </div>
