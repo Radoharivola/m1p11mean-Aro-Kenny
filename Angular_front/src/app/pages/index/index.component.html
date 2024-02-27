@@ -60,8 +60,7 @@
                       <option [ngValue]="null" class="form-control">
                         Non spécifié
                       </option>
-                      <option [ngValue]="employee._id" class="form-control" *ngFor="let employee of employees;"
-                        [selected]="employees[0]._id">
+                      <option [ngValue]="employee._id" class="form-control" *ngFor="let employee of employees;">
                         {{ employee.firstName }} {{employee.lastName }}
                       </option>
 
@@ -166,12 +165,6 @@
                                 <p class="text-white mt-4">{{service.name}}</p>
                               </li>
                             </ul>
-                          </div>
-                          <div class="card-footer text-center">
-                            <button class="btn btn-warning btn-round mr-1" type="button"
-                              (click)="setSelectedServices(offer.services,offer.reduction)">
-                              Prendre rendez-vous
-                            </button>
                           </div>
                         </div>
                       </div>
