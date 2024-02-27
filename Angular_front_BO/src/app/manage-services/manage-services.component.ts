@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { Router, NavigationEnd } from '@angular/router';
+import { ServiceService } from '../services/service.service';
 
 @Component({
   selector: 'app-manage-services',
@@ -7,9 +9,35 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ManageServicesComponent implements OnInit {
 
-  constructor() { }
+  constructor(private router: Router, private serviceService: ServiceService) { }
+  services: any[];
 
   ngOnInit(): void {
+    this.fetchServices();
+  }
+
+  navigateToAdd() {
+    this.router.navigate(['/services/new']);
+  }
+
+  navigateToUpdate(id: string) {
+    this.router.navigate(['/services/update', id]);
+  }
+
+  fetchServices() {
+    this.serviceService.getServices().subscribe(data => {
+      this.services = data.services;
+      console.log(data.services);
+    });
+  }
+
+  delete(id: string) {
+    this.serviceService.deleteService(id).subscribe(data => {
+      console.log(data);
+      this.fetchServices();
+    }, error => {
+      console.log(error);
+    })
   }
 
 }

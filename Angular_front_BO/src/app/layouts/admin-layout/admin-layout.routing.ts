@@ -94,8 +94,13 @@ export const AdminLayoutRoutes: Routes = [
         }, {
             path: 'new',
             component: NewServiceComponent
+
+        },{
+            path: 'update/:id',
+
         }, {
             path: 'update',
+
             component: UpdateServiceComponent
         }]
     },

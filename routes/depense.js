@@ -73,21 +73,22 @@ router.delete('/delete/:depenseId', async (req, res) => {
 
 
 
-router.get('/offers', async (req, res, next) => {
-    var offers = await Depense.find();
-    return res.status(200).json({ offers });
+router.get('/achats', async (req, res, next) => {
+    var achats = await Depense.find();
+    //console.log(achats);
+    return res.status(200).json({ achats });
 });
 
-router.get('/offers/:date', async (req, res, next) => {
+router.get('/achats/:date', async (req, res, next) => {
     const dateToCheck = new Date(req.params.date).toISOString();
     console.log(dateToCheck);
-    const offers = await Depense.find({
+    const achats = await Depense.find({
         $and: [
             { dateDebut: { $lte: dateToCheck } }, // Check if dateDebut is less than or equal to given date
             { dateFin: { $gte: dateToCheck } }    // Check if dateFin is greater than or equal to given date
         ]
     });
-    return res.status(200).json({ offers });
+    return res.status(200).json({ achats });
 });
 
 module.exports = router; 

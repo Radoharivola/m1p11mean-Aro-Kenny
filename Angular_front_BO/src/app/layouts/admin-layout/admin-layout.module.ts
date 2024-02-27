@@ -20,6 +20,12 @@ import { NgxDropzoneModule } from 'ngx-dropzone';
 import { UpdateEmployeeComponent } from 'app/manage-employees/update-employee/update-employee.component';
 import { NewEmployeeComponent } from 'app/manage-employees/new-employee/new-employee.component';
 import { ManageEmployeesComponent } from 'app/manage-employees/manage-employees.component';
+
+import { ManageServicesComponent } from 'app/manage-services/manage-services.component';
+import { NewServiceComponent } from 'app/manage-services/new-service/new-service.component';
+import { UpdateServiceComponent } from 'app/manage-services/update-service/update-service.component';
+import { ManageAchatsComponent } from 'app/manage-achats/manage-achats.component';
+import { NewAchatComponent } from 'app/manage-achats/new-achat/new-achat.component';
 import { LoginComponent } from '../../login/login.component';
 import { RelativeTimePipe } from '../../pipes/relative-time.pipe';
 import { MatIconModule } from '@angular/material/icon';
@@ -55,6 +61,13 @@ import { UpdateOfferComponent } from 'app/manage-offers/update-offer/update-offe
     UpdateEmployeeComponent,
     NewEmployeeComponent,
     ManageEmployeesComponent,
+
+    ManageServicesComponent,
+    NewServiceComponent,
+    UpdateServiceComponent,
+    ManageAchatsComponent,
+    NewAchatComponent
+
     LoginComponent,
     RelativeTimePipe,
     ManageWsComponent,
