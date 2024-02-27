@@ -5,6 +5,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { Router } from "@angular/router";
 import { PreferenceService } from '../../services/preference.service';
 import { ServiceService } from "src/app/services/service.service";
+import { BankService } from '../../services/bank.service';
 @Component({
   selector: "app-profilepage",
   templateUrl: "profilepage.component.html",
@@ -31,8 +32,9 @@ export class ProfilepageComponent implements OnInit, OnDestroy {
   // rdv: any = [];
   prefServices: any[] = [];
   prefEmps: any[] = [];
-
-  constructor(private rdvservice: RdvService, private userService: UserService, private sanitizer: DomSanitizer, private route: Router, private preferenceservice: PreferenceService, private serviceservice: ServiceService) { }
+  refill: number = 0;
+  solde: any;
+  constructor(private rdvservice: RdvService, private userService: UserService, private sanitizer: DomSanitizer, private route: Router, private preferenceservice: PreferenceService, private serviceservice: ServiceService, private bankservice: BankService) { }
 
   ngOnInit() {
     var body = document.getElementsByTagName("body")[0];
@@ -43,10 +45,28 @@ export class ProfilepageComponent implements OnInit, OnDestroy {
     this.fetcPrefEmps();
     this.fetchServices();
     this.fetchEmployees();
+    this.fetchBank();
   }
 
-
-
+  refillBank() {
+    console.log(this.refill);
+    const data = {
+      solde: this.refill
+    }
+    this.bankservice.refill(data).subscribe(data => {
+      console.log(data);
+      this.fetchBank();
+    }, err => {
+      console.log(err);
+    });
+  }
+  fetchBank() {
+    this.bankservice.get().subscribe(res => {
+      this.solde = res.body.solde;
+    }, err => {
+      console.log(err);
+    });
+  }
   isInPrefServices(service: any): boolean {
     return this.prefServices.some(pref => pref.service._id === service._id);
   }

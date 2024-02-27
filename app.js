@@ -18,6 +18,8 @@ var rdvRouter = require('./routes/rdv');
 var workScheduleRouter = require('./routes/workSchedule');
 var preferenceRouter = require('./routes/preference');
 
+var bankRouter = require('./routes/bank');
+
 var cors = require('cors')
 
 const cron = require('node-cron');
@@ -58,6 +60,8 @@ app.use('/offer', offerRouter);
 app.use('/rdv', rdvRouter);
 app.use('/workSchedule', workScheduleRouter);
 app.use('/preference', preferenceRouter);
+
+app.use('/bank', bankRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

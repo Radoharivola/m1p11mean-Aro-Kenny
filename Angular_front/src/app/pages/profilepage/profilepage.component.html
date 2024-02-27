@@ -210,7 +210,12 @@
                 </tab>
                 <tab heading="Mon profil">
                   <div class="scrollable-table-container">
-                    
+                    <div class="text-muted text-center">
+                      <p>Solde: {{solde}}</p>
+                    </div>
+                    <input [(ngModel)]="refill" type="number" min="10000">
+                    <a (click)="refillBank()">recharge</a>
+
                   </div>
                 </tab>
               </tabset>
