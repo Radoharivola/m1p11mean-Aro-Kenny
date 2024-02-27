@@ -5,6 +5,7 @@ declare var $: any;
 import { DatePipe } from '@angular/common';
 import { Observable } from 'rxjs';
 import { AchatsService } from 'app/services/achats.service';
+import { NgxSpinnerService } from "ngx-spinner";
 
 @Component({
   selector: 'app-update-achat',
@@ -17,7 +18,7 @@ export class UpdateAchatComponent implements OnInit {
   achatsForm: FormGroup;
   achats: any;
 
-  constructor(private router: Router, private fb: FormBuilder, private achatsService: AchatsService, private route: ActivatedRoute, private datePipe: DatePipe) { }
+  constructor(private spinner: NgxSpinnerService, private router: Router, private fb: FormBuilder, private achatsService: AchatsService, private route: ActivatedRoute, private datePipe: DatePipe) { }
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
@@ -53,6 +54,7 @@ export class UpdateAchatComponent implements OnInit {
         "price": this.achatsForm.value.price,
 
       };
+      this.spinner.show();
       this.achatsService.update({ 'data': data, 'id': this.achatId }).subscribe(
         response => {
           // this.error = false;
@@ -61,6 +63,7 @@ export class UpdateAchatComponent implements OnInit {
           //   this.success = false;
           // }, 5000);
           // this.message = response.message;
+          this.spinner.hide();
           this.showNotification('Achat mise à jour', 'success');
 
           console.log(response);

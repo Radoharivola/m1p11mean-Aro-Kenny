@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { AchatsService } from 'app/services/achats.service';
+import { NgxSpinnerService } from "ngx-spinner";
 
 @Component({
   selector: 'app-manage-achats',
@@ -9,7 +10,7 @@ import { AchatsService } from 'app/services/achats.service';
 })
 export class ManageAchatsComponent implements OnInit {
 
-  constructor(private router: Router, private achatsService: AchatsService) { }
+  constructor(private spinner: NgxSpinnerService, private router: Router, private achatsService: AchatsService) { }
   achats: any[];
 
   ngOnInit(): void {
@@ -25,9 +26,12 @@ export class ManageAchatsComponent implements OnInit {
   }
 
   fetchAchats() {
+    this.spinner.show();
     this.achatsService.getAchats().subscribe(data => {
       this.achats = data.achats;
       console.log(data);
+      this.spinner.hide();
+
     });
   }
 
