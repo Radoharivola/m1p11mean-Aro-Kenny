@@ -79,57 +79,64 @@ app.use(function (err, req, res, next) {
   res.render('error');
 });
 
-// cron.schedule('* * * * *', async () => {
-//   console.log('llllll');
-//   // Find all appointments 1 hour from now
-//   const oneHourFromNow = new Date(Date.now() + 60 * 60 * 1000);
-//   const rdvs = await Rdv.find({ date: { $gt: new Date(), $lte: oneHourFromNow } });
-//   console.log(rdvs);
-//   rdvs.forEach(async (rdv) => {
-//     try {
-//       await sendEmail(rdv.client.email, 'Rendez-vous Manjatiana', `Vous avez un rendez-vous prévu à ${rdv.date}.`);
-//     } catch (error) {
-//       console.error('Error sending email:', error);
-//     }
-//   });
-// });
+cron.schedule('0 6 * * *', async () => {
+  // Find all appointments 1 hour from now
+  const oneHourFromNow = new Date(Date.now() + 60 * 60 * 1000);
+  const rdvs = await Rdv.find({ date: { $gt: new Date(), $lte: oneHourFromNow } });
+  console.log(rdvs);
+  rdvs.forEach(async (rdv) => {
+    try {
+      await sendEmail(rdv.client.email, 'Rendez-vous Manjatiana', `Vous avez un rendez-vous prévu à ${rdv.date}.`);
+    } catch (error) {
+      console.error('Error sending email:', error);
+    }
+  });
+});
 
 
-// cron.schedule('* * * * *', async () => {
+cron.schedule('0 8 * * *', async () => {
 
-//   try {
-//     // Find offers for today
-//     const dateToCheck = new Date().toISOString();
+  try {
+    // Find offers for today
+    const dateToCheck = new Date().toISOString();
 
-//     const offers = await Offer.find({
-//         $and: [
-//             { dateDebut: { $lte: dateToCheck } }, // Check if dateDebut is less than or equal to given date
-//             { dateFin: { $gte: dateToCheck } }    // Check if dateFin is greater than or equal to given date
-//         ]
-//     });
-//     console.log(offers);
-//     if (offers.length === 0) {
-//         console.log('No offers available for today.');
-//         return;
-//     }
+    const offers = await Offer.find({
+      $and: [
+        { dateDebut: { $lte: dateToCheck } }, // Check if dateDebut is less than or equal to given date
+        { dateFin: { $gte: dateToCheck } }    // Check if dateFin is greater than or equal to given date
+      ]
+    });
+    if (offers.length === 0) {
+      return;
+    }
 
-//     // Find clients with role 'client'
-//     const clients = await User.find({ 'role.roleName': 'client' });
-//     console.log(clients);
-//     // Send email to each client
-//     clients.forEach(async (client) => {
-//         offers.forEach(async (offer) => {
-//             try {
-//                 await sendEmail(client.email, 'Offre spéciale', offer.description);
-//             } catch (error) {
-//                 console.error('Error sending email:', error);
-//             }
-//         });
-//     });
-// } catch (error) {
-//     console.error('Error checking offers:', error);
-// }
-// });
+    // Find clients with role 'client'
+    const clients = await User.find({ 'role.roleName': 'client' });
+
+    clients.forEach(async (client) => {
+      offers.forEach(async (offer) => {
+        let string = '';
+        offer.services.forEach(service => {
+          string += '<li>' + service.name + '</li>';
+        });
+
+        const htmlContent = `<h1>${offer.description}</h1><p>Réduction de ${offer.reduction}% pour les services suivants:</p><ul>${string}</ul>`;
+
+        try {
+          await sendEmail(client.email, 'Offre spéciale', htmlContent);
+        } catch (error) {
+          console.error('Error sending email:', error);
+        }
+      });
+    });
+  } catch (error) {
+    console.error('Error checking offers:', error);
+  }
+});
+
+
+
+
 
 async function sendEmail(to, subject, body) {
   // Configure nodemailer with your email service details
