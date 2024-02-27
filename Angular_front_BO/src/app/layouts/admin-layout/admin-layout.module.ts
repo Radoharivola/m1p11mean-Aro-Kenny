@@ -23,6 +23,8 @@ import { ManageEmployeesComponent } from 'app/manage-employees/manage-employees.
 import { ManageServicesComponent } from 'app/manage-services/manage-services.component';
 import { NewServiceComponent } from 'app/manage-services/new-service/new-service.component';
 import { UpdateServiceComponent } from 'app/manage-services/update-service/update-service.component';
+import { ManageAchatsComponent } from 'app/manage-achats/manage-achats.component';
+import { NewAchatComponent } from 'app/manage-achats/new-achat/new-achat.component';
 @NgModule({
   imports: [
     CommonModule,
@@ -50,7 +52,9 @@ import { UpdateServiceComponent } from 'app/manage-services/update-service/updat
     ManageEmployeesComponent,
     ManageServicesComponent,
     NewServiceComponent,
-    UpdateServiceComponent
+    UpdateServiceComponent,
+    ManageAchatsComponent,
+    NewAchatComponent
   ]
 })
 
