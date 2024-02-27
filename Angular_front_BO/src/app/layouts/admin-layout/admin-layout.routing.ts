@@ -97,7 +97,7 @@ export const AdminLayoutRoutes: Routes = [
 
         },{
             path: 'update/:id',
-
+            component: UpdateServiceComponent
         }, {
             path: 'update',
 

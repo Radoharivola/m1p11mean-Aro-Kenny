@@ -26,7 +26,7 @@ export class ManageServicesComponent implements OnInit {
 
   fetchServices() {
     this.serviceService.getServices().subscribe(data => {
-      this.services = data.services;
+      this.services = data.body.services;
       console.log(data.services);
     });
   }

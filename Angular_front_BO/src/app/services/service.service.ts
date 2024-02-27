@@ -33,7 +33,7 @@ httpOptions = {
   getService(id: string): Observable<any> {
     return this.http.get('http://127.0.0.1:3000/service/service/' + id);
 
-  
+  }
   getServices(): Observable<any> {
     return this.http.get('http://127.0.0.1:3000/service/services', this.httpOptions);
 

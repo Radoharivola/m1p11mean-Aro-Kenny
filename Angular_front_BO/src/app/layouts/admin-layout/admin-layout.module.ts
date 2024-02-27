@@ -66,7 +66,7 @@ import { UpdateOfferComponent } from 'app/manage-offers/update-offer/update-offe
     NewServiceComponent,
     UpdateServiceComponent,
     ManageAchatsComponent,
-    NewAchatComponent
+    NewAchatComponent,
 
     LoginComponent,
     RelativeTimePipe,
