@@ -95,14 +95,14 @@ export const AdminLayoutRoutes: Routes = [
             path: 'new',
             component: NewServiceComponent
 
-        },{
+        }, {
             path: 'update/:id',
             component: UpdateServiceComponent
         }, {
             path: 'update',
 
             component: UpdateServiceComponent
-        }]
+        }], canActivate: [AuthGuardService]
     },
     {
         path: 'employees', children: [{
@@ -126,7 +126,7 @@ export const AdminLayoutRoutes: Routes = [
         }, {
             path: 'update/:id',
             component: UpdateOfferComponent
-        }]
+        }], canActivate: [AuthGuardService]
     },
     {
         path: 'achats', children: [{
@@ -138,7 +138,7 @@ export const AdminLayoutRoutes: Routes = [
         }, {
             path: 'update/:id',
             component: UpdateAchatComponent
-        }]
+        }], canActivate: [AuthGuardService]
     },
     {
         path: 'ws', children: [{
@@ -150,6 +150,6 @@ export const AdminLayoutRoutes: Routes = [
         }, {
             path: 'update/:id',
             component: UpdateWsComponent
-        }]
+        }], canActivate: [AuthGuardService]
     },
 ];

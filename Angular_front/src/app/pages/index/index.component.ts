@@ -7,6 +7,9 @@ import { UserService } from '../../services/user.service';
 import { OfferService } from '../../services/offer.service';
 import { Router } from "@angular/router";
 
+import { NgxSpinnerService } from "ngx-spinner";
+
+
 @Component({
   selector: "app-index",
   templateUrl: "index.component.html",
@@ -41,16 +44,22 @@ export class IndexComponent implements OnInit, OnDestroy {
 
 
 
-  constructor(private serviceService: ServiceService, private userService: UserService, private rdvservice: RdvService, private offerservice: OfferService, private route: Router) { }
+  constructor(private spinner: NgxSpinnerService, private serviceService: ServiceService, private userService: UserService, private rdvservice: RdvService, private offerservice: OfferService, private route: Router) { }
 
   ngOnInit() {
     var body = document.getElementsByTagName("body")[0];
     body.classList.add("index-page");
-    this.fetchServices();
-    this.fetchEmployees();
-    this.fetchTodaysRdv();
-    this.fetchRdvHistory(this.page);
-    this.fetchOffers();
+    Promise.all([this.spinner.show(),
+    this.fetchServices(),
+    this.fetchEmployees(),
+    this.fetchTodaysRdv(),
+    this.fetchRdvHistory(this.page),
+    this.fetchOffers()]).then(() => {
+      this.spinner.hide();
+    }).catch(error => {
+      console.error('Error fetching data:', error);
+      this.spinner.hide();
+    });
   }
   ngOnDestroy() {
     var body = document.getElementsByTagName("body")[0];
@@ -76,58 +85,73 @@ export class IndexComponent implements OnInit, OnDestroy {
   }
 
   fetchServices() {
-    this.serviceService.getServices().subscribe(data => {
-      this.services = data.services;
-    });
+    return new Promise<void>((resolve, reject) => {
+      this.serviceService.getServices().subscribe(data => {
+        this.services = data.services;
+        resolve();
+      });
+    })
+
   }
   fetchEmployees() {
-    this.userService.getEmployees().subscribe(data => {
-      console.log(data.body.employees);
-      this.employees = data.body.employees;
-    });
+    return new Promise<void>((resolve, reject) => {
+
+      this.userService.getEmployees().subscribe(data => {
+        this.employees = data.body.employees;
+        resolve();
+      });
+    })
+
   }
   fetchTodaysRdv() {
-    const today = new Date();
+    return new Promise<void>((resolve, reject) => {
 
-    const dateInit = today.toISOString();
+      const today = new Date();
 
-    today.setHours(23, 59, 59, 999);
-    const dateFin = today.toISOString();
-    this.rdvservice.getRdv({ 'dateInit': dateInit, 'dateFin': dateFin, 'limit': 10, 'page': 1, 'dateSort': 1 }).subscribe(response => {
-      console.log(response);
-      this.todaysRdv = response.body.rdvs;
-    },
-      error => {
-        this.userService.logout().subscribe(res => {
-          localStorage.removeItem('uToken');
-          localStorage.removeItem('username');
-          this.route.navigate(['/login']);
-        }, err => {
-          console.log(err);
-        }
-        );
-        console.log(error);
-      });
+      const dateInit = today.toISOString();
+
+      today.setHours(23, 59, 59, 999);
+      const dateFin = today.toISOString();
+      this.rdvservice.getRdv({ 'dateInit': dateInit, 'dateFin': dateFin, 'limit': 10, 'page': 1, 'dateSort': 1 }).subscribe(response => {
+        this.todaysRdv = response.body.rdvs;
+        resolve();
+      },
+        error => {
+          this.userService.logout().subscribe(res => {
+            localStorage.removeItem('uToken');
+            localStorage.removeItem('username');
+            this.route.navigate(['/login']);
+          }, err => {
+            console.log(err);
+          }
+          );
+          console.log(error);
+        });
+    })
+
   }
 
   fetchRdvHistory(page) {
-    const today = new Date();
-    const dateFin = today.toISOString();
+    return new Promise<void>((resolve, reject) => {
 
-    const dateInit = new Date("1970-01-01").toISOString();
+      const today = new Date();
+      const dateFin = today.toISOString();
 
-    this.rdvservice.getRdv({ 'dateInit': dateInit, 'dateFin': dateFin, 'limit': this.limit, 'page': page, 'dateSort': this.dateSort }).subscribe(response => {
-      if (this.page == 1) {
-        this.history = response.body.rdvs;
-        console.log(response.body.rdvs);
-      } else {
-        this.history = this.history.concat(response.body.rdvs);
-      }
-      this.totalPages = response.body.totalPages;
-    },
-      error => {
-        console.log(error);
-      });
+      const dateInit = new Date("1970-01-01").toISOString();
+
+      this.rdvservice.getRdv({ 'dateInit': dateInit, 'dateFin': dateFin, 'limit': this.limit, 'page': page, 'dateSort': this.dateSort }).subscribe(response => {
+        if (this.page == 1) {
+          this.history = response.body.rdvs;
+        } else {
+          this.history = this.history.concat(response.body.rdvs);
+        }
+        this.totalPages = response.body.totalPages;
+        resolve();
+      },
+        error => {
+          console.log(error);
+        });
+    })
   }
 
   flipDateSort() {
@@ -151,7 +175,7 @@ export class IndexComponent implements OnInit, OnDestroy {
   updateSelectedServices(service: any, isChecked: boolean) {
     if (isChecked) {
       this.selectedServices.push(service);
-      this.totalPrice += service.price; 
+      this.totalPrice += service.price;
     } else {
       const index = this.selectedServices.indexOf(service);
       if (index !== -1) {
