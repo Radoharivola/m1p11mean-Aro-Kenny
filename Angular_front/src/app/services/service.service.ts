@@ -6,11 +6,9 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class ServiceService {
-
   constructor(private http: HttpClient) { }
-
-
   getServices(): Observable<any> {
+    console.log('getting services')
     return this.http.get('http://127.0.0.1:3000/service/services');
   }
 }

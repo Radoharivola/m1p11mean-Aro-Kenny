@@ -10,9 +10,9 @@
         <div class="col-lg-12 col-md-12 ml-auto mr-auto">
           <div class="card card-coin card-plain">
             <div class="card-header">
-              <img class="img-center img-fluid rounded-circle" src="assets/img/mike.jpg" />
+              <img class="img-center img-fluid rounded-circle" [src]="image" />
 
-              <h4 class="title">Jean Aimé</h4>
+              <!-- <h4 class="title">{{user.firstName}} {{user.lastName}}</h4> -->
             </div>
             <div class="card-body">
               <tabset class="nav-tabs-danger justify-content-center tab-subcategories">
@@ -71,82 +71,151 @@
 
                   </ng-template>
                 </tab>
-                <tab heading="Rendez-vous">
-                  <div class="table-responsive">
-                    <table class="table tablesorter" id="plain-table">
-                      <thead class="text-danger">
-                        <tr>
-                          <th class="header">Date</th>
-                          <th class="header">services</th>
-                          <th class="header">employé</th>
-                          <th class="header">reste à payer</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr>
-                          <td>Jeudi 12 février 2023</td>
-                          <td>patati patata patata patata patata patata</td>
-                          <td>Jean</td>
-                          <td>10000</td>
-                          <td>
-                            <button class="btn btn-default btn-icon mr-1" type="button">
-                              <i class="tim-icons icon-settings-gear-63"> </i>
-                            </button>
-                            <button class="btn btn-danger btn-icon mr-1" type="button">
-                              <i class="tim-icons icon-trash-simple"> </i>
-                            </button>
 
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
+                <tab heading="Employés">
+                  <div class="scrollable-table-container">
+                    <div *ngIf="prefEmps && prefEmps.length > 0; else noPE" (scroll)="onContainerScroll()">
+                      <table class="table" id="plain-table">
+                        <thead class="text-danger">
+                          <tr>
+                            <th class="header">employé pref</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr *ngFor="let pref of prefEmps">
+
+                            <td>{{pref.employee.firstName}} {{pref.employee.lastName}}</td>
+                            <td>
+                              <button class="btn btn-danger btn-icon mr-1" type="button" data-target="#myModal1"
+                                (click)="updatePrefEmp(pref.employee)">
+                                <i class="tim-icons icon-trash-simple"> </i>
+                              </button>
+
+
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+
+                    </div>
+                    <ng-template #noPE>
+                      <div class="text-muted text-center">
+                        <p>Aucun employé préféré</p>
+                      </div>
+
+
+                    </ng-template>
+                    <hr />
+                    <div *ngIf="employees && employees.length > 0; else noEmp" (scroll)="onContainerScroll()">
+                      <table class="table" id="plain-table">
+                        <thead class="text-danger">
+                          <tr>
+                            <th class="header">employé</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <ng-container *ngFor="let emp of employees">
+                            <tr *ngIf="!isInPrefEmps(emp)">
+                              <td>{{emp.firstName}} {{emp.lastName}}</td>
+                              <td>
+                                <!-- <button class="btn btn-default btn-icon mr-1" type="button" data-target="#myModal" (click)="myModal.show();loadRdvData(rdv._id)"> -->
+                                <button class="btn btn-default btn-icon mr-1" type="button" data-target="#myModal"
+                                  (click)="updatePrefEmp(emp)">
+                                  <i class="tim-icons icon-heart-2"> </i>
+                                </button>
+
+                              </td>
+                            </tr>
+                          </ng-container>
+                        </tbody>
+                      </table>
+
+                    </div>
+                    <ng-template #noEmp>
+                      <div class="text-muted text-center">
+                        <p>Aucun employé</p>
+                      </div>
+
+
+                    </ng-template>
                   </div>
                 </tab>
-                <tab heading="Préférences">
-                  <div class="row">
-                    <label class="col-sm-3 col-form-label"> Pay to </label>
-                    <div class="col-sm-9">
-                      <div class="form-group">
-                        <input class="form-control" placeholder="e.g. 1Nasd92348hU984353hfid" type="text" />
+                <tab heading="Services">
+                  <div class="scrollable-table-container">
+                    <div *ngIf="prefServices && prefServices.length > 0; else noPS" (scroll)="onContainerScroll()">
+                      <table class="table" id="plain-table">
+                        <thead class="text-danger">
+                          <tr>
+                            <th class="header">Services préférés</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr *ngFor="let pref of prefServices">
+                            <td>{{pref.service.name}}</td>
+                            <td>
+                              <button class="btn btn-danger btn-icon mr-1" type="button" data-target="#myModal1"
+                                (click)="updatePrefService(pref.service)">
+                                <i class="tim-icons icon-trash-simple"> </i>
+                              </button>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
 
-                        <span class="form-text">
-                          Please enter a valid address.
-                        </span>
-                      </div>
                     </div>
-                  </div>
-                  <div class="row">
-                    <label class="col-sm-3 col-form-label"> Amount </label>
-                    <div class="col-sm-9">
-                      <div class="form-group">
-                        <input class="form-control" placeholder="1.587" type="text" />
+                    <ng-template #noPS>
+                      <div class="text-muted text-center">
+                        <p>Aucun service préféré</p>
                       </div>
+
+
+                    </ng-template>
+                    <hr />
+                    <div *ngIf="services && services.length > 0; else noS" (scroll)="onContainerScroll()">
+                      <table class="table" id="plain-table">
+                        <thead class="text-danger">
+                          <tr>
+                            <th class="header">Service</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <ng-container *ngFor="let service of services">
+
+                            <tr *ngIf="!isInPrefServices(service)">
+
+                              <td>{{service.name}}</td>
+                              <td>
+                                <!-- <button class="btn btn-default btn-icon mr-1" type="button" data-target="#myModal" (click)="myModal.show();loadRdvData(rdv._id)"> -->
+                                <button class="btn btn-default btn-icon mr-1" type="button" data-target="#myModal"
+                                  (click)="updatePrefService(service)">
+                                  <i class="tim-icons icon-heart-2"> </i>
+                                </button>
+
+                              </td>
+                            </tr>
+                          </ng-container>
+
+                        </tbody>
+                      </table>
+
                     </div>
+                    <ng-template #noS>
+                      <div class="text-muted text-center">
+                        <p>Aucun service</p>
+                      </div>
+
+
+                    </ng-template>
                   </div>
-                  <button class="btn btn-simple btn-danger btn-icon btn-round float-right" type="submit">
-                    <i class="tim-icons icon-send"> </i>
-                  </button>
                 </tab>
                 <tab heading="Mon profil">
-                  <div class="table-responsive">
-                    <table class="table tablesorter" id="plain-table">
-                      <thead class="text-danger">
-                        <tr>
-                          <th class="header">Latest Crypto News</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr>
-                          <td>The Daily: Nexo to Pay on Stable...</td>
-                        </tr>
-                        <tr>
-                          <td>Venezuela Begins Public of Nation...</td>
-                        </tr>
-                        <tr>
-                          <td>PR: BitCanna â Dutch Blockchain...</td>
-                        </tr>
-                      </tbody>
-                    </table>
+                  <div class="scrollable-table-container">
+                    <div class="text-muted text-center">
+                      <p>Solde: {{solde}}</p>
+                    </div>
+                    <input [(ngModel)]="refill" type="number" min="10000">
+                    <a (click)="refillBank()">recharge</a>
+
                   </div>
                 </tab>
               </tabset>

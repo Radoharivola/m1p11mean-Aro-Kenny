@@ -50,6 +50,7 @@ export class UpdateOfferComponent implements OnInit {
     });
   }
   fetchServices() {
+    
     this.serviceservice.getServices().subscribe(response => {
       this.services = response.body.services;
       console.log("services:"+ this.selectedServices);

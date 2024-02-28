@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { UserService } from '../services/user.service';
 import { WsService } from 'app/services/ws.service';
 import { StatService } from 'app/services/stat.service';
+
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
@@ -27,6 +28,7 @@ export class DashboardComponent implements OnInit {
   ];
   currentYear: number = new Date().getFullYear();
   currentMonth: number = new Date().getMonth() + 1;
+  commission: number;
 
   // Generate the years array from the current year to 2024
   years: number[];
@@ -37,6 +39,7 @@ export class DashboardComponent implements OnInit {
   todayDateSort: number = 1;
   todayDoneDateSort: number = 1;
   ws: any[] = [];
+  isAdmin: boolean = false;
   constructor(private rdvservice: RdvService, private router: Router, private userservice: UserService, private wsservice: WsService, private statservice: StatService) { }
   startAnimationForLineChart(chart) {
     let seq: any, delays: any, durations: any;
@@ -105,7 +108,8 @@ export class DashboardComponent implements OnInit {
     this.caPDPM(this.currentYear, this.currentMonth);
     this.nbrRdvPMPY(this.currentYear);
     this.caPMPY(this.currentYear);
-
+    this.benefits(this.currentYear);
+    this.workTime(this.currentYear, this.currentMonth);
     this.monthRdvPDPM = this.currentMonth;
     this.yearRdvPDPM = this.currentYear;
 
@@ -115,6 +119,13 @@ export class DashboardComponent implements OnInit {
     this.yearCaPDPM = this.currentYear;
 
     this.yearCaPMPY = this.currentYear;
+
+    this.yearBenefits = this.currentYear;
+
+    this.yearWT=this.currentYear;
+    this.monthWT=this.currentMonth;
+
+    this.isAdmin=this.userservice.isLoggedIn();
   }
 
   monthRdvPDPM: number;
@@ -137,6 +148,101 @@ export class DashboardComponent implements OnInit {
   yearCaPMPY: number;
   refreshCaPMPY() {
     this.caPMPY(this.yearCaPMPY);
+  }
+  yearBenefits: number;
+  refreshYearBenefits() {
+    this.benefits(this.yearBenefits);
+  }
+  benefits(year: number) {
+    this.statservice.getBenefits(year).subscribe(res => {
+      const data = res.body.monthlyBenefits;
+      var labels = [];
+      var series = [];
+      data.forEach((d) => {
+        labels.push(d.month);
+        series.push(d.benefits);
+        console.log(series);
+      })
+
+      this.initBenefits(labels, series);
+    }, err => {
+      console.log(err);
+    });
+  }
+  initBenefits(labels, series) {
+    const dataDailySalesChart: any = {
+      labels: labels,
+      series: [
+        series
+      ]
+    };
+
+    const optionsDailySalesChart: any = {
+      lineSmooth: Chartist.Interpolation.cardinal({
+        tension: 0
+      }),
+      low: 0,
+      high: Math.max(...series), // creative tim: we recommend you to set the high sa the biggest value + something for a better look
+      chartPadding: { top: 0, right: 0, bottom: 10, left: 20 },
+    }
+
+    var dailySalesChart = new Chartist.Line('#benefits', dataDailySalesChart, optionsDailySalesChart);
+
+    this.startAnimationForLineChart(dailySalesChart);
+  }
+
+
+  monthWT: number;
+  yearWT: number;
+  refreshWT() {
+    this.workTime(this.yearWT, this.monthWT);
+  }
+  workTime(year: number, month: number) {
+    this.statservice.getWorkTime(year, month).subscribe(res => {
+      const data = res.body.result;
+      var labels = [];
+      var series = [];
+      data.forEach((d) => {
+        labels.push(d.employee);
+        series.push(d.averageWorkTime);
+        console.log(series);
+      })
+
+      this.initWorkTime(labels, series);
+    }, err => {
+      console.log(err);
+    });
+  }
+  initWorkTime(labels, series) {
+    var datawebsiteViewsChart = {
+      labels: labels,
+      series: [
+        series
+
+      ]
+    };
+    var optionswebsiteViewsChart = {
+      axisX: {
+        showGrid: true
+      },
+      low: 0,
+      high: Math.max(...series),
+      chartPadding: { top: 30, right: 5, bottom: 0, left: 20 },
+    };
+    var responsiveOptions: any[] = [
+      ['screen and (max-width: 640px)', {
+        seriesBarDistance: 5,
+        axisX: {
+          labelInterpolationFnc: function (value) {
+            return value[0];
+          }
+        }
+      }]
+    ];
+    var websiteViewsChart = new Chartist.Bar('#workTime', datawebsiteViewsChart, optionswebsiteViewsChart, responsiveOptions);
+
+    //start animation for the Emails Subscription Chart
+    this.startAnimationForBarChart(websiteViewsChart);
   }
 
   nbrRdvPDPM(year: number, month?: any) {
@@ -167,8 +273,8 @@ export class DashboardComponent implements OnInit {
         tension: 0
       }),
       low: 0,
-      high: Math.max(...series) + 2, // creative tim: we recommend you to set the high sa the biggest value + something for a better look
-      chartPadding: { top: 0, right: 0, bottom: 0, left: 0 },
+      high: Math.max(...series), // creative tim: we recommend you to set the high sa the biggest value + something for a better look
+      chartPadding: { top: 30, right: 0, bottom: 0, left: 20 },
     }
 
     var dailySalesChart = new Chartist.Line('#dailySalesChart', dataDailySalesChart, optionsDailySalesChart);
@@ -202,11 +308,11 @@ export class DashboardComponent implements OnInit {
     };
     var optionswebsiteViewsChart = {
       axisX: {
-        showGrid: false
+        showGrid: true
       },
       low: 0,
-      high: Math.max(...series) + 5,
-      chartPadding: { top: 0, right: 5, bottom: 0, left: 0 }
+      high: Math.max(...series),
+      chartPadding: { top: 30, right: 5, bottom: 0, left: 20 }
     };
     var responsiveOptions: any[] = [
       ['screen and (max-width: 640px)', {
@@ -253,8 +359,8 @@ export class DashboardComponent implements OnInit {
         tension: 0
       }),
       low: Math.min(...series),
-      high: Math.max(...series) + 5000, // creative tim: we recommend you to set the high sa the biggest value + something for a better look
-      chartPadding: { top: 0, right: 0, bottom: 0, left: 50 }
+      high: Math.max(...series), // creative tim: we recommend you to set the high sa the biggest value + something for a better look
+      chartPadding: { top: 30, right: 0, bottom: 10, left: 50 }
     }
 
 
@@ -293,8 +399,8 @@ export class DashboardComponent implements OnInit {
         tension: 0
       }),
       low: Math.min(...series),
-      high: Math.max(...series) + 100000, // creative tim: we recommend you to set the high sa the biggest value + something for a better look
-      chartPadding: { top: 0, right: 0, bottom: 0, left: 50 }
+      high: Math.max(...series), // creative tim: we recommend you to set the high sa the biggest value + something for a better look
+      chartPadding: { top: 30, right: 0, bottom: 10, left: 50 }
     }
     var completedTasksChart = new Chartist.Line('#capmpy', dataCompletedTasksChart, optionsCompletedTasksChart);
 
@@ -334,6 +440,14 @@ export class DashboardComponent implements OnInit {
     this.rdvservice.getRdv({ 'dateInit': dateInit, 'dateFin': dateFin, 'limit': 100, 'page': 1, 'dateSort': this.todayDoneDateSort, 'done': true }).subscribe(response => {
       console.log(response.body.rdvs);
       this.todaysDoneRdv = response.body.rdvs;
+      var comission = 0;
+      this.todaysDoneRdv.forEach(today => {
+        today.services.forEach(service => {
+          console.log(service);
+          comission = service.price * service.commission / 100;
+        });
+      });
+      this.commission = comission;
     },
       error => {
         console.log(error);

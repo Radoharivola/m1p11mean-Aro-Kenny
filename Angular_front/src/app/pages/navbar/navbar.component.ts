@@ -19,12 +19,10 @@ export class NavbarComponent implements OnInit {
   constructor(private spinner: NgxSpinnerService, private router: Router, private userservice: UserService) { }
 
   ngOnInit(): void {
-    // Subscribe to router events
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd),
       takeUntil(this.unsubscribe$)
     ).subscribe((event: NavigationEnd) => {
-      // Check if navigation ends at the home page
       if (event.urlAfterRedirects === '/') {
         this.scrollToAppointment();
       }
@@ -34,7 +32,6 @@ export class NavbarComponent implements OnInit {
   }
 
   ngOnDestroy(): void {
-    // Unsubscribe from router events when the component is destroyed
     this.unsubscribe$.next();
     this.unsubscribe$.complete();
   }
@@ -54,7 +51,7 @@ export class NavbarComponent implements OnInit {
       localStorage.removeItem('username');
       this.router.navigate(['/login']);
       window.location.reload();
-      //I just wanna add smt
+
       this.spinner.hide();
     }, err => {
       this.spinner.hide();

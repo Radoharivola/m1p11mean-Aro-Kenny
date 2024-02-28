@@ -60,8 +60,7 @@
                       <option [ngValue]="null" class="form-control">
                         Non spécifié
                       </option>
-                      <option [ngValue]="employee._id" class="form-control" *ngFor="let employee of employees;"
-                        [selected]="employees[0]._id">
+                      <option [ngValue]="employee._id" class="form-control" *ngFor="let employee of employees;">
                         {{ employee.firstName }} {{employee.lastName }}
                       </option>
 
@@ -84,12 +83,12 @@
                     </div>
                   </div>
                   <hr />
-                  <div class="input-group">
+                  <!-- <div class="input-group">
                     <span class="category">Avance (mobile money)</span>
                     <bSwitch [switch-on-color]="'blue'" [switch-on-text]="'oui'" [switch-off-text]="'non'"
                       [switch-off-color]="'danger'" [(ngModel)]="isSwitchOn" name="bswitch"></bSwitch>
-                  </div>
-                  <div *ngIf="isSwitchOn">
+                  </div> -->
+                  <!-- <div *ngIf="isSwitchOn">
                     <div class="input-group">
                       <div class="input-group-prepend">
                         <div class="input-group-text">
@@ -109,7 +108,7 @@
                       <input class="form-control" placeholder="Montant" type="number" name="paid"
                         [(ngModel)]="formData.paid" />
                     </div>
-                  </div>
+                  </div> -->
                   <alert *ngIf="error" class="alert-with-icon" [type]="'warning alert-with-icon'" [dismissible]="true">
                     <span class="tim-icons icon-alert-circle-exc" data-notify="icon"> </span>
                     <span>
@@ -166,12 +165,6 @@
                                 <p class="text-white mt-4">{{service.name}}</p>
                               </li>
                             </ul>
-                          </div>
-                          <div class="card-footer text-center">
-                            <button class="btn btn-warning btn-round mr-1" type="button"
-                              (click)="setSelectedServices(offer.services,offer.reduction)">
-                              Prendre rendez-vous
-                            </button>
                           </div>
                         </div>
                       </div>

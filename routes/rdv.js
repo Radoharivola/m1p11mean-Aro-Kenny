@@ -3,6 +3,8 @@ var router = express.Router();
 const WorkSchedule = require('../models/WorkSchedule');
 const Rdv = require('../models/Rdv');
 const User = require('../models/User');
+const Bank = require('../models/Bank');
+const Offer = require('../models/Offer');
 const verifyToken = require('../middleware/authMiddleware');
 // const Service = require('../models/Service');
 
@@ -10,11 +12,47 @@ router.post('/new', verifyToken, async (req, res) => {
     try {
         //in the next update client will be replaced req.userId user the protected route
         const { employee, services, date, total, paid } = req.body;
+        let newTotal = total;
         const client = req.userId;
         const foundClient = await User.findOne({ _id: client });
         if (!foundClient) {
             return res.status(400).json({ error: 'Client not found' });
         }
+
+        let bank = await Bank.findOne({ 'client._id': foundClient._id });
+        if (!bank) {
+            return res.status(409).json({ message: "Votre solde est insuffisant" });
+        }
+        
+
+
+
+        const offers = await Offer.find({
+            dateDebut: { $lte: new Date(date).toISOString() },
+            dateFin: { $gte: new Date(date).toISOString() }
+        });
+        console.log(offers);
+        // Check if the selected services match the services in any offer
+        for (const offer of offers) {
+            const matchedServices = services.filter(service => {
+                return offer.services.some(offerService => offerService._id.toString() === service._id.toString());
+            });
+
+            // If matched services found, apply reduction to their prices
+            if (matchedServices.length > 0) {
+                const reduction = offer.reduction;
+                matchedServices.forEach(service => {
+                    newTotal -= service.price;
+                    service.price -= (service.price * reduction) / 100; // Apply reduction
+                    newTotal += service.price;
+                });
+            }
+        }
+        if (bank.solde < newTotal) {
+            return res.status(409).json({ message: "Votre solde est insuffisant" });
+
+        }
+
         // const foundService = await Service.findOne({ _id: service });
         // if (!foundService) {
         //     return res.status(400).json({ error: 'service not found' });
@@ -28,7 +66,6 @@ router.post('/new', verifyToken, async (req, res) => {
 
             // Find the employee's work schedule
             const workSchedule = await WorkSchedule.findOne({ 'employee.employeeId': employee });
-            console.log(workSchedule);
 
             // Find the relevant day's schedule based on the day of the week of the given date
             const dayOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][startDate.getDay()];
@@ -67,7 +104,7 @@ router.post('/new', verifyToken, async (req, res) => {
                 services: services,
                 date: startDate,
                 dateFin: addedDate,
-                total: total,
+                total: newTotal,
                 paid: paid,
                 done: false,
                 emailed: false
@@ -142,9 +179,12 @@ router.post('/new', verifyToken, async (req, res) => {
             if (result1) {
                 return res.status(409).json({ message: "Vous avez déja un rendez-vous prévu pour cette date.", rdv: result, selectedEmp: foundEmployee });
             }
-            await rdv.save();
+            bank.solde -= newTotal;
 
-            return res.status(200).json({ message: "Rendez-vous programmé!", rdv: rdv });
+            await rdv.save();
+            await bank.save();
+
+            return res.status(200).json({ message: "Rendez-vous programmé!", rdv: rdv, bank: bank });
         } else {
             // return res.status(409).json({ message: "no emp"});
             const sumOfDurations = services.reduce((total, service) => total + service.duration, 0);
@@ -205,7 +245,7 @@ router.post('/new', verifyToken, async (req, res) => {
                 services: services,
                 date: startDate,
                 dateFin: addedDate,
-                total: total,
+                total: newTotal,
                 paid: paid,
                 done: false,
                 emailed: false
@@ -245,9 +285,12 @@ router.post('/new', verifyToken, async (req, res) => {
             if (result1) {
                 return res.status(409).json({ message: "Vous avez déja un rendez-vous prévu pour cette date.", rdv: result, selectedEmp: foundEmployee });
             }
-            await rdv.save();
+            bank.solde -= newTotal;
 
-            return res.status(200).json({ message: "Rendez-vous programmé!", rdv: rdv });
+            await rdv.save();
+            await bank.save();
+
+            return res.status(200).json({ message: "Rendez-vous programmé!", rdv: rdv, bank: bank });
         }
     } catch (error) {
         console.error(error);
@@ -268,7 +311,6 @@ router.get('/:dateInit/:dateFin/:limit/:page/:dateSort', verifyToken, async (req
 
         const dateOnly = formattedDate.split('T')[0];
         const foundClient = await User.findOne({ _id: clientId });
-        console.log(foundClient);
         if (!foundClient) {
             return res.status(400).json({ error: 'Client not found' });
         }
@@ -339,7 +381,6 @@ router.put('/:rdvId', verifyToken, async (req, res) => {
     try {
         const rdvId = req.params.rdvId;
         const data = req.body;
-        console.log(data);
 
         const updatedRdv = await Rdv.findByIdAndUpdate(rdvId, data, { new: true });
 
@@ -353,7 +394,6 @@ router.put('/:rdvId', verifyToken, async (req, res) => {
 router.delete('/rdvs/:rdvId', async (req, res) => {
     try {
         const rdvId = req.params.rdvId;
-        console.log(rdvId);
         // Check if the user exists
         const existingRdv = await Rdv.findById(rdvId);
         if (!existingRdv) {
@@ -374,7 +414,6 @@ router.delete('/rdvs/:rdvId', async (req, res) => {
 router.get('/:rdvId', async (req, res) => {
     try {
         const rdvId = req.params.rdvId;
-        console.log(rdvId);
         // Check if the user exists
         const rdv = await Rdv.findById(rdvId);
         if (!rdv) {

@@ -1,7 +1,11 @@
 import { Component, OnInit, OnDestroy } from "@angular/core";
 import { RdvService } from "src/app/services/rdv.service";
-import { ServiceService } from "src/app/services/service.service";
 import { UserService } from "src/app/services/user.service";
+import { DomSanitizer } from '@angular/platform-browser';
+import { Router } from "@angular/router";
+import { PreferenceService } from '../../services/preference.service';
+import { ServiceService } from "src/app/services/service.service";
+import { BankService } from '../../services/bank.service';
 @Component({
   selector: "app-profilepage",
   templateUrl: "profilepage.component.html",
@@ -11,8 +15,8 @@ export class ProfilepageComponent implements OnInit, OnDestroy {
   isCollapsed = true;
   rdvs: any[] = [];
   page: number = 1;
-  services: any[]=[];
-  employees: any[]=[];
+  services: any[] = [];
+  employees: any[] = [];
   limit: number = 10;
   totalPages: number = 0;
   dateSort: number = -1;
@@ -26,16 +30,98 @@ export class ProfilepageComponent implements OnInit, OnDestroy {
   isSwitchOn: boolean = false;
   temp: string = '';
   // rdv: any = [];
-
-
-  constructor(private rdvservice: RdvService, private serviceService: ServiceService, private userService: UserService,) { }
+  prefServices: any[] = [];
+  prefEmps: any[] = [];
+  refill: number = 0;
+  solde: any;
+  constructor(private rdvservice: RdvService, private userService: UserService, private sanitizer: DomSanitizer, private route: Router, private preferenceservice: PreferenceService, private serviceservice: ServiceService, private bankservice: BankService) { }
 
   ngOnInit() {
     var body = document.getElementsByTagName("body")[0];
     body.classList.add("profile-page");
     this.fetchRdv(this.page);
-    // this.fetchServices();
-    // this.fetchEmployees();
+    this.fetchEmp();
+    this.fetcPrefServices();
+    this.fetcPrefEmps();
+    this.fetchServices();
+    this.fetchEmployees();
+    this.fetchBank();
+  }
+
+  refillBank() {
+    console.log(this.refill);
+    const data = {
+      solde: this.refill
+    }
+    this.bankservice.refill(data).subscribe(data => {
+      console.log(data);
+      this.fetchBank();
+    }, err => {
+      console.log(err);
+    });
+  }
+  fetchBank() {
+    this.bankservice.get().subscribe(res => {
+      this.solde = res.body.solde;
+    }, err => {
+      console.log(err);
+    });
+  }
+  isInPrefServices(service: any): boolean {
+    return this.prefServices.some(pref => pref.service._id === service._id);
+  }
+
+  isInPrefEmps(emp: any): boolean {
+    return this.prefEmps.some(pref => pref.employee._id === emp._id);
+  }
+
+  updatePrefService(service: any) {
+    const data = {
+      service: service
+    }
+    this.preferenceservice.updatePrefService(data).subscribe(data => {
+      console.log(data);
+      this.fetcPrefServices();
+    }, err => console.log(err));
+  }
+  updatePrefEmp(emp: any) {
+    const data = {
+      employee: emp
+    }
+    this.preferenceservice.updatePrefEmp(data).subscribe(data => {
+      console.log(data);
+      this.fetcPrefEmps();
+
+    }, err => console.log(err));
+  }
+  fetchServices() {
+    this.serviceservice.getServices().subscribe(data => {
+      this.services = data.services;
+      console.log(data);
+    }, err => console.log(err));
+  }
+  fetchEmployees() {
+    this.userService.getEmployees().subscribe(data => {
+      console.log(data.body.employees);
+      this.employees = data.body.employees;
+    });
+  }
+
+  fetcPrefServices() {
+    this.preferenceservice.getPrefServices().subscribe(res => {
+      this.prefServices = res.body.prefServices;
+      console.log(res);
+    }, err => {
+      console.log(err);
+    });
+  }
+  fetcPrefEmps() {
+    this.preferenceservice.getPrefEmps().subscribe(res => {
+      this.prefEmps = res.body.prefEmps;
+      console.log(res);
+    }, err => {
+      console.log(err);
+    });
   }
   ngOnDestroy() {
     var body = document.getElementsByTagName("body")[0];
@@ -70,7 +156,6 @@ export class ProfilepageComponent implements OnInit, OnDestroy {
   onContainerScroll() {
     const container = document.querySelector('.scrollable-table-container');
     if (container) {
-      // Check if the user has scrolled to the bottom of the container
       if (container.scrollTop + container.clientHeight >= container.scrollHeight) {
         if (this.page < this.totalPages) {
           this.page += 1;
@@ -102,6 +187,41 @@ export class ProfilepageComponent implements OnInit, OnDestroy {
       this.temp = '';
     }, error => { console.log(error); });
   }
+  user: any;
+  image: any;
+  files: any[];
+
+  fetchEmp() {
+    this.userService.myProfile().subscribe(data => {
+      this.user = data.body.employee;
+      console.log(this.user.lastName);
+      const base64Image = data.body.profilePicture;
+      const byteCharacters = atob(base64Image);
+      const byteNumbers = new Array(byteCharacters.length);
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      const byteArray = new Uint8Array(byteNumbers);
+      const blob = new Blob([byteArray], { type: 'image/jpeg' });
+      const imageFile = new File([blob], 'profile_picture.jpg', { type: 'image/jpeg' });
+      this.image = this.sanitizer.bypassSecurityTrustUrl(URL.createObjectURL(imageFile));
+      this.files = [];
+      this.files.push(imageFile);
+      console.log(this.files[0]);
+    }, err => {
+      this.userService.logout().subscribe(response => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('username');
+        this.route.navigate(['/login']);
+      }, err => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('username');
+        this.route.navigate(['/login']);
+        console.log(err);
+      });
+      console.log(err);
+    });
+  }
 
   // fetchServices() {
   //   this.serviceService.getServices().subscribe(data => {
@@ -111,7 +231,7 @@ export class ProfilepageComponent implements OnInit, OnDestroy {
   // fetchEmployees() {
   //   this.userService.getEmployees().subscribe(data => {
   //     console.log(data.employees);
-  //     this.employees = data.employees;
+  //     this.users = data.employees;
   //   });
   // }
   // updateSelectedServices(service: any, isChecked: boolean) {
