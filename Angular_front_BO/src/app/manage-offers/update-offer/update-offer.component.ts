@@ -7,6 +7,8 @@ import { OfferService } from 'app/services/offer.service';
 import { ServiceService } from 'app/services/service.service';
 declare var $: any;
 import { DatePipe } from '@angular/common';
+import { NgxSpinnerService } from "ngx-spinner";
+
 
 @Component({
   selector: 'app-update-offer',
@@ -29,7 +31,7 @@ export class UpdateOfferComponent implements OnInit {
 
 
   files: File[] = [];
-  constructor(private router: Router, private fb: FormBuilder, private offerservice: OfferService, private route: ActivatedRoute, private serviceservice: ServiceService, private datePipe: DatePipe) { }
+  constructor(private spinner: NgxSpinnerService, private router: Router, private fb: FormBuilder, private offerservice: OfferService, private route: ActivatedRoute, private serviceservice: ServiceService, private datePipe: DatePipe) { }
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
@@ -50,10 +52,11 @@ export class UpdateOfferComponent implements OnInit {
     });
   }
   fetchServices() {
+    this.spinner.show();
     this.serviceservice.getServices().subscribe(response => {
       this.services = response.body.services;
       console.log("services:"+ this.selectedServices);
-
+      this.spinner.hide();
     }, error => {
       console.log(error);
     });
@@ -101,6 +104,7 @@ export class UpdateOfferComponent implements OnInit {
         "description": this.offerForm.value.description,
 
       };
+      this.spinner.show();
       this.offerservice.update({ 'data': data, 'id': this.offerId }).subscribe(
         response => {
           // this.error = false;
@@ -109,6 +113,7 @@ export class UpdateOfferComponent implements OnInit {
           //   this.success = false;
           // }, 5000);
           // this.message = response.message;
+          this.spinner.hide();
           this.showNotification('Offre mise à jour', 'success');
 
           console.log(response);

@@ -5,6 +5,8 @@ import { Observable } from 'rxjs';
 import { ServiceService } from 'app/services/service.service';
 import { Router, NavigationEnd } from '@angular/router';
 declare var $: any;
+import { NgxSpinnerService } from "ngx-spinner";
+
 
 
 @Component({
@@ -19,7 +21,7 @@ export class UpdateServiceComponent implements OnInit {
 
   service: any;
 
-  constructor(private router: Router, private fb: FormBuilder, private serviceService: ServiceService, private route: ActivatedRoute) { }
+  constructor(private spinner: NgxSpinnerService, private router: Router, private fb: FormBuilder, private serviceService: ServiceService, private route: ActivatedRoute) { }
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
@@ -64,6 +66,7 @@ export class UpdateServiceComponent implements OnInit {
       }
       
       console.log(this.serviceForm.value.commission);
+      this.spinner.show();
       this.serviceService.updateService({ 'data': data, 'id': this.serviceId }).subscribe(
         response => {
           // this.error = false;
@@ -72,6 +75,7 @@ export class UpdateServiceComponent implements OnInit {
           //   this.success = false;
           // }, 5000);
           // this.message = response.message;
+          this.spinner.hide();
           this.showNotification('Service mise à jour', 'success');
           console.log(response);
         },

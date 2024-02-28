@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { UserService } from 'app/services/user.service';
 declare var $: any;
+import { NgxSpinnerService } from "ngx-spinner";
+
 
 
 @Component({
@@ -15,7 +17,7 @@ export class NewEmployeeComponent implements OnInit {
 
   files: File[] = [];
   fileEmpty: boolean = false;
-  constructor(private fb: FormBuilder, private userservice: UserService) { }
+  constructor(private spinner: NgxSpinnerService, private fb: FormBuilder, private userservice: UserService) { }
 
   ngOnInit(): void {
     this.employeeForm = this.fb.group({
@@ -70,7 +72,7 @@ export class NewEmployeeComponent implements OnInit {
       formData.append('lastName', this.employeeForm.value.nom);
       formData.append('email', this.employeeForm.value.email);
       formData.append('phone', this.employeeForm.value.telephone);
-
+      this.spinner.show();
       this.userservice.newEmployee({ formData }).subscribe(
         response => {
           // this.error = false;
@@ -79,6 +81,7 @@ export class NewEmployeeComponent implements OnInit {
           //   this.success = false;
           // }, 5000);
           // this.message = response.message;
+          this.spinner.hide();
           this.showNotification('Nouvel Employé ajouté', 'success');
 
           console.log(response);

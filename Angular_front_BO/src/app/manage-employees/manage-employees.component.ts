@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { UserService } from 'app/services/user.service';
+import { NgxSpinnerService } from "ngx-spinner";
+
 @Component({
   selector: 'app-manage-employees',
   templateUrl: './manage-employees.component.html',
@@ -12,7 +14,7 @@ export class ManageEmployeesComponent implements OnInit {
   searchString: string = '';
 
   employees: any[];
-  constructor(private router: Router, private userservice: UserService) { }
+  constructor(private spinner: NgxSpinnerService, private router: Router, private userservice: UserService) { }
 
   ngOnInit(): void {
     this.fetchEmployees();
@@ -28,8 +30,10 @@ export class ManageEmployeesComponent implements OnInit {
   }
 
   fetchEmployees() {
+    this.spinner.show();
     this.userservice.getEmployees({ 'searchString': this.searchString, 'sortBy': this.sortBy, 'sortOrder': this.sortOrder }).subscribe(data => {
       this.employees = data.body.employees;
+      this.spinner.hide();
       console.log(data);
     }, error => {
       localStorage.removeItem('token');
@@ -49,8 +53,10 @@ export class ManageEmployeesComponent implements OnInit {
     this.fetchEmployees();
   }
   delete(id: string) {
+    this.spinner.show();
     this.userservice.deleteEmployee(id).subscribe(data => {
       console.log(data);
+      this.spinner.hide();
       this.fetchEmployees();
     }, error => {
       console.log(error);

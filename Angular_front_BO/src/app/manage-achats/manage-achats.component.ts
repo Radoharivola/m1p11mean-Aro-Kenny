@@ -36,9 +36,11 @@ export class ManageAchatsComponent implements OnInit {
   }
 
   delete(id: string) {
+    this.spinner.show();
     this.achatsService.deleteAchats(id).subscribe(data => {
       console.log(data);
       this.fetchAchats();
+      this.spinner.hide();
     }, error => {
       console.log(error);
     })

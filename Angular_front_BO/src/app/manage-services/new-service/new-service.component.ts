@@ -3,6 +3,8 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ServiceService } from 'app/services/service.service';
 import { Router, NavigationEnd } from '@angular/router';
 declare var $: any;
+import { NgxSpinnerService } from "ngx-spinner";
+
 
 @Component({
   selector: 'app-new-service',
@@ -13,7 +15,7 @@ export class NewServiceComponent implements OnInit {
 
   serviceForm: FormGroup;
 
-  constructor(private router: Router, private fb: FormBuilder, private serviceService: ServiceService) { }
+  constructor(private spinner: NgxSpinnerService, private router: Router, private fb: FormBuilder, private serviceService: ServiceService) { }
 
   ngOnInit(): void {
     this.serviceForm = this.fb.group({
@@ -45,7 +47,7 @@ export class NewServiceComponent implements OnInit {
         description: this.serviceForm.value.description,
       }
       console.log(data);
-
+      this.spinner.show();
       this.serviceService.newService({ data: data }).subscribe(
         response => {
           // this.error = false;
@@ -54,6 +56,7 @@ export class NewServiceComponent implements OnInit {
           //   this.success = false;
           // }, 5000);
           // this.message = response.message;
+          this.spinner.hide();
           this.showNotification('Nouveau service ajouté', 'success');
           console.log(response);
         },
