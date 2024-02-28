@@ -103,6 +103,19 @@
                   <div *ngIf="fileEmpty" class="dz-error-message">
                     Veuillez choisir une photo de profil
                   </div>
+                  <alert *ngIf="error" class="alert" [type]="'danger alert'" [dismissible]="true">
+                    <span> {{message}}
+                    </span>
+                  </alert>
+                  <alert *ngIf="success" class="alert-with-icon" [type]="'success alert-with-icon'"
+                    [dismissible]="true">
+                    <span class="tim-icons icon-check-2" data-notify="icon"> </span>
+                    <span>
+                      <b> Yay! </b> {{message}}
+                    </span>
+                  </alert>
+                  <ngx-spinner type="ball-scale-multiple" color="#fd5d93" bdColor="rgba(0, 0, 0, 0.8)"></ngx-spinner>
+
                 </form>
               </div>
               <div class="card-footer">

@@ -89,10 +89,8 @@ export class IndexComponent implements OnInit, OnDestroy {
   fetchTodaysRdv() {
     const today = new Date();
 
-    // Set dateInit to today's date
     const dateInit = today.toISOString();
 
-    // Set dateFin to today's date at 23:59:59
     today.setHours(23, 59, 59, 999);
     const dateFin = today.toISOString();
     this.rdvservice.getRdv({ 'dateInit': dateInit, 'dateFin': dateFin, 'limit': 10, 'page': 1, 'dateSort': 1 }).subscribe(response => {
@@ -141,7 +139,6 @@ export class IndexComponent implements OnInit, OnDestroy {
   onContainerScroll() {
     const container = document.querySelector('.scrollable-table-container');
     if (container) {
-      // Check if the user has scrolled to the bottom of the container
       if (container.scrollTop + container.clientHeight >= container.scrollHeight) {
         if (this.page < this.totalPages) {
           this.page += 1;
@@ -154,7 +151,7 @@ export class IndexComponent implements OnInit, OnDestroy {
   updateSelectedServices(service: any, isChecked: boolean) {
     if (isChecked) {
       this.selectedServices.push(service);
-      this.totalPrice += service.price; // Assuming each service has a 'price' property
+      this.totalPrice += service.price; 
     } else {
       const index = this.selectedServices.indexOf(service);
       if (index !== -1) {
@@ -175,17 +172,17 @@ export class IndexComponent implements OnInit, OnDestroy {
       this.message = "Veuillez choisir une date!";
       return;
     }
-    if (this.isSwitchOn) {
-      if (!this.phoneRegex.test(this.formData.numero)) {
-        this.success = false;
-        this.error = true;
-        setTimeout(() => {
-          this.error = false;
-        }, 5000);
-        this.message = "Numero de telephone invalide!";
-      }
-      return;
-    }
+    // if (this.isSwitchOn) {
+    //   if (!this.phoneRegex.test(this.formData.numero)) {
+    //     this.success = false;
+    //     this.error = true;
+    //     setTimeout(() => {
+    //       this.error = false;
+    //     }, 5000);
+    //     this.message = "Numero de telephone invalide!";
+    //   }
+    //   return;
+    // }
     if (this.selectedServices.length == 0 || this.totalPrice == 0) {
       this.success = false;
       this.error = true;
@@ -200,7 +197,7 @@ export class IndexComponent implements OnInit, OnDestroy {
         "employee": this.formData.employee,
         "services": this.selectedServices,
         "total": this.totalPrice,
-        "paid": this.formData.paid,
+        "paid": 0,
         "date": this.formData.date
       };
       this.rdvservice.newRdv({ data }).subscribe(

@@ -1,6 +1,6 @@
 <div class="main-content">
     <div class="container-fluid">
-        <div class="row">
+        <div class="row" *ngIf="!isAdmin">
             <div class="col-lg-3 col-md-6 col-sm-6">
                 <div class="card card-stats">
                     <div class="card-header card-header-danger card-header-icon">
@@ -42,7 +42,7 @@
                             <i class="material-icons">wallet</i>
                         </div>
                         <p class="card-category">Commission</p>
-                        <h3 class="card-title">MGA 34,245</h3>
+                        <h3 class="card-title">MGA {{commission}}</h3>
                     </div>
                     <div class="card-footer">
                         <div class="stats">
@@ -69,7 +69,7 @@
                 </div>
             </div>
         </div>
-        <div class="row">
+        <div class="row" *ngIf="!isAdmin">
             <div class="col-lg-12 col-md-12">
                 <div class="card">
                     <div class="card-header card-header-tabs card-header-primary">
@@ -263,7 +263,7 @@
             </div>
 
         </div>
-        <div class="row">
+        <div class="row" *ngIf="!isAdmin">
 
             <div class="col-lg-12 col-md-12">
                 <div class="card">
@@ -290,55 +290,70 @@
             </div>
         </div>
 
-        <div class="row">
-            <div class="col-md-6">
+        <div class="row" *ngIf="isAdmin">
+            <div class="col-md-8">
                 <div class="card card-chart">
                     <div class="card-header card-header-success">
                         <div class="ct-chart" id="dailySalesChart"></div>
                     </div>
                     <div class="card-body">
-                        <h4 class="card-title">Daily Sales</h4>
+                        <h4 class="card-title">Nombre de renez-vous journalier/mois</h4>
                         <p class="card-category">
-                            <select [(ngModel)]="monthRdvPDPM" (change)="refreshRdvPDPM()">
+                            <select class="shit" [(ngModel)]="monthRdvPDPM" (change)="refreshRdvPDPM()">
                                 <option *ngFor="let month of monthList" [value]="month.index"
                                     [attr.selected]="month.index === currentMonth ? true : null">
                                     {{ month.month }}
                                 </option>
                             </select>
-                            <select [(ngModel)]="yearRdvPDPM" (change)="refreshRdvPDPM()">
+                            <select class="shit" [(ngModel)]="yearRdvPDPM" (change)="refreshRdvPDPM()">
                                 <option *ngFor="let year of years" value="{{year}}">{{year}}</option>
                             </select>
                         </p>
                     </div>
                 </div>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <div class="card card-chart">
-                    <div class="card-header card-header-warning">
+                    <div class="card-header card-header-success">
                         <div class="ct-chart" id="websiteViewsChart"></div>
                     </div>
                     <div class="card-body">
-                        <h4 class="card-title">Email Subscriptions</h4>
-                        <select [(ngModel)]="yearRdvPMPY" (change)="refreshRdvPMPY()">
+                        <h4 class="card-title">Nombre de rendez-vous mensuel</h4>
+                        <select class="shit" [(ngModel)]="yearRdvPMPY" (change)="refreshRdvPMPY()">
                             <option *ngFor="let year of years" value="{{year}}">{{year}}</option>
                         </select>
                     </div>
                 </div>
             </div>
-            <div class="col-md-6">
+            
+
+            <div class="col-md-4">
+                <div class="card card-chart">
+                    <div class="card-header card-header-danger">
+                        <div class="ct-chart" id="capmpy"></div>
+                    </div>
+                    <div class="card-body">
+                        <h4 class="card-title">Chiffre d'affaire mensuel</h4>
+                        <select class="shit" [(ngModel)]="yearCaPMPY" (change)="refreshCaPMPY()">
+                            <option *ngFor="let year of years" value="{{year}}">{{year}}</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8">
                 <div class="card card-chart">
                     <div class="card-header card-header-danger">
                         <div class="ct-chart" id="completedTasksChart"></div>
                     </div>
                     <div class="card-body">
-                        <h4 class="card-title">Completed Tasks 1</h4>
-                        <select [(ngModel)]="monthCaPDPM" (change)="refreshCaPDPM()">
+                        <h4 class="card-title">Chiffre d'affaire journalier/mois</h4>
+                        <select class="shit" [(ngModel)]="monthCaPDPM" (change)="refreshCaPDPM()">
                             <option *ngFor="let month of monthList" [value]="month.index"
                                 [attr.selected]="month.index === currentMonth ? true : null">
                                 {{ month.month }}
                             </option>
                         </select>
-                        <select [(ngModel)]="yearCaPDPM" (change)="refreshCaPDPM()">
+                        <select class="shit" [(ngModel)]="yearCaPDPM" (change)="refreshCaPDPM()">
                             <option *ngFor="let year of years" value="{{year}}">{{year}}</option>
                         </select>
                     </div>
@@ -347,12 +362,32 @@
 
             <div class="col-md-6">
                 <div class="card card-chart">
-                    <div class="card-header card-header-danger">
-                        <div class="ct-chart" id="capmpy"></div>
+                    <div class="card-header card-header-primary">
+                        <div class="ct-chart" id="benefits"></div>
                     </div>
                     <div class="card-body">
-                        <h4 class="card-title">Completed Tasks</h4>
-                        <select [(ngModel)]="yearCaPMPY" (change)="refreshCaPMPY()">
+                        <h4 class="card-title">Bénéfices mensuels</h4>
+                        <select class="shit" [(ngModel)]="yearBenefits" (change)="refreshYearBenefits()">
+                            <option *ngFor="let year of years" value="{{year}}">{{year}}</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card card-chart">
+                    <div class="card-header card-header-primary">
+                        <div class="ct-chart" id="workTime"></div>
+                    </div>
+                    <div class="card-body">
+                        <h4 class="card-title">Temps de travail (moyenne en minutes)</h4>
+                        <select class="shit" [(ngModel)]="monthWT" (change)="refreshWT()">
+                            <option *ngFor="let month of monthList" [value]="month.index"
+                                [attr.selected]="month.index === currentMonth ? true : null">
+                                {{ month.month }}
+                            </option>
+                        </select>
+                        <select class="shit" [(ngModel)]="yearWT" (change)="refreshWT()">
                             <option *ngFor="let year of years" value="{{year}}">{{year}}</option>
                         </select>
                     </div>
@@ -360,7 +395,7 @@
             </div>
 
         </div>
-        <div class="row">
+        <!-- <div class="row">
             <div class="col-lg-6 col-md-12">
                 <div class="card">
                     <div class="card-header card-header-tabs card-header-primary">
@@ -617,6 +652,6 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> -->
     </div>
 </div>

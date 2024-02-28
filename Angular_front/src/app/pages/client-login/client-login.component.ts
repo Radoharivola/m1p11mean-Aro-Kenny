@@ -146,7 +146,6 @@ export class ClientLoginComponent implements OnInit, OnDestroy {
       console.log("Form submitted successfully");
     } else {
       console.log("not valid");
-      // Mark all fields as touched to display errors
       this.loginForm.markAllAsTouched();
     }
     // setTimeout(() => {

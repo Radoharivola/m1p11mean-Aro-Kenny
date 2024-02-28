@@ -58,5 +58,7 @@ export class UserService {
   logout(): Observable<any> {
     return this.http.post('http://127.0.0.1:3000/auth/logout', null, this.httpOptions);
   }
-
+  myProfile(): Observable<any> {
+    return this.http.get('http://127.0.0.1:3000/users/emp/profile', this.httpOptions);
+  }
 }

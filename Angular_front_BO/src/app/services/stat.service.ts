@@ -23,4 +23,11 @@ export class StatService {
   getCa(year: number, month?: any): Observable<any> {
     return this.http.get('http://127.0.0.1:3000/rdv/ca/' + year + '/' + month, this.httpOptions);
   }
+  getBenefits(year: number): Observable<any> {
+    return this.http.get('http://127.0.0.1:3000/depense/benefits-per-month/' + year, this.httpOptions);
+  }
+  getWorkTime(year: number, month: any): Observable<any> {
+    return this.http.get('http://127.0.0.1:3000/workSchedule/' + year + '/' + month, this.httpOptions);
+
+  }
 }

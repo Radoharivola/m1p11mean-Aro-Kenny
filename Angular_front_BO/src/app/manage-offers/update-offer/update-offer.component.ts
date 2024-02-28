@@ -53,6 +53,8 @@ export class UpdateOfferComponent implements OnInit {
   }
   fetchServices() {
     this.spinner.show();
+
+    
     this.serviceservice.getServices().subscribe(response => {
       this.services = response.body.services;
       console.log("services:"+ this.selectedServices);
