@@ -43,7 +43,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 const corsOptions = {
-  origin: ['http://localhost:4200', 'http://localhost:4201'],
+  origin: ['http://localhost:4200', 'https://radoharivola.github.io'],
   credentials: true
 }
 app.use(cors(corsOptions));
