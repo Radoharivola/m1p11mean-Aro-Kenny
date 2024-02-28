@@ -1,7 +1,7 @@
 # m1p11mean-Aro-Kenny
 
 ## installation
-* ### back:
+* ### Nodejs express server:
 Go to the directory
 ```bash
 cd m1p11mean-Aro-Kenny
@@ -10,7 +10,7 @@ Install all the packages
 ```bash
 npm install
 ```
-* ### front:
+* ### front-office:
 Go to the angular directory
 ```bash
 cd m1p11mean-Aro-Kenny/Angular_front
@@ -21,6 +21,18 @@ npm install
 ```
 use `npm start` to start the project instead of `ng serve`: 
 - the angular template we used doesn't support recent node versions, by using `npm start`, the project will use an older node version included in the node_modules packages.
+
+* ### Back-office:
+Go to the angular directory
+```bash
+cd m1p11mean-Aro-Kenny/Angular_front_BO
+```
+Install all the packages
+```bash
+npm install
+```
+use `npm start` to start the project
+
 ## Fonctionnalités:
 ### Pour le client
 * S’inscrire
