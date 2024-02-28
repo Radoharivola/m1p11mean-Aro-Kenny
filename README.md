@@ -1,9 +1,9 @@
 # m1p11mean-Aro-Kenny
 ### Documents: https://docs.google.com/presentation/d/19U0XLSGR6kUkgc7Fx0ORLVyy_8EF8YVwGrl_ZtqBMjw/edit?usp=sharing
 
-profil manager: karen, mdp: aZ12345678
-profil employé: paul, mdp: bZ12345678
-profil client: luc, mdp: aZ12345678
+- profil manager: karen, mdp: aZ12345678
+- profil employé: paul, mdp: bZ12345678
+- profil client: luc, mdp: aZ12345678
 
 ## installation
 * ### Nodejs express server:
