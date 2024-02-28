@@ -4,6 +4,8 @@ import { UserService } from 'app/services/user.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable } from 'rxjs';
 declare var $: any;
+import { NgxSpinnerService } from "ngx-spinner";
+
 
 @Component({
   selector: 'app-update-employee',
@@ -23,7 +25,7 @@ export class UpdateEmployeeComponent implements OnInit {
 
 
   files: File[] = [];
-  constructor(private router: Router,private fb: FormBuilder, private userservice: UserService, private route: ActivatedRoute) { }
+  constructor(private spinner: NgxSpinnerService, private router: Router,private fb: FormBuilder, private userservice: UserService, private route: ActivatedRoute) { }
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
@@ -110,6 +112,7 @@ export class UpdateEmployeeComponent implements OnInit {
       formData.append('email', this.employeeForm.value.email);
       formData.append('phone', this.employeeForm.value.telephone);
       console.log(formData);
+      this.spinner.show();
       this.userservice.updateEmployee({ 'formData': formData, 'id': this.employeeId }).subscribe(
         response => {
           // this.error = false;
@@ -118,6 +121,7 @@ export class UpdateEmployeeComponent implements OnInit {
           //   this.success = false;
           // }, 5000);
           // this.message = response.message;
+          this.spinner.hide();
           this.showNotification('Employé mis à jour', 'success');
 
           console.log(response);

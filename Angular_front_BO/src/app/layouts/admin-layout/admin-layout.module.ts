@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -34,6 +34,9 @@ import { UpdateWsComponent } from 'app/manage-ws/update-ws/update-ws.component';
 import { ManageOffersComponent } from 'app/manage-offers/manage-offers.component';
 import { NewOfferComponent } from 'app/manage-offers/new-offer/new-offer.component';
 import { UpdateOfferComponent } from 'app/manage-offers/update-offer/update-offer.component';
+import { UpdateAchatComponent } from 'app/manage-achats/update-achat/update-achat.component';
+import { NgxSpinnerModule } from 'ngx-spinner';
+import { BrowserModule } from "@angular/platform-browser";
 
 @NgModule({
   imports: [
@@ -48,8 +51,10 @@ import { UpdateOfferComponent } from 'app/manage-offers/update-offer/update-offe
     MatSelectModule,
     MatTooltipModule,
     NgxDropzoneModule,
-    MatIconModule
+    MatIconModule,
+    NgxSpinnerModule
   ],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   declarations: [
     DashboardComponent,
     UserProfileComponent,
@@ -74,8 +79,9 @@ import { UpdateOfferComponent } from 'app/manage-offers/update-offer/update-offe
     UpdateWsComponent,
     ManageOffersComponent,
     NewOfferComponent,
-    UpdateOfferComponent
-  ]
+    UpdateOfferComponent,
+    UpdateAchatComponent
+  ],
 })
 
 export class AdminLayoutModule { }

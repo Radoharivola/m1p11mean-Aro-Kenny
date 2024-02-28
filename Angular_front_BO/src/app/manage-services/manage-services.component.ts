@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { ServiceService } from '../services/service.service';
+import { NgxSpinnerService } from "ngx-spinner";
+
 
 @Component({
   selector: 'app-manage-services',
@@ -9,7 +11,7 @@ import { ServiceService } from '../services/service.service';
 })
 export class ManageServicesComponent implements OnInit {
 
-  constructor(private router: Router, private serviceService: ServiceService) { }
+  constructor(private spinner: NgxSpinnerService, private router: Router, private serviceService: ServiceService) { }
   services: any[];
 
   ngOnInit(): void {
@@ -25,16 +27,20 @@ export class ManageServicesComponent implements OnInit {
   }
 
   fetchServices() {
+    this.spinner.show();
     this.serviceService.getServices().subscribe(data => {
       this.services = data.body.services;
+      this.spinner.hide();
       console.log(data.services);
     });
   }
 
   delete(id: string) {
+    this.spinner.show();
     this.serviceService.deleteService(id).subscribe(data => {
-      console.log(data);
+      console.log(data);   
       this.fetchServices();
+      this.spinner.hide();
     }, error => {
       console.log(error);
     })

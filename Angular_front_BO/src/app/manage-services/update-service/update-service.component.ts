@@ -4,6 +4,9 @@ import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { ServiceService } from 'app/services/service.service';
 import { Router, NavigationEnd } from '@angular/router';
+declare var $: any;
+import { NgxSpinnerService } from "ngx-spinner";
+
 
 
 @Component({
@@ -18,7 +21,7 @@ export class UpdateServiceComponent implements OnInit {
 
   service: any;
 
-  constructor(private router: Router, private fb: FormBuilder, private serviceService: ServiceService, private route: ActivatedRoute) { }
+  constructor(private spinner: NgxSpinnerService, private router: Router, private fb: FormBuilder, private serviceService: ServiceService, private route: ActivatedRoute) { }
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
@@ -63,6 +66,7 @@ export class UpdateServiceComponent implements OnInit {
       }
       
       console.log(this.serviceForm.value.commission);
+      this.spinner.show();
       this.serviceService.updateService({ 'data': data, 'id': this.serviceId }).subscribe(
         response => {
           // this.error = false;
@@ -71,6 +75,8 @@ export class UpdateServiceComponent implements OnInit {
           //   this.success = false;
           // }, 5000);
           // this.message = response.message;
+          this.spinner.hide();
+          this.showNotification('Service mise à jour', 'success');
           console.log(response);
         },
         error => {
@@ -95,6 +101,35 @@ export class UpdateServiceComponent implements OnInit {
       if (control instanceof FormGroup) {
         this.markFormGroupTouched(control);
       }
+    });
+  }
+
+  showNotification(message: string, type: string) {
+    // const type = ['','info','success','warning','danger'];
+
+    const color = Math.floor((Math.random() * 4) + 1);
+
+    $.notify({
+      icon: "notifications",
+      message: message
+
+    }, {
+      type: type,
+      timer: 4000,
+      placement: {
+        from: 'top',
+        align: 'center'
+      },
+      template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+        '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+        '<i class="material-icons" data-notify="icon">notifications</i> ' +
+        '<span data-notify="title">{1}</span> ' +
+        '<span data-notify="message">{2}</span>' +
+        '<div class="progress" data-notify="progressbar">' +
+        '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+        '</div>' +
+        '<a href="{3}" target="{4}" data-notify="url"></a>' +
+        '</div>'
     });
   }
 

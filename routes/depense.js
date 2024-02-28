@@ -81,17 +81,35 @@ router.get('/achats', async (req, res, next) => {
     return res.status(200).json({ achats });
 });
 
-router.get('/achats/:date', async (req, res, next) => {
-    const dateToCheck = new Date(req.params.date).toISOString();
-    console.log(dateToCheck);
-    const achats = await Depense.find({
-        $and: [
-            { dateDebut: { $lte: dateToCheck } }, // Check if dateDebut is less than or equal to given date
-            { dateFin: { $gte: dateToCheck } }    // Check if dateFin is greater than or equal to given date
-        ]
-    });
-    return res.status(200).json({ achats });
-});
+// router.get('/achats/:date', async (req, res, next) => {
+//     const dateToCheck = new Date(req.params.date).toISOString();
+//     console.log(dateToCheck);
+//     const achats = await Depense.find({
+//         $and: [
+//             { dateDebut: { $lte: dateToCheck } }, // Check if dateDebut is less than or equal to given date
+//             { dateFin: { $gte: dateToCheck } }    // Check if dateFin is greater than or equal to given date
+//         ]
+//     });
+//     return res.status(200).json({ achats });
+// });
+
+router.get('/achats/:id', async (req, res, next) => {
+    try {
+      // Attempt to find the employee by ID
+      const achat = await Depense.findOne({ _id: req.params.id });
+  
+      // If employee is not found, return a 404 status
+      if (!achat) {
+        return res.status(404).json({ error: 'Service not found' });
+      }
+  
+      // If employee is found, return it with a 200 status
+      return res.status(200).json({ achat });
+    } catch (error) {
+      // If there's an error, return a 500 status with the error message
+      return res.status(500).json({ error: error.message });
+    }
+  });
 
 router.get('/benefits-per-month/:year', async (req, res) => {
     const year = parseInt(req.params.year);

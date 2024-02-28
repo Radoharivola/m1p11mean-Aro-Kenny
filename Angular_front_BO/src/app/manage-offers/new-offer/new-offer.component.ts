@@ -4,6 +4,8 @@ import { UserService } from 'app/services/user.service';
 import { ServiceService } from 'app/services/service.service';
 import { OfferService } from 'app/services/offer.service';
 declare var $: any;
+import { NgxSpinnerService } from "ngx-spinner";
+
 
 
 @Component({
@@ -18,7 +20,7 @@ export class NewOfferComponent implements OnInit {
   fileEmpty: boolean = false;
   selectedServices: any[] = [];
 
-  constructor(private fb: FormBuilder, private userservice: UserService, private serviceservice: ServiceService, private offerservice:OfferService) { }
+  constructor(private spinner: NgxSpinnerService, private fb: FormBuilder, private userservice: UserService, private serviceservice: ServiceService, private offerservice:OfferService) { }
 
   ngOnInit(): void {
 
@@ -35,8 +37,10 @@ export class NewOfferComponent implements OnInit {
   }
 
   fetchServices() {
+    this.spinner.show();
     this.serviceservice.getServices().subscribe(response => {
       this.services = response.body.services;
+      this.spinner.hide();
       console.log(response);
     }, error => {
       console.log(error);
@@ -55,7 +59,7 @@ export class NewOfferComponent implements OnInit {
         "description": this.offerForm.value.description,
 
       };
-
+      this.spinner.show();
       this.offerservice.new({ data:data }).subscribe(
         response => {
           // this.error = false;
@@ -64,7 +68,8 @@ export class NewOfferComponent implements OnInit {
           //   this.success = false;
           // }, 5000);
           // this.message = response.message;
-          this.showNotification('Nouvel Employé ajouté', 'success');
+          this.spinner.hide();
+          this.showNotification('Nouvelle offre ajoutée', 'success');
 
           console.log(response);
         },

@@ -3,6 +3,8 @@ import { Component, OnInit } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { OfferService } from 'app/services/offer.service';
 declare var $: any;
+import { NgxSpinnerService } from "ngx-spinner";
+
 
 @Component({
   selector: 'app-manage-offers',
@@ -15,7 +17,7 @@ export class ManageOffersComponent implements OnInit {
   searchString: string = '';
 
   offers: any[];
-  constructor(private router: Router, private offerservice: OfferService) { }
+  constructor(private spinner: NgxSpinnerService, private router: Router, private offerservice: OfferService) { }
 
   ngOnInit(): void {
     this.fetchoffers();
@@ -31,8 +33,10 @@ export class ManageOffersComponent implements OnInit {
   }
 
   fetchoffers() {
+    this.spinner.show();
     this.offerservice.getOffers({ 'searchString': this.searchString, 'sortBy': this.sortBy, 'sortOrder': this.sortOrder }).subscribe(data => {
       this.offers = data.body.offers;
+      this.spinner.hide();
       console.log(data);
     }, error => {
       localStorage.removeItem('token');
@@ -51,9 +55,12 @@ export class ManageOffersComponent implements OnInit {
     this.searchString = input;
     this.fetchoffers();
   }
-  delete(id: string) {
+  delete(id: string) 
+  {
+    this.spinner.show();
     this.offerservice.delete({ id: id }).subscribe(data => {
       console.log(data);
+      this.spinner.hide();
       this.fetchoffers();
       this.showNotification('Offre supprimée', 'success')
     }, error => {
