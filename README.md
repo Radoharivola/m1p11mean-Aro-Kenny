@@ -1,6 +1,9 @@
 # m1p11mean-Aro-Kenny
 ### Documents: https://docs.google.com/presentation/d/19U0XLSGR6kUkgc7Fx0ORLVyy_8EF8YVwGrl_ZtqBMjw/edit?usp=sharing
-
+### lien BO: https://radoharivola.github.io/back-office
+### lien FO: https://radoharivola.github.io/front-office
+### repo BO qui a été déployé: https://github.com/Radoharivola/back-office
+### repo FO qui a été déployé: https://github.com/Radoharivola/back-office
 - profil manager: karen, mdp: aZ12345678
 - profil employé: paul, mdp: bZ12345678
 - profil client: luc, mdp: aZ12345678
