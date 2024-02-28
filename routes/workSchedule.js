@@ -5,6 +5,7 @@ const WorkSchedule = require('../models/WorkSchedule');
 const User = require('../models/User');
 const mongoose = require('mongoose');
 const verifyToken = require('../middleware/authMiddleware');
+const Rdv = require('../models/Rdv');
 
 const ObjectId = mongoose.Types.ObjectId;
 
@@ -166,6 +167,57 @@ router.put('/:id', async (req, res) => {
 
 function padWithZeros(number) {
     return number < 10 ? '0' + number : '' + number;
+}
+
+
+router.get('/:year/:month', async (req, res) => {
+    const year = parseInt(req.params.year);
+    const month = parseInt(req.params.month);
+
+    try {
+        const result = await getAverageWorkTime(year, month);
+        res.status(200).json({result});
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+async function getAverageWorkTime(year, month) {
+    const startDate = new Date(year, month - 1, 1);
+    const endDate = new Date(year, month, 0);
+
+    try {
+        // Fetch all employees from the User collection with role 'employee'
+        const employees = await User.find({ 'role.roleName': 'employee' });
+
+        // Calculate average work time for each employee
+        const result = await Promise.all(employees.map(async (employee) => {
+            const rdvs = await Rdv.find({
+                'employee._id': employee._id,
+                date: {
+                    $gte: startDate,
+                    $lte: endDate
+                }
+            });
+
+            // Calculate total work time for this employee
+            const totalWorkTime = rdvs.reduce((acc, rdv) => {
+                return acc + rdv.services.reduce((acc, service) => acc + service.duration, 0);
+            }, 0);
+
+            // Calculate average work time (or 0 if no RDVs)
+            const averageWorkTime = rdvs.length > 0 ? totalWorkTime / rdvs.length : 0;
+
+            return {
+                employee: employee.username,
+                averageWorkTime: averageWorkTime
+            };
+        }));
+
+        return result;
+    } catch (error) {
+        throw error;
+    }
 }
 
 module.exports = router; 

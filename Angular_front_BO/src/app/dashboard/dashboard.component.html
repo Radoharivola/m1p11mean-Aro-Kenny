@@ -1,6 +1,6 @@
 <div class="main-content">
     <div class="container-fluid">
-        <div class="row">
+        <div class="row" *ngIf="!isAdmin">
             <div class="col-lg-3 col-md-6 col-sm-6">
                 <div class="card card-stats">
                     <div class="card-header card-header-danger card-header-icon">
@@ -69,7 +69,7 @@
                 </div>
             </div>
         </div>
-        <div class="row">
+        <div class="row" *ngIf="!isAdmin">
             <div class="col-lg-12 col-md-12">
                 <div class="card">
                     <div class="card-header card-header-tabs card-header-primary">
@@ -263,7 +263,7 @@
             </div>
 
         </div>
-        <div class="row">
+        <div class="row" *ngIf="!isAdmin">
 
             <div class="col-lg-12 col-md-12">
                 <div class="card">
@@ -290,7 +290,7 @@
             </div>
         </div>
 
-        <div class="row">
+        <div class="row" *ngIf="isAdmin">
             <div class="col-md-8">
                 <div class="card card-chart">
                     <div class="card-header card-header-success">
@@ -374,8 +374,28 @@
                 </div>
             </div>
 
+            <div class="col-md-6">
+                <div class="card card-chart">
+                    <div class="card-header card-header-primary">
+                        <div class="ct-chart" id="workTime"></div>
+                    </div>
+                    <div class="card-body">
+                        <h4 class="card-title">Temps de travail (moyenne en minutes)</h4>
+                        <select class="shit" [(ngModel)]="monthWT" (change)="refreshWT()">
+                            <option *ngFor="let month of monthList" [value]="month.index"
+                                [attr.selected]="month.index === currentMonth ? true : null">
+                                {{ month.month }}
+                            </option>
+                        </select>
+                        <select class="shit" [(ngModel)]="yearWT" (change)="refreshWT()">
+                            <option *ngFor="let year of years" value="{{year}}">{{year}}</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
         </div>
-        <div class="row">
+        <!-- <div class="row">
             <div class="col-lg-6 col-md-12">
                 <div class="card">
                     <div class="card-header card-header-tabs card-header-primary">
@@ -632,6 +652,6 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> -->
     </div>
 </div>

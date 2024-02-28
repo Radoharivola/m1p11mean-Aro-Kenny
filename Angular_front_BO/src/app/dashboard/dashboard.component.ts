@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { UserService } from '../services/user.service';
 import { WsService } from 'app/services/ws.service';
 import { StatService } from 'app/services/stat.service';
+
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
@@ -38,6 +39,7 @@ export class DashboardComponent implements OnInit {
   todayDateSort: number = 1;
   todayDoneDateSort: number = 1;
   ws: any[] = [];
+  isAdmin: boolean = false;
   constructor(private rdvservice: RdvService, private router: Router, private userservice: UserService, private wsservice: WsService, private statservice: StatService) { }
   startAnimationForLineChart(chart) {
     let seq: any, delays: any, durations: any;
@@ -107,7 +109,7 @@ export class DashboardComponent implements OnInit {
     this.nbrRdvPMPY(this.currentYear);
     this.caPMPY(this.currentYear);
     this.benefits(this.currentYear);
-
+    this.workTime(this.currentYear, this.currentMonth);
     this.monthRdvPDPM = this.currentMonth;
     this.yearRdvPDPM = this.currentYear;
 
@@ -119,6 +121,11 @@ export class DashboardComponent implements OnInit {
     this.yearCaPMPY = this.currentYear;
 
     this.yearBenefits = this.currentYear;
+
+    this.yearWT=this.currentYear;
+    this.monthWT=this.currentMonth;
+
+    this.isAdmin=this.userservice.isLoggedIn();
   }
 
   monthRdvPDPM: number;
@@ -183,6 +190,61 @@ export class DashboardComponent implements OnInit {
 
     this.startAnimationForLineChart(dailySalesChart);
   }
+
+
+  monthWT: number;
+  yearWT: number;
+  refreshWT() {
+    this.workTime(this.yearWT, this.monthWT);
+  }
+  workTime(year: number, month: number) {
+    this.statservice.getWorkTime(year, month).subscribe(res => {
+      const data = res.body.result;
+      var labels = [];
+      var series = [];
+      data.forEach((d) => {
+        labels.push(d.employee);
+        series.push(d.averageWorkTime);
+        console.log(series);
+      })
+
+      this.initWorkTime(labels, series);
+    }, err => {
+      console.log(err);
+    });
+  }
+  initWorkTime(labels, series) {
+    var datawebsiteViewsChart = {
+      labels: labels,
+      series: [
+        series
+
+      ]
+    };
+    var optionswebsiteViewsChart = {
+      axisX: {
+        showGrid: true
+      },
+      low: 0,
+      high: Math.max(...series),
+      chartPadding: { top: 30, right: 5, bottom: 0, left: 20 },
+    };
+    var responsiveOptions: any[] = [
+      ['screen and (max-width: 640px)', {
+        seriesBarDistance: 5,
+        axisX: {
+          labelInterpolationFnc: function (value) {
+            return value[0];
+          }
+        }
+      }]
+    ];
+    var websiteViewsChart = new Chartist.Bar('#workTime', datawebsiteViewsChart, optionswebsiteViewsChart, responsiveOptions);
+
+    //start animation for the Emails Subscription Chart
+    this.startAnimationForBarChart(websiteViewsChart);
+  }
+
   nbrRdvPDPM(year: number, month?: any) {
     this.statservice.get(year, month).subscribe(res => {
       const data = res.body.appointmentsCounts;
@@ -246,7 +308,7 @@ export class DashboardComponent implements OnInit {
     };
     var optionswebsiteViewsChart = {
       axisX: {
-        showGrid: false
+        showGrid: true
       },
       low: 0,
       high: Math.max(...series),

@@ -156,7 +156,6 @@ export class ProfilepageComponent implements OnInit, OnDestroy {
   onContainerScroll() {
     const container = document.querySelector('.scrollable-table-container');
     if (container) {
-      // Check if the user has scrolled to the bottom of the container
       if (container.scrollTop + container.clientHeight >= container.scrollHeight) {
         if (this.page < this.totalPages) {
           this.page += 1;
